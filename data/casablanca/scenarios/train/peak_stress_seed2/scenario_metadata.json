@@ -1,10 +1,10 @@
 {
-  "generated_at_utc": "2026-11-06T22:56:02+00:00",
+  "generated_at_utc": "2026-11-06T23:43:50+00:00",
   "regime": "peak_stress",
   "seed": 2,
   "split": "train",
-  "generator_version": "0.1.0",
-  "n_requests": 80,
+  "generator_version": "0.2.0",
+  "n_requests": 40,
   "fleet": {
     "label": "hypothetical_light_ev_van",
     "usable_battery_kwh": 40.0,
@@ -12,23 +12,27 @@
     "initial_soc": 1.0,
     "min_reserve_soc": 0.15,
     "consumption_wh_per_km": 200.0,
-    "consumption_note": "Assumed constant Wh/km for a small electric van under urban conditions. Not calibrated to HELECAR-D passenger cars without qualification.\n",
+    "consumption_note": "Assumed constant Wh/km for a small electric van under urban conditions. Not calibrated to HELECAR-D passenger cars without qualification. Usable range before reserve under this model is about 170 km per vehicle; whether energy binds depends on realized route distances, not this sheet alone.\n",
     "depot_charging": "depot_only",
     "charge_power_kw": 22.0,
     "drive_speed_cap_kmh": 50,
     "service_duration_override_min": null,
-    "n_vehicles": 3
+    "n_vehicles": 3,
+    "problem_class_note": "Depot-only charging makes this closer to a dynamic energy-constrained pickup VRP than classical EVRP with en-route charging-station routing.\n"
   },
   "depot": {
     "label": "scenario_depot_not_observed_facility",
-    "lat": 33.57421164429523,
-    "lon": -7.6343575518802576,
-    "snap_node": 458745356,
+    "lat": 33.57455139385016,
+    "lon": -7.6231243306337495,
+    "snap_node": 1849562461,
     "note": "Accessible OSM-derived location used as a scenario depot. Not a validated Casablanca logistics facility."
   },
   "feasibility": {
-    "feasible_mode": false,
-    "label": "stressful"
+    "attempt_certificate": false,
+    "label": "stressful_unlabeled",
+    "certified_feasible": false,
+    "note": "Stressful by construction parameters; not a certified infeasibility class."
   },
-  "claim": "Synthetic geographically grounded requests. Not observed Casablanca customer orders."
+  "claim": "Synthetic geographically grounded requests. Not observed Casablanca customer orders.",
+  "arrival_process": "fixed_count_hourly_intensity_sampling"
 }

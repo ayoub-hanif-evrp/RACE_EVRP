@@ -27,13 +27,16 @@ def test_fleet_and_package_bounds():
 def test_witness_energy_feasibility_when_present():
     witnesses = list(scenarios_dir().rglob("reference_schedule.csv"))
     if not witnesses:
-        pytest.skip("no witnesses generated")
+        pytest.fail("no certified reference_schedule.csv found; regenerate scenarios")
     fleet = yaml.safe_load((config_dir() / "fleet_default.yaml").read_text(encoding="utf-8"))
     reserve = float(fleet["usable_battery_kwh"]) * float(fleet["min_reserve_soc"])
     for path in witnesses:
         df = pd.read_csv(path)
         assert df["witness_only"].all()
+        assert "travel_distance_m" in df.columns
+        assert "path_nodes" in df.columns
         assert df["battery_after_kwh"].min() >= reserve - 1e-6
+        assert (df["travel_distance_m"] >= 0).all()
 
 
 def test_split_seed_isolation():

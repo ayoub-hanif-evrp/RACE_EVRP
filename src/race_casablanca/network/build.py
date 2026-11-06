@@ -89,11 +89,63 @@ def graph_integrity(graph) -> dict:
     }
 
 
+def _sanitize_graphml_attrs(graph):
+    """Keep only Stage-1 routing attributes that GraphML round-trips cleanly."""
+
+    keep_edge = {
+        "length",
+        "free_flow_time_s",
+        "free_flow_speed_kmh",
+        "highway",
+        "race_highway",
+        "maxspeed",
+        "zone_commune",
+        "geometry",
+        "name",
+        "osmid",
+    }
+    truthy = {"yes", "true", "1"}
+    falsy = {"no", "false", "0"}
+    for _u, _v, _k, data in graph.edges(keys=True, data=True):
+        oneway = data.get("oneway")
+        for key in list(data.keys()):
+            if key not in keep_edge and key != "oneway":
+                data.pop(key, None)
+        if isinstance(data.get("highway"), list):
+            data["highway"] = data["highway"][0]
+        if isinstance(data.get("osmid"), list):
+            data["osmid"] = data["osmid"][0]
+        if oneway is not None:
+            if isinstance(oneway, list):
+                oneway = oneway[0]
+            if isinstance(oneway, str):
+                low = oneway.split(",")[0].strip().lower()
+                data["oneway"] = True if low in truthy else False if low in falsy else False
+            else:
+                data["oneway"] = bool(oneway)
+    return graph
+
+
 def export_graph(graph, roads_dir: Path) -> dict:
     roads_dir.mkdir(parents=True, exist_ok=True)
     graphml = roads_dir / "casablanca_drive.graphml"
+    graph = _sanitize_graphml_attrs(graph)
     ox.save_graphml(graph, graphml)
     nodes, edges = ox.graph_to_gdfs(graph)
+    # Avoid duplicate index/column names that break GeoPackage export.
+    if "osmid" in nodes.columns and nodes.index.name == "osmid":
+        nodes = nodes.drop(columns=["osmid"])
+    for col in list(edges.columns):
+        if col in {"u", "v", "key"} and col in (edges.index.names or []):
+            edges = edges.drop(columns=[col])
+    # Drop non-serializable / unwieldy object columns.
+    for frame in (nodes, edges):
+        drop_cols = [c for c in frame.columns if frame[c].dtype == "object" and c != "geometry"]
+        # Keep a few useful string attrs if present.
+        keep = {"highway", "name", "maxspeed", "oneway", "race_highway", "zone_commune"}
+        drop_cols = [c for c in drop_cols if c not in keep]
+        if drop_cols:
+            frame.drop(columns=drop_cols, inplace=True, errors="ignore")
     nodes_path = roads_dir / "nodes.gpkg"
     edges_path = roads_dir / "edges.gpkg"
     nodes.to_file(nodes_path, driver="GPKG")

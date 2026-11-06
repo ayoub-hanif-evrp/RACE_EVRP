@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-06T22:42:29+00:00",
+  "generated_at_utc": "2026-11-06T23:17:01+00:00",
   "n_workbook": 22,
   "n_matched": 16,
   "unmatched": [
@@ -11,6 +11,6 @@
     "Moulay Youssef"
   ],
   "n_hcp_units_parsed": 1936,
-  "note": "Unmatched communes received household-scaled synthetic population (ratio=5.3492 from matched median pop/households). Labeled modeled.",
+  "note": "Unmatched communes received household-scaled synthetic population (ratio=5.3492). Explicit population_source=imputed_household_scaled.",
   "claim": "HCP RGPH-2024 legal population joined to workbook commune names where matched. Unmatched zones use documented household-scaled placeholders, not claimed census counts."
 }

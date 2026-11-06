@@ -80,6 +80,20 @@ def _normalize_distance(value: float) -> float:
     return float(value) * 1000.0
 
 
+def _normalize_travel_time_min(value: float) -> float:
+    """Return travel time in minutes.
+
+    Some workbook cells store seconds (values > 180), others store minutes.
+    Values above 180 are treated as seconds and converted.
+    """
+
+    if not np.isfinite(value):
+        return np.nan
+    if value > 180:
+        return float(value) / 60.0
+    return float(value)
+
+
 def _parse_day_sheet(path: Path, day: str, sheet: str) -> pd.DataFrame:
     raw = pd.read_excel(path, sheet_name=sheet, header=None)
     records = []
@@ -116,7 +130,7 @@ def _parse_day_sheet(path: Path, day: str, sheet: str) -> pd.DataFrame:
                     "distance_raw": float(distance) if pd.notna(distance) else np.nan,
                     "distance_m": _normalize_distance(float(distance)) if pd.notna(distance) else np.nan,
                     "hour": hour,
-                    "travel_time_min": float(travel) if pd.notna(travel) else np.nan,
+                    "travel_time_min": _normalize_travel_time_min(float(travel)) if pd.notna(travel) else np.nan,
                     "tti": float(tti) if pd.notna(tti) else np.nan,
                 }
             )

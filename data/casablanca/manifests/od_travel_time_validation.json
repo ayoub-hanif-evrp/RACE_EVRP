@@ -1,0 +1,14 @@
+{
+  "generated_at_utc": "2026-11-06T23:50:39+00:00",
+  "status": "ok",
+  "holdout_day": "Sunday",
+  "n_compared": 80,
+  "n_failures": 0,
+  "mae_min": 69.09222965481237,
+  "rmse_min": 91.78535208052159,
+  "median_abs_error_min": 65.37987758270303,
+  "mean_rel_error": 0.9453363259034535,
+  "peak_7_10_mae_min": 62.04221695118195,
+  "claim": "Compares modeled OSM earliest-arrival times to Waze-reported OD durations. Does not claim identical physical routes or edge-level traffic calibration.",
+  "output": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\traffic\\od_travel_time_holdout_sunday.csv"
+}

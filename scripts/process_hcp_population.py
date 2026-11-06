@@ -130,31 +130,37 @@ def main() -> int:
         base["households"] = workbook_hh
     if workbook_density is not None:
         base["density"] = workbook_density
-    merged = base.merge(out[["commune", "zip_code", "population", "hcp_name"]], on=["commune", "zip_code"], how="left")
-    unmatched_mask = merged["population"].isna()
+    merged = base.merge(out[["commune", "zip_code", "population", "hcp_name", "matched"]], on=["commune", "zip_code"], how="left")
+    merged["population_source"] = "hcp_rgph2024_matched"
+    unmatched_mask = merged["population"].isna() | (~merged["matched"].fillna(False))
     if unmatched_mask.any() and "households" in merged.columns:
-        # Secondary covariate: scale unmatched zones by workbook households relative to matched median.
         matched_pop = merged.loc[~unmatched_mask, "population"]
         matched_hh = merged.loc[~unmatched_mask, "households"]
         if matched_hh.notna().any() and matched_pop.notna().any() and float(matched_hh.median()) > 0:
             ratio = float(matched_pop.median() / matched_hh.median())
             merged.loc[unmatched_mask, "population"] = merged.loc[unmatched_mask, "households"] * ratio
+            merged.loc[unmatched_mask, "population_source"] = "imputed_household_scaled"
             pop_note = (
                 "Unmatched communes received household-scaled synthetic population "
-                f"(ratio={ratio:.4f} from matched median pop/households). Labeled modeled."
+                f"(ratio={ratio:.4f}). Explicit population_source=imputed_household_scaled."
             )
         else:
-            merged["population"] = merged["population"].fillna(1.0)
+            merged.loc[unmatched_mask, "population"] = 1.0
+            merged.loc[unmatched_mask, "population_source"] = "imputed_unit_fallback"
             pop_note = "Fallback population=1 for unmatched; check HCP join."
     elif unmatched_mask.any():
-        merged["population"] = merged["population"].fillna(1.0)
+        merged.loc[unmatched_mask, "population"] = 1.0
+        merged.loc[unmatched_mask, "population_source"] = "imputed_unit_fallback"
         pop_note = "Fallback population=1 for unmatched; check HCP join."
     else:
         pop_note = "All workbook communes matched to HCP population rows."
 
+    merged = merged.drop(columns=["matched"], errors="ignore")
     merged.to_csv(traffic_dir() / "communes.csv", index=False)
     zones_dir().mkdir(parents=True, exist_ok=True)
     out.to_csv(zones_dir() / "hcp_zone_population.csv", index=False)
+    # Keep measured-only table separate from modeling table.
+    out.to_csv(zones_dir() / "hcp_population_measured_only.csv", index=False)
     summary = {
         "generated_at_utc": utc_now(),
         "n_workbook": int(len(out)),

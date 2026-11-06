@@ -1,0 +1,33 @@
+{
+  "generated_at_utc": "2026-11-06T23:17:00+00:00",
+  "n_zones": 22,
+  "n_verified_admin": 15,
+  "n_approximate_study_zone": 7,
+  "verified": [
+    "Anfa",
+    "Assoukhour Assawda",
+    "Ben Msick",
+    "El Maarif",
+    "Hay Hassani",
+    "Hay Mohammadi",
+    "Ain Chock",
+    "Ain Sebaa",
+    "Al Fida",
+    "Mers Sultan",
+    "Moulay Rachid",
+    "Sidi Belyout",
+    "Sidi Moumen",
+    "Sidi Othmane",
+    "Sidi Bernoussi"
+  ],
+  "approximate": [
+    "Echchallalate",
+    "Sidi Maarouf",
+    "Bou Chentouf",
+    "Al Idrissia",
+    "Lissasfa",
+    "Ahl Laghlam",
+    "Moulay Youssef"
+  ],
+  "claim": "Not all 22 workbook zones are verified official Casablanca communes. Approximate study zones are retained for synthetic demand geography only."
+}

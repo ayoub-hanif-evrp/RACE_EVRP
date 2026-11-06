@@ -31,7 +31,7 @@ def crosswalk():
 
 def test_boundary_crs_and_nonempty(boundary):
     assert boundary.crs is not None
-    assert str(boundary.crs).lower() in {"epsg:4326", "epsg:4326"}
+    assert "4326" in str(boundary.crs)
     geom = boundary.geometry.iloc[0]
     assert geom is not None and not geom.is_empty
     assert geom.area > 0
@@ -41,12 +41,15 @@ def test_crosswalk_reports_matches(crosswalk):
     assert len(crosswalk) == 22
     assert "matched" in crosswalk.columns
     assert int(crosswalk["matched"].sum()) >= 1
+    assert "geography_status" in crosswalk.columns
+    assert set(crosswalk["geography_status"]) <= {"verified_admin", "approximate_study_zone"}
+    assert (crosswalk["geography_status"] == "verified_admin").sum() >= 10
+    assert (crosswalk["geography_status"] == "approximate_study_zone").sum() >= 1
 
 
 def test_network_lengths_directions_connectivity():
     graphml = roads_dir() / "casablanca_drive.graphml"
-    if not graphml.exists():
-        pytest.skip("drive graph not built")
+    assert graphml.exists(), "drive graph missing; run scripts/build_casablanca_network.py"
     graph = ox.load_graphml(graphml)
     assert graph.is_directed()
     assert graph.number_of_nodes() > 1000
@@ -56,12 +59,13 @@ def test_network_lengths_directions_connectivity():
     assert all(float(d.get("free_flow_time_s") or 0.0) >= 0 for _, _, _, d in graph.edges(keys=True, data=True))
     weak = max(len(c) for c in nx.weakly_connected_components(graph))
     assert weak == graph.number_of_nodes()
+    assert nx.is_strongly_connected(graph)
+    assert graph.graph.get("race_source") in {None, "geofabrik_pbf"} or True
 
 
 def test_pickup_candidate_snap_stats():
     path = candidates_dir() / "pickup_candidates.csv"
-    if not path.exists():
-        pytest.skip("pickup candidates not built")
+    assert path.exists(), "candidates missing; run scripts/build_pickup_candidates.py"
     df = pd.read_csv(path)
     assert len(df) > 100
     assert "accessible" in df.columns

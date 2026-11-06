@@ -31,13 +31,18 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python scripts\process_casablanca_traffic.py
 .\.venv\Scripts\python scripts\process_hcp_population.py
 .\.venv\Scripts\python scripts\build_casablanca_boundary.py
+.\.venv\Scripts\python scripts\audit_zone_matching.py
 .\.venv\Scripts\python scripts\build_casablanca_network.py
 .\.venv\Scripts\python scripts\build_pickup_candidates.py
 .\.venv\Scripts\python scripts\generate_all_scenarios.py
+.\.venv\Scripts\python scripts\validate_od_travel_times.py
 .\.venv\Scripts\python scripts\write_dataset_manifest.py
 .\.venv\Scripts\python scripts\make_casablanca_figures.py
 .\.venv\Scripts\python -m pytest
 ```
+
+Roads and pickup candidates are extracted from the frozen Geofabrik `morocco-260101.osm.pbf` snapshot (not live Overpass). Feasible labels require independently validated graph schedules; see `reports/STAGE1_SCIENTIFIC_CORRECTION.md`.
+
 
 Large raw downloads (OpenStreetMap PBF, census Excel, traffic workbook) and heavy GraphML/GeoPackage exports are fetched or rebuilt by scripts and recorded in manifests. Oversized binaries are gitignored.
 

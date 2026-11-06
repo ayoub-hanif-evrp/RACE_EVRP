@@ -1,0 +1,23 @@
+commune,zip_code,population,hcp_name,matched
+Echchallalate,28822,98015.0,Commune d'Ech-challalate,True
+Sidi Maarouf,20192,,,False
+Anfa,20040,66202.0,Arrondissement d'Anfa,True
+Assoukhour Assawda,20320,104775.0,Arrondissement d'Asoukhour Assawda,True
+Ben Msick,20023,105612.0,Arrondissement de Ben-M'sick,True
+Bou Chentouf,20500,,,False
+El Maarif,20390,139669.0,Arrondissement de Maârif,True
+Hay Hassani,20220,537509.0,Arrondissement de Hay-Hassani,True
+Hay Mohammadi,20570,104232.0,Arrondissement de Hay-Mohammadi,True
+Ain Chock,20190,374707.0,Arrondissement d'Aïn-Chock,True
+Ain Sebaa,20590,155828.0,Arrondissement d'Aïn-Sebaâ,True
+Al Fida,20520,125933.0,Arrondissement d'Al-Fida,True
+Al Idrissia,20450,,,False
+Lissasfa,20232,,,False
+Mers Sultan,20550,98139.0,Arrondissement de Mers-Sultan,True
+Moulay Rachid,20660,245139.0,Arrondissement de Moulay Rachid,True
+Sidi Belyout,20000,138294.0,Arrondissement de Sidi Belyout,True
+Sidi Moumen,20400,551443.0,Arrondissement de Sidi Moumen,True
+Sidi Othmane,20700,211894.0,Arrondissement de Sidi Othmane,True
+Ahl Laghlam,29640,,,False
+Sidi Bernoussi,20600,154919.0,Arrondissement de Sidi Bernoussi,True
+Moulay Youssef,20060,,,False

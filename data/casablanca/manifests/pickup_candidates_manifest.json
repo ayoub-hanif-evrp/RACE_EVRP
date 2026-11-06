@@ -1,8 +1,10 @@
 {
-  "generated_at_utc": "2026-11-06T22:56:01+00:00",
-  "n_candidates": 25341,
-  "n_accessible": 25220,
-  "rejection_rate": 0.00477487076279547,
-  "median_snap_distance_m": 34.943637232446626,
-  "n_with_commune": 25340
+  "generated_at_utc": "2026-11-06T23:22:33+00:00",
+  "source": "geofabrik_morocco-260101.osm.pbf",
+  "pbf_sha256": "dace94a528619cf4f8ac3bf3f817d5330d4642a61486c7190c05fcd33cabedec",
+  "n_candidates": 46995,
+  "n_accessible": 44892,
+  "rejection_rate": 0.044749441429939356,
+  "median_snap_distance_m": 38.5804165970214,
+  "n_with_commune": 46990
 }

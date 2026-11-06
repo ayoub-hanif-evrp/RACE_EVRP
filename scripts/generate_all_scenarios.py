@@ -25,7 +25,8 @@ def main() -> int:
     for split, seeds in plan:
         for seed in seeds:
             # Rotate regimes across seeds so each split covers all regimes.
-            regime = regimes[(seed - 1) % len(regimes)]
+            # Prefer stable ordering from YAML insertion order.
+            regime = regimes[(abs(seed) - 1) % len(regimes)]
             cmd = [py, str(script), "--regime", regime, "--seed", str(seed), "--split", split]
             print(" ".join(cmd))
             result = subprocess.run(cmd, cwd=project_root())

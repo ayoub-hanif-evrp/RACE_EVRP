@@ -1,55 +1,70 @@
-generator_version: "0.1.0"
+generator_version: "0.2.0"
 random_seed_base: 42
 splits:
   train_seeds: [1, 2, 3, 4, 5, 6, 7, 8]
   validation_seeds: [101, 102]
   test_seeds: [201, 202, 203]
 
-regimes:
-  baseline_feasible:
-    n_customers: 40
-    horizon_hours: 8
-    start_hour: 8
-    service_duration_min: 8
-    package_weight_kg: 5.0
-    time_window_hours: 2.0
-    release_lead_min: 0
-    urgency: normal
-    intensity_profile: daytime_peak
-    feasible_mode: true
-  peak_stress:
-    n_customers: 80
-    horizon_hours: 8
-    start_hour: 7
-    service_duration_min: 10
-    package_weight_kg: 8.0
-    time_window_hours: 1.5
-    release_lead_min: 0
-    urgency: high
-    intensity_profile: morning_peak
-    feasible_mode: false
-    label: stressful
-  partially_infeasible:
-    n_customers: 60
-    horizon_hours: 6
-    start_hour: 8
-    service_duration_min: 12
-    package_weight_kg: 12.0
-    time_window_hours: 1.0
-    release_lead_min: 0
-    urgency: high
-    intensity_profile: morning_peak
-    feasible_mode: false
-    label: partially_infeasible
-
-intensity_profiles:
-  daytime_peak:
-    # Relative hourly weights for hours 0..23
-    weights: [0,0,0,0,0,0,0.2,0.6,1.0,1.0,0.8,0.7,0.6,0.7,0.8,0.9,1.0,0.8,0.4,0.2,0.1,0,0,0]
-  morning_peak:
-    weights: [0,0,0,0,0,0,0.4,1.0,1.0,0.9,0.6,0.4,0.3,0.3,0.4,0.5,0.6,0.4,0.2,0.1,0,0,0,0]
-
+# Spatial weights are scenario parameters, not an empirically validated
+# Casablanca parcel-demand model.
 spatial:
   population_weight: 0.6
   commercial_weight: 0.4
   max_snap_distance_m: 150
+  note: "Assumed mixture for synthetic generation; not claimed as observed demand."
+
+regimes:
+  baseline:
+    n_customers: 12
+    horizon_hours: 8
+    start_hour: 8
+    service_duration_min: 8
+    package_weight_kg: 15.0
+    time_window_hours: 3.0
+    weight_jitter: 0.35
+    service_jitter_min: 3.0
+    window_jitter_hours: 0.5
+    release_lead_min: 0
+    urgency: normal
+    intensity_profile: daytime_peak
+    attempt_feasible_certificate: true
+    label: baseline_attempt_certificate
+    label_note: "Feasible only if graph witness is independently validated."
+  peak_stress:
+    n_customers: 40
+    horizon_hours: 8
+    start_hour: 7
+    service_duration_min: 10
+    package_weight_kg: 25.0
+    time_window_hours: 1.5
+    weight_jitter: 0.4
+    service_jitter_min: 4.0
+    window_jitter_hours: 0.25
+    release_lead_min: 0
+    urgency: high
+    intensity_profile: morning_peak
+    attempt_feasible_certificate: false
+    label: stressful_unlabeled
+    label_note: "Stressful by construction parameters; not a certified infeasibility class."
+  tight_windows:
+    n_customers: 30
+    horizon_hours: 6
+    start_hour: 8
+    service_duration_min: 12
+    package_weight_kg: 30.0
+    time_window_hours: 1.0
+    weight_jitter: 0.4
+    service_jitter_min: 4.0
+    window_jitter_hours: 0.2
+    release_lead_min: 0
+    urgency: high
+    intensity_profile: morning_peak
+    attempt_feasible_certificate: false
+    label: tight_windows_unlabeled
+    label_note: "Not certified mathematically infeasible without an optimization certificate."
+
+intensity_profiles:
+  daytime_peak:
+    weights: [0,0,0,0,0,0,0.2,0.6,1.0,1.0,0.8,0.7,0.6,0.7,0.8,0.9,1.0,0.8,0.4,0.2,0.1,0,0,0]
+  morning_peak:
+    weights: [0,0,0,0,0,0,0.4,1.0,1.0,0.9,0.6,0.4,0.3,0.3,0.4,0.5,0.6,0.4,0.2,0.1,0,0,0,0]

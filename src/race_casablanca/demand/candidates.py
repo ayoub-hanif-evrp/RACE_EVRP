@@ -84,7 +84,19 @@ def snap_to_graph(candidates: gpd.GeoDataFrame, graph, max_snap_m: float = 150.0
 
 
 def assign_zones(candidates: gpd.GeoDataFrame, zones: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    zones_valid = zones[zones["matched"] & zones.geometry.notna()][["workbook_commune", "geometry"]]
-    joined = gpd.sjoin(candidates, zones_valid, how="left", predicate="within")
+    """Assign communes, preferring verified admin polygons over approximate zones."""
+
+    zones_valid = zones[zones["matched"] & zones.geometry.notna()].copy()
+    if "geography_status" in zones_valid.columns:
+        zones_valid["_prio"] = zones_valid["geography_status"].map(
+            {"verified_admin": 0, "approximate_study_zone": 1}
+        ).fillna(2)
+        zones_valid = zones_valid.sort_values("_prio")
+    cols = ["workbook_commune", "geometry"]
+    if "geography_status" in zones_valid.columns:
+        cols.append("geography_status")
+    joined = gpd.sjoin(candidates, zones_valid[cols], how="left", predicate="within")
+    # One row per candidate geometry index.
+    joined = joined[~joined.index.duplicated(keep="first")]
     joined = joined.rename(columns={"workbook_commune": "commune"})
     return joined

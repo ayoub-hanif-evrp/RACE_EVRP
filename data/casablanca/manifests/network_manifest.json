@@ -1,17 +1,19 @@
 {
-  "generated_at_utc": "2026-11-06T22:55:51+00:00",
-  "method": "OSMnx graph_from_polygon on the matched-commune union boundary. Geofabrik morocco-260101.osm.pbf is retained as the archived Morocco extract for provenance; network construction uses the study-area polygon query.",
+  "generated_at_utc": "2026-11-06T23:22:26+00:00",
+  "method": "pyrosm_extract_from_geofabrik_morocco-260101.osm.pbf clipped to study boundary",
+  "pbf_path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\raw\\osm\\morocco-260101.osm.pbf",
+  "pbf_sha256": "dace94a528619cf4f8ac3bf3f817d5330d4642a61486c7190c05fcd33cabedec",
   "integrity": {
-    "n_nodes": 37952,
-    "n_edges": 100286,
+    "n_nodes": 30943,
+    "n_edges": 47787,
     "crs": "epsg:4326",
-    "largest_weak_component_nodes": 37952,
-    "largest_strong_component_nodes": 37764,
+    "largest_weak_component_nodes": 30943,
+    "largest_strong_component_nodes": 30943,
     "n_weak_components": 1,
-    "n_strong_components": 153,
+    "n_strong_components": 1,
     "min_edge_length_m": 0.5844331580354828,
-    "max_edge_length_m": 4247.294876722895,
-    "mean_edge_length_m": 67.8732067638672,
+    "max_edge_length_m": 3317.4058313481337,
+    "mean_edge_length_m": 68.08180926701553,
     "nonpositive_length_edges": 0,
     "turn_restriction_note": "OSMnx drive graphs encode one-way restrictions on edges. Complex turn restrictions that require relation-level turn bans are not fully enforced by a simple directed graph representation."
   },
@@ -21,5 +23,9 @@
     "edges_gpkg": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\roads\\edges.gpkg"
   },
   "speed_config": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\configs\\travel_time.yaml",
-  "osm_attribution": "© OpenStreetMap contributors (ODbL)"
+  "osm_attribution": "© OpenStreetMap contributors (ODbL)",
+  "software": {
+    "pyrosm": "required",
+    "osmnx": "2.1.1"
+  }
 }

@@ -1,0 +1,74 @@
+{
+  "generated_at_utc": "2026-11-06T23:45:48+00:00",
+  "regime": "baseline",
+  "seed": 4,
+  "split": "train",
+  "generator_version": "0.2.0",
+  "n_requests": 12,
+  "fleet": {
+    "label": "hypothetical_light_ev_van",
+    "usable_battery_kwh": 40.0,
+    "payload_kg": 600.0,
+    "initial_soc": 1.0,
+    "min_reserve_soc": 0.15,
+    "consumption_wh_per_km": 200.0,
+    "consumption_note": "Assumed constant Wh/km for a small electric van under urban conditions. Not calibrated to HELECAR-D passenger cars without qualification. Usable range before reserve under this model is about 170 km per vehicle; whether energy binds depends on realized route distances, not this sheet alone.\n",
+    "depot_charging": "depot_only",
+    "charge_power_kw": 22.0,
+    "drive_speed_cap_kmh": 50,
+    "service_duration_override_min": null,
+    "n_vehicles": 3,
+    "problem_class_note": "Depot-only charging makes this closer to a dynamic energy-constrained pickup VRP than classical EVRP with en-route charging-station routing.\n"
+  },
+  "depot": {
+    "label": "scenario_depot_not_observed_facility",
+    "lat": 33.57455139385016,
+    "lon": -7.6231243306337495,
+    "snap_node": 1849562461,
+    "note": "Accessible OSM-derived location used as a scenario depot. Not a validated Casablanca logistics facility."
+  },
+  "feasibility": {
+    "attempt_certificate": true,
+    "label": "baseline_attempt_certificate",
+    "certified_feasible": true,
+    "note": "Feasible only if graph witness is independently validated.",
+    "independent_validator": {
+      "valid": true,
+      "n_violations": 0,
+      "violations": [],
+      "vehicles": {
+        "V1": {
+          "final_node": 1849562461,
+          "battery_kwh": 24.000393347624556,
+          "load_kg": 109.81186680429512
+        },
+        "V2": {
+          "final_node": 1849562461,
+          "battery_kwh": 33.09183737758236,
+          "load_kg": 40.962338771578494
+        },
+        "V3": {
+          "final_node": 1849562461,
+          "battery_kwh": 39.093994314345224,
+          "load_kg": 12.243800585050291
+        }
+      }
+    },
+    "n_requests": 12,
+    "n_served": 12,
+    "n_returns": 3,
+    "share_within_window": 1.0,
+    "min_battery_after_kwh": 24.000393347624556,
+    "total_travel_distance_m": 119068.87480223933,
+    "vehicles_used": [
+      "V1",
+      "V2",
+      "V3"
+    ],
+    "certificate": "graph_constructive_freeflow_path_td_eval_with_depot_return",
+    "window_definition": "service_must_finish_by_tw_end",
+    "online_policy_must_not_read": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\scenarios\\train\\baseline_seed4\\witnesses"
+  },
+  "claim": "Synthetic geographically grounded requests. Not observed Casablanca customer orders.",
+  "arrival_process": "fixed_count_hourly_intensity_sampling"
+}

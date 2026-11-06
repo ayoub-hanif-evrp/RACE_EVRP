@@ -1,4 +1,4 @@
-"""Seeded synthetic pickup demand and feasible witness construction."""
+"""Seeded synthetic pickup demand generation."""
 
 from __future__ import annotations
 
@@ -30,9 +30,20 @@ def zone_sampling_weights(communes: pd.DataFrame, land_use: pd.DataFrame, config
     return pd.Series(weights.to_numpy(), index=merged["commune"])
 
 
-def _nhpp_arrivals(n: int, start_hour: float, horizon_hours: float, weights: list[float], rng: np.random.Generator):
+def fixed_count_hourly_arrivals(
+    n: int,
+    start_hour: float,
+    horizon_hours: float,
+    weights: list[float],
+    rng: np.random.Generator,
+):
+    """Sample exactly n arrival times with hourly intensity weights.
+
+    This is fixed-count temporal sampling, not an unconditional nonhomogeneous
+    Poisson process (NHPP). Naming is intentional after the Stage-1 audit.
+    """
+
     hours = np.arange(24)
-    # Restrict to active horizon window.
     active = []
     probs = []
     for h in hours:
@@ -44,9 +55,12 @@ def _nhpp_arrivals(n: int, start_hour: float, horizon_hours: float, weights: lis
         probs = np.ones(len(active))
     probs = probs / probs.sum()
     chosen_hours = rng.choice(active, size=n, replace=True, p=probs)
-    # Uniform within hour.
     minutes = chosen_hours * 60.0 + rng.uniform(0, 60, size=n)
     return np.sort(minutes)
+
+
+# Backward-compatible alias used by older tests/docs.
+_nhpp_arrivals = fixed_count_hourly_arrivals
 
 
 def generate_requests(
@@ -60,12 +74,15 @@ def generate_requests(
     rng = np.random.default_rng(seed)
     n = int(regime["n_customers"])
     profile = config["intensity_profiles"][regime["intensity_profile"]]["weights"]
-    release_min = _nhpp_arrivals(n, regime["start_hour"], regime["horizon_hours"], profile, rng)
+    release_min = fixed_count_hourly_arrivals(n, regime["start_hour"], regime["horizon_hours"], profile, rng)
 
-    # Sample zones then candidates within zone.
     zones = list(zone_weights.index)
     zprob = zone_weights.to_numpy(dtype=float)
     chosen_zones = rng.choice(zones, size=n, replace=True, p=zprob)
+    # Optional within-regime heterogeneity multipliers.
+    weight_jitter = float(regime.get("weight_jitter", 0.0))
+    service_jitter = float(regime.get("service_jitter_min", 0.0))
+    window_jitter = float(regime.get("window_jitter_hours", 0.0))
     rows = []
     for i in range(n):
         zone = chosen_zones[i]
@@ -74,7 +91,15 @@ def generate_requests(
             pool = candidates[candidates["accessible"] == True]  # noqa: E712
         pick = pool.sample(1, random_state=int(rng.integers(0, 1_000_000))).iloc[0]
         release = float(release_min[i])
-        tw = float(regime["time_window_hours"]) * 60.0
+        tw_hours = float(regime["time_window_hours"])
+        if window_jitter > 0:
+            tw_hours = max(0.25, tw_hours + float(rng.uniform(-window_jitter, window_jitter)))
+        service = float(regime["service_duration_min"])
+        if service_jitter > 0:
+            service = max(1.0, service + float(rng.uniform(-service_jitter, service_jitter)))
+        pkg = float(regime["package_weight_kg"])
+        if weight_jitter > 0:
+            pkg = max(0.5, pkg * float(rng.uniform(1.0 - weight_jitter, 1.0 + weight_jitter)))
         rows.append(
             {
                 "request_id": f"{regime_name}-{seed}-{i:04d}",
@@ -88,65 +113,13 @@ def generate_requests(
                 "snap_distance_m": float(pick.get("snap_distance_m") or np.nan),
                 "release_min": release,
                 "tw_start_min": release,
-                "tw_end_min": release + tw,
-                "service_min": float(regime["service_duration_min"]),
-                "weight_kg": float(regime["package_weight_kg"]),
+                "tw_end_min": release + tw_hours * 60.0,
+                "service_min": service,
+                "weight_kg": pkg,
                 "urgency": regime.get("urgency", "normal"),
                 "is_observed_order": False,
+                "arrival_process": "fixed_count_hourly_intensity_sampling",
                 "generator_version": config["generator_version"],
             }
         )
     return pd.DataFrame(rows)
-
-
-def build_feasible_witness(requests: pd.DataFrame, fleet: dict, depot_node, seed: int) -> pd.DataFrame:
-    """Construct a simple sequential depot-based schedule as a feasibility witness.
-
-    This is a constructive certificate for the generated instance under stated
-    assumptions. It is stored separately from online decision inputs.
-    """
-
-    rng = np.random.default_rng(seed + 999)
-    vehicles = [f"V{i+1}" for i in range(int(fleet.get("n_vehicles", 1)))]
-    ordered = requests.sort_values("release_min").reset_index(drop=True)
-    assign = []
-    vehicle_time = {v: 0.0 for v in vehicles}
-    vehicle_load = {v: 0.0 for v in vehicles}
-    battery = {v: float(fleet["usable_battery_kwh"]) * float(fleet["initial_soc"]) for v in vehicles}
-    reserve = float(fleet["usable_battery_kwh"]) * float(fleet["min_reserve_soc"])
-    consumption = float(fleet["consumption_wh_per_km"]) / 1000.0  # kWh/km
-    for _, req in ordered.iterrows():
-        # Greedy: earliest vehicle that can serve after release with payload/energy slack.
-        chosen = None
-        for v in vehicles:
-            ready = max(vehicle_time[v], float(req["release_min"]))
-            # Assume 2 km average hop for witness energy bookkeeping.
-            energy_need = consumption * 2.0
-            if vehicle_load[v] + float(req["weight_kg"]) > float(fleet["payload_kg"]):
-                continue
-            if battery[v] - energy_need < reserve:
-                continue
-            if ready <= float(req["tw_end_min"]):
-                chosen = v
-                start = ready
-                break
-        if chosen is None:
-            chosen = vehicles[int(rng.integers(0, len(vehicles)))]
-            start = max(vehicle_time[chosen], float(req["release_min"]))
-        end = start + float(req["service_min"])
-        vehicle_time[chosen] = end + 5.0
-        vehicle_load[chosen] += float(req["weight_kg"])
-        battery[chosen] -= consumption * 2.0
-        assign.append(
-            {
-                "request_id": req["request_id"],
-                "vehicle_id": chosen,
-                "depot_node": depot_node,
-                "planned_start_min": start,
-                "planned_end_min": end,
-                "within_window": start <= float(req["tw_end_min"]),
-                "battery_after_kwh": battery[chosen],
-                "witness_only": True,
-            }
-        )
-    return pd.DataFrame(assign)
