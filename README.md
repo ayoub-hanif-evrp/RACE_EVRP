@@ -1,12 +1,20 @@
-# LaDe-P Jilin pickup audit
+# RACE-EVRP — Casablanca Stage 1
 
-Stage 1 of a new transportation-research project. The repository audits the published Jilin partition of [Cainiao-AI/LaDe-P](https://huggingface.co/datasets/Cainiao-AI/LaDe-P). It does not implement a simulator, a routing solver, or a learning model, and it does not depend on any earlier project code.
+Reproducible research benchmark for **online electric parcel pickup** in **Casablanca, Morocco**.
 
-The suitability decision is **conditionally suitable**: the file can anchor observed pickup demand and courier-day event times. It does not observe electric vehicles, batteries, depots, or customer request-release times. Read `reports/DATASET_SUITABILITY.md` before any modeling.
+Casablanca is the sole primary geographical research environment. This repository does not use Chinese delivery logs (LaDe, Jilin, or related cities) as demand or calibration data.
+
+Stage 1 builds:
+
+- a directed OpenStreetMap driving network for a documented Casablanca study area;
+- a time-dependent travel-time model calibrated only to published zonal/hourly Waze-derived congestion where justified;
+- synthetic but geographically grounded pickup scenarios with explicitly labeled electric-fleet assumptions.
+
+Stage 1 does **not** implement PPO, GNNs, or the full multi-agent EVRP simulator.
 
 ## Install
 
-Python 3.11 or newer is required. The audit was run with Python 3.12.10.
+Python 3.11+ required.
 
 ```powershell
 py -3.12 -m venv .venv
@@ -14,37 +22,43 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python -m pip install -e ".[dev]"
 ```
 
-## Reproduce
+## Reproduce Stage 1
 
 ```powershell
-.\.venv\Scripts\python scripts\download_lade_p_jilin.py
-.\.venv\Scripts\python scripts\analyze_jilin_pickup.py
+.\.venv\Scripts\python scripts\download_casablanca_traffic.py
+.\.venv\Scripts\python scripts\download_morocco_osm.py
+.\.venv\Scripts\python scripts\download_hcp_population.py
+.\.venv\Scripts\python scripts\build_casablanca_boundary.py
+.\.venv\Scripts\python scripts\build_casablanca_network.py
+.\.venv\Scripts\python scripts\process_casablanca_traffic.py
+.\.venv\Scripts\python scripts\build_pickup_candidates.py
+.\.venv\Scripts\python scripts\generate_scenarios.py --regime baseline_feasible --seed 42
+.\.venv\Scripts\python scripts\make_casablanca_figures.py
 .\.venv\Scripts\python -m pytest
 ```
 
-The download copies the Jilin parquet and the dataset card at revision `f1ddd8dd163028dd5a8ab7d7c83b198ebd2f2167`. It exits with an error if the SHA-256 differs from the published Git-LFS object `043bdc91ff0c5906ac810e6097407226bc2c51da68bda6f40727f57aaf2737f9`. It does not create a substitute table.
+Large raw downloads (OpenStreetMap PBF, census Excel, traffic workbook) are fetched by scripts and recorded in manifests. They are not committed when oversized.
 
-Analysis prints the Arrow schema before any derived columns are built. Figures are written only from that verified file.
+## Data layout
 
-## Layout
+```text
+data/casablanca/
+  raw/                 # downloaded sources (local)
+  roads/               # GraphML / GeoPackage network
+  traffic/             # processed TTI profiles
+  zones/               # study boundary and crosswalk
+  pickup_candidates/   # OSM-derived candidates
+  scenarios/           # generated requests and witnesses
+  fleet/               # vehicle and depot configs
+  manifests/           # checksums and provenance
+```
 
-| Path | Contents |
-| --- | --- |
-| `data/raw/` | Unmodified parquet and dataset-card snapshot |
-| `data/processed/` | Audit tables and `audit_summary.json` |
-| `data/manifests/` | Revision, URLs, checksums, license notes, citation |
-| `scripts/` | Download and analysis entry points |
-| `src/lade_audit/` | Parsing, integrity checks, summaries, figures |
-| `figures/` | Five audit figures, PNG and PDF |
-| `reports/` | Provenance, audit, research specification, suitability, handoff |
-| `tests/` | Parsing and file-integrity tests |
+## Attribution and licenses
 
-## Citation
+- OpenStreetMap data: © OpenStreetMap contributors, ODbL.
+- Casablanca traffic workbook: Rouky & Bousouf, Mendeley Data, DOI 10.17632/8hj76bpzpv.1, CC BY 4.0.
+- Population statistics: Haut-Commissariat au Plan (HCP), RGPH 2024.
 
-Wu et al., "LaDe: The First Comprehensive Last-mile Express Dataset from Industry," KDD 2024, pp. 5991–6002, https://doi.org/10.1145/3637528.3671548.
+## Scientific boundary
 
-The Hugging Face card is tagged Apache-2.0. The paper states CC BY-NC 4.0. Both are recorded in `reports/DATA_PROVENANCE.md`.
-
-## Boundary
-
-Couriers in this table are not labeled as electric vehicles. Acceptance time is not customer request creation. Package weight, battery, energy, depot location, road travel time, and vehicle-to-vehicle communication are absent.
+Synthetic pickup requests are **not** observed Casablanca customer orders. Electric-vehicle energy, depot charging, and package attributes are **modeled assumptions**. Zonal Waze-derived TTI values do **not** provide edge-specific traffic calibration.

@@ -3,19 +3,27 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lade-pickup-audit"
+name = "race-evrp"
 version = "0.1.0"
-description = "Stage-1 audit of the published LaDe-P Jilin pickup partition."
+description = "Casablanca Stage-1 research benchmark for online electric parcel pickup."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{ name = "RACE research project" }]
 dependencies = [
-    "huggingface_hub>=0.24",
+    "geopandas>=1.0",
     "matplotlib>=3.8",
+    "networkx>=3.2",
     "numpy>=1.26",
+    "openpyxl>=3.1",
+    "osmnx>=2.0",
     "pandas>=2.2",
     "pyarrow>=15",
+    "pyproj>=3.6",
+    "pyyaml>=6.0",
+    "requests>=2.31",
+    "scipy>=1.11",
+    "shapely>=2.0",
 ]
 
 [project.optional-dependencies]

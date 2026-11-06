@@ -5,3 +5,10 @@ __pycache__/
 *.egg-info/
 .mypy_cache/
 .ruff_cache/
+*.osm.pbf
+*.osm.pbf.md5
+data/casablanca/raw/**
+!data/casablanca/raw/**/.gitkeep
+!data/casablanca/raw/**/README.md
+osmnx_cache/
+.cache/
