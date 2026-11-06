@@ -1,0 +1,55 @@
+generator_version: "0.1.0"
+random_seed_base: 42
+splits:
+  train_seeds: [1, 2, 3, 4, 5, 6, 7, 8]
+  validation_seeds: [101, 102]
+  test_seeds: [201, 202, 203]
+
+regimes:
+  baseline_feasible:
+    n_customers: 40
+    horizon_hours: 8
+    start_hour: 8
+    service_duration_min: 8
+    package_weight_kg: 5.0
+    time_window_hours: 2.0
+    release_lead_min: 0
+    urgency: normal
+    intensity_profile: daytime_peak
+    feasible_mode: true
+  peak_stress:
+    n_customers: 80
+    horizon_hours: 8
+    start_hour: 7
+    service_duration_min: 10
+    package_weight_kg: 8.0
+    time_window_hours: 1.5
+    release_lead_min: 0
+    urgency: high
+    intensity_profile: morning_peak
+    feasible_mode: false
+    label: stressful
+  partially_infeasible:
+    n_customers: 60
+    horizon_hours: 6
+    start_hour: 8
+    service_duration_min: 12
+    package_weight_kg: 12.0
+    time_window_hours: 1.0
+    release_lead_min: 0
+    urgency: high
+    intensity_profile: morning_peak
+    feasible_mode: false
+    label: partially_infeasible
+
+intensity_profiles:
+  daytime_peak:
+    # Relative hourly weights for hours 0..23
+    weights: [0,0,0,0,0,0,0.2,0.6,1.0,1.0,0.8,0.7,0.6,0.7,0.8,0.9,1.0,0.8,0.4,0.2,0.1,0,0,0]
+  morning_peak:
+    weights: [0,0,0,0,0,0,0.4,1.0,1.0,0.9,0.6,0.4,0.3,0.3,0.4,0.5,0.6,0.4,0.2,0.1,0,0,0,0]
+
+spatial:
+  population_weight: 0.6
+  commercial_weight: 0.4
+  max_snap_distance_m: 150

@@ -1,0 +1,19 @@
+{
+  "retrieved_at_utc": "2026-11-06T22:28:44+00:00",
+  "source": "Haut-Commissariat au Plan (HCP)",
+  "product": "RGPH 2024 legal population",
+  "pages_checked": [
+    "https://www.hcp.ma/downloads/RGPH-2024_t22752.html",
+    "https://www.hcp.ma/reg-casablanca/%D9%86%D8%AA%D8%A7%D8%A6%D8%AC-%D8%A7%D9%84%D8%A5%D8%AD%D8%B5%D8%A7%D8%A1-%D8%A7%D9%84%D8%B9%D8%A7%D9%85-%D9%84%D9%84%D8%B3%D9%83%D8%A7%D9%86-%D9%88%D8%A7%D9%84%D8%B3%D9%83%D9%86%D9%89-2024_a126.html",
+    "https://www.hcp.ma/Population-legale-du-Royaume-du-Maroc-repartie-par-regions-provinces-et-prefectures-et-communes-selon-les-resultats-du_a3975.html"
+  ],
+  "download_url": "https://www.hcp.ma/file/242341/",
+  "discovered_candidates": [
+    "https://www.hcp.ma/file/242341/"
+  ],
+  "page_errors": [],
+  "filename": "rgph2024_population_legale.xlsx",
+  "bytes": 166693,
+  "sha256": "7e9d3d402cc2fd0d9c4fc941c4f23c6a5e5ddcbefbba80b7540267f8e2728dca",
+  "attribution": "Haut-Commissariat au Plan, Royaume du Maroc, RGPH 2024"
+}

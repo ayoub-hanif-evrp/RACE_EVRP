@@ -1,0 +1,23 @@
+workbook_commune,zip_code,matched,osm_name,osm_id,admin_level,match_score,nominatim_query,match_method
+Echchallalate,28822,True,,,,0.0,,workbook_od_convex_hull_buffer
+Sidi Maarouf,20192,True,"arrondissement sidi maarouf - annexe moustakbal, Boulevard Bahia Qotbi شارع بهية القطبي, Sidi Maârouf سيدي معروف, Aïn Chock, Préfecture d'arrondissement d'Aïn Chock عمالة مقاطعة عين الشق, Casablanca, Pachalik de Casablanca باشوية الدار البيضاء, Prefecture of Casablanca, Casablanca-Settat, 20190, Morocco",332031267.0,,,"Arrondissement de sidi maarouf, Casablanca, Morocco",osm_admin_name_match
+Anfa,20040,True,Arrondissement d'Anfa ⴰⴱⵏⵏⵣ ⴰⵏⴼⴰ مقاطعة أنفا,,10,22.0,,osm_admin_name_match
+Assoukhour Assawda,20320,True,Arrondissement des Roches noires مقاطعة الصخور السوداء,,10,7.0,,osm_admin_name_match
+Ben Msick,20023,True,Arrondissement de Ben M'Sick مقاطعة ابن امسيك,,10,7.0,,osm_admin_name_match
+Bou Chentouf,20500,True,,,,0.0,,workbook_od_convex_hull_buffer
+El Maarif,20390,True,Arrondissement du Maârif ⵜⴰⴳⵣⵣⵓⵎⵜ ⵏ ⵍⵎⵄⴰⵔⵉⴼ مقاطعة المعاريف,,10,7.0,,osm_admin_name_match
+Hay Hassani,20220,True,Arrondissement de Hay Hassani مقاطعة الحي الحسني,,10,12.0,,osm_admin_name_match
+Hay Mohammadi,20570,True,Arrondissement de Hay Mohammadi مقاطعة الحي المحمدي,,10,12.0,,osm_admin_name_match
+Ain Chock,20190,True,Arrondissement d'Aïn Chock مقاطعة عين الشق,,10,17.0,,osm_admin_name_match
+Ain Sebaa,20590,True,Arrondissement d'Aïn Sebaâ مقاطعة عين السبع,,10,12.0,,osm_admin_name_match
+Al Fida,20520,True,Arrondissement d'Al Fida مقاطعة الفداء,,10,22.0,,osm_admin_name_match
+Al Idrissia,20450,True,"Arrondissement d'Al Fida مقاطعة الفداء, Rue 50, Hay El Farah, Idrissia, Arrondissement d'Al Fida مقاطعة الفداء, Préfecture d’arrondissements Al Fida-Mers Sultan عمالة مقاطعات الفداء مرس السلطان, Casablanca, Pachalik de Casablanca باشوية الدار البيضاء, Prefecture of Casablanca, Casablanca-Settat, 20530, Morocco",1319993228.0,,,"Arrondissement de al idrissia, Casablanca, Morocco",osm_admin_name_match
+Lissasfa,20232,True,,,,0.0,,workbook_od_convex_hull_buffer
+Mers Sultan,20550,True,Arrondissement de Mers Sultan مقاطعة مرس السلطان,,10,12.0,,osm_admin_name_match
+Moulay Rachid,20660,True,Arrondissement de Moulay Rachid مقاطعة مولاي رشيد,,10,12.0,,osm_admin_name_match
+Sidi Belyout,20000,True,Arrondissement de Sidi Belyout ⵜⴰⴳⵥⵥⵓⵎⵜ ⵏ ⵙⵉⴷⵉ ⴱⵍⵢⵓⵟ مقاطعة سيدي بليوط,,10,12.0,,osm_admin_name_match
+Sidi Moumen,20400,True,Arrondissement de Sidi Moumen مقاطعة سيدي مومن,,10,12.0,,osm_admin_name_match
+Sidi Othmane,20700,True,Arrondissement de Sidi Othmane مقاطعة سيدي عثمان,,10,17.0,,osm_admin_name_match
+Ahl Laghlam,29640,True,,,,0.0,,workbook_od_convex_hull_buffer
+Sidi Bernoussi,20600,True,Arrondissement de Sidi Bernoussi مقاطعة سيدي البرنوصي,,10,12.0,,osm_admin_name_match
+Moulay Youssef,20060,True,,,,0.0,,workbook_od_convex_hull_buffer

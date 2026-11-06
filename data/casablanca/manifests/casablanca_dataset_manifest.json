@@ -1,0 +1,382 @@
+{
+  "generated_at_utc": "2026-11-06T22:57:33+00:00",
+  "dataset": "casablanca_stage1",
+  "geography": "Casablanca study area = union of 22 workbook zones matched to OSM admin (with documented OD-hull fallbacks)",
+  "claim_discipline": {
+    "allowed": [
+      "published Waze-derived zonal/hourly congestion",
+      "OSM geometry and distances",
+      "synthetic geographically grounded pickups",
+      "hypothetical depot-only EV fleet"
+    ],
+    "forbidden": [
+      "edge-calibrated digital twin claims",
+      "Chinese/LaDe demand",
+      "calling synthetic requests real orders",
+      "claiming observed Casablanca EV logistics"
+    ]
+  },
+  "splits": {
+    "train": [
+      {
+        "regime": "baseline_feasible",
+        "seed": 1,
+        "path": "data\\casablanca\\scenarios\\train\\baseline_feasible_seed1"
+      },
+      {
+        "regime": "baseline_feasible",
+        "seed": 4,
+        "path": "data\\casablanca\\scenarios\\train\\baseline_feasible_seed4"
+      },
+      {
+        "regime": "baseline_feasible",
+        "seed": 7,
+        "path": "data\\casablanca\\scenarios\\train\\baseline_feasible_seed7"
+      },
+      {
+        "regime": "partially_infeasible",
+        "seed": 3,
+        "path": "data\\casablanca\\scenarios\\train\\partially_infeasible_seed3"
+      },
+      {
+        "regime": "partially_infeasible",
+        "seed": 6,
+        "path": "data\\casablanca\\scenarios\\train\\partially_infeasible_seed6"
+      },
+      {
+        "regime": "peak_stress",
+        "seed": 2,
+        "path": "data\\casablanca\\scenarios\\train\\peak_stress_seed2"
+      },
+      {
+        "regime": "peak_stress",
+        "seed": 5,
+        "path": "data\\casablanca\\scenarios\\train\\peak_stress_seed5"
+      },
+      {
+        "regime": "peak_stress",
+        "seed": 8,
+        "path": "data\\casablanca\\scenarios\\train\\peak_stress_seed8"
+      }
+    ],
+    "validation": [
+      {
+        "regime": "partially_infeasible",
+        "seed": 102,
+        "path": "data\\casablanca\\scenarios\\validation\\partially_infeasible_seed102"
+      },
+      {
+        "regime": "peak_stress",
+        "seed": 101,
+        "path": "data\\casablanca\\scenarios\\validation\\peak_stress_seed101"
+      }
+    ],
+    "test": [
+      {
+        "regime": "baseline_feasible",
+        "seed": 202,
+        "path": "data\\casablanca\\scenarios\\test\\baseline_feasible_seed202"
+      },
+      {
+        "regime": "partially_infeasible",
+        "seed": 201,
+        "path": "data\\casablanca\\scenarios\\test\\partially_infeasible_seed201"
+      },
+      {
+        "regime": "peak_stress",
+        "seed": 203,
+        "path": "data\\casablanca\\scenarios\\test\\peak_stress_seed203"
+      }
+    ]
+  },
+  "component_manifests": {
+    "boundary_manifest.json": {
+      "keys": [
+        "n_workbook_communes",
+        "n_matched",
+        "n_unmatched",
+        "unmatched",
+        "boundary_path",
+        "crosswalk_path",
+        "definition",
+        "generated_at_utc",
+        "envelope",
+        "method",
+        "n_admin_candidates",
+        "n_osm_admin_matched",
+        "n_od_hull_fallback"
+      ]
+    },
+    "hcp_join_manifest.json": {
+      "keys": [
+        "generated_at_utc",
+        "n_workbook",
+        "n_matched",
+        "unmatched",
+        "n_hcp_units_parsed",
+        "note",
+        "claim"
+      ]
+    },
+    "hcp_population_manifest.json": {
+      "keys": [
+        "retrieved_at_utc",
+        "source",
+        "product",
+        "pages_checked",
+        "download_url",
+        "discovered_candidates",
+        "page_errors",
+        "filename",
+        "bytes",
+        "sha256",
+        "attribution"
+      ]
+    },
+    "morocco_osm_manifest.json": {
+      "keys": [
+        "retrieved_at_utc",
+        "source",
+        "page",
+        "download_url",
+        "md5_url",
+        "filename",
+        "bytes",
+        "md5",
+        "expected_md5",
+        "md5_verified",
+        "sha256",
+        "license_note",
+        "attribution"
+      ]
+    },
+    "network_manifest.json": {
+      "keys": [
+        "generated_at_utc",
+        "method",
+        "integrity",
+        "paths",
+        "speed_config",
+        "osm_attribution"
+      ]
+    },
+    "pickup_candidates_manifest.json": {
+      "keys": [
+        "generated_at_utc",
+        "n_candidates",
+        "n_accessible",
+        "rejection_rate",
+        "median_snap_distance_m",
+        "n_with_commune"
+      ]
+    },
+    "scenario_test_baseline_feasible_seed202.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_test_partially_infeasible_seed201.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_test_peak_stress_seed203.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_train_baseline_feasible_seed1.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_train_baseline_feasible_seed4.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_train_baseline_feasible_seed7.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_train_partially_infeasible_seed3.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_train_partially_infeasible_seed6.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_train_peak_stress_seed2.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_train_peak_stress_seed5.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_train_peak_stress_seed8.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_validation_partially_infeasible_seed102.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "scenario_validation_peak_stress_seed101.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim"
+      ]
+    },
+    "traffic_workbook_manifest.json": {
+      "keys": [
+        "retrieved_at_utc",
+        "source",
+        "doi",
+        "version",
+        "page",
+        "dataset_api",
+        "download_url",
+        "filename",
+        "local_path",
+        "bytes",
+        "sha256",
+        "expected_sha256",
+        "expected_bytes",
+        "checksum_matches_published",
+        "license",
+        "citation",
+        "api_file_record"
+      ]
+    }
+  },
+  "licenses": [
+    "OpenStreetMap ODbL",
+    "Mendeley traffic workbook CC BY 4.0 (DOI 10.17632/8hj76bpzpv.1)",
+    "HCP RGPH-2024 attribution required"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "n_workbook_communes": 22,
+  "n_matched": 22,
+  "n_unmatched": 0,
+  "unmatched": [],
+  "boundary_path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\study_boundary.gpkg",
+  "crosswalk_path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\zone_crosswalk.csv",
+  "definition": "Union of OSM administrative polygons matched to the 22 workbook commune names. Not an arbitrary rectangle and not the full Casablanca-Settat region.",
+  "generated_at_utc": "2026-11-06T22:51:28+00:00",
+  "envelope": {
+    "west": -7.756392033086802,
+    "south": 33.43147210659073,
+    "east": -7.3453063488094354,
+    "north": 33.697920533159476
+  },
+  "method": "overpass_plus_nominatim_fill+od_hull_fallback",
+  "n_admin_candidates": 89,
+  "n_osm_admin_matched": 17,
+  "n_od_hull_fallback": 5
+}

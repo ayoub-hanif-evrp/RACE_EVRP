@@ -28,16 +28,18 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python scripts\download_casablanca_traffic.py
 .\.venv\Scripts\python scripts\download_morocco_osm.py
 .\.venv\Scripts\python scripts\download_hcp_population.py
+.\.venv\Scripts\python scripts\process_casablanca_traffic.py
+.\.venv\Scripts\python scripts\process_hcp_population.py
 .\.venv\Scripts\python scripts\build_casablanca_boundary.py
 .\.venv\Scripts\python scripts\build_casablanca_network.py
-.\.venv\Scripts\python scripts\process_casablanca_traffic.py
 .\.venv\Scripts\python scripts\build_pickup_candidates.py
-.\.venv\Scripts\python scripts\generate_scenarios.py --regime baseline_feasible --seed 42
+.\.venv\Scripts\python scripts\generate_all_scenarios.py
+.\.venv\Scripts\python scripts\write_dataset_manifest.py
 .\.venv\Scripts\python scripts\make_casablanca_figures.py
 .\.venv\Scripts\python -m pytest
 ```
 
-Large raw downloads (OpenStreetMap PBF, census Excel, traffic workbook) are fetched by scripts and recorded in manifests. They are not committed when oversized.
+Large raw downloads (OpenStreetMap PBF, census Excel, traffic workbook) and heavy GraphML/GeoPackage exports are fetched or rebuilt by scripts and recorded in manifests. Oversized binaries are gitignored.
 
 ## Data layout
 
@@ -52,6 +54,17 @@ data/casablanca/
   fleet/               # vehicle and depot configs
   manifests/           # checksums and provenance
 ```
+
+## Reports
+
+- `reports/CASABLANCA_DATA_SOURCES.md`
+- `reports/CASABLANCA_TRAFFIC_AUDIT.md`
+- `reports/CASABLANCA_NETWORK_VALIDATION.md`
+- `reports/CASABLANCA_DEMAND_GENERATION.md`
+- `reports/CASABLANCA_ENERGY_ASSUMPTIONS.md`
+- `reports/CASABLANCA_DATASET_VALIDATION.md`
+- `reports/CASABLANCA_RESEARCH_METHOD.md`
+- `reports/STAGE1_CASABLANCA_HANDOFF.md`
 
 ## Attribution and licenses
 

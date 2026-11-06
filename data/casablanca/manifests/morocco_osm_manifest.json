@@ -1,0 +1,15 @@
+{
+  "retrieved_at_utc": "2026-11-06T22:36:56+00:00",
+  "source": "Geofabrik",
+  "page": "https://download.geofabrik.de/africa/morocco.html",
+  "download_url": "https://download.geofabrik.de/africa/morocco-260101.osm.pbf",
+  "md5_url": "https://download.geofabrik.de/africa/morocco-260101.osm.pbf.md5",
+  "filename": "morocco-260101.osm.pbf",
+  "bytes": 240265932,
+  "md5": "37ff8bcbf9e728accaa85bca5e40a85d",
+  "expected_md5": "37ff8bcbf9e728accaa85bca5e40a85d",
+  "md5_verified": true,
+  "sha256": "dace94a528619cf4f8ac3bf3f817d5330d4642a61486c7190c05fcd33cabedec",
+  "license_note": "OpenStreetMap data is available under the ODbL.",
+  "attribution": "© OpenStreetMap contributors"
+}

@@ -1,0 +1,7 @@
+{
+  "label": "scenario_depot_not_observed_facility",
+  "lat": 33.57421164429523,
+  "lon": -7.6343575518802576,
+  "snap_node": 458745356,
+  "note": "Accessible OSM-derived location used as a scenario depot. Not a validated Casablanca logistics facility."
+}

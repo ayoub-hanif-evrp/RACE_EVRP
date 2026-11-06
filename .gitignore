@@ -10,5 +10,12 @@ __pycache__/
 data/casablanca/raw/**
 !data/casablanca/raw/**/.gitkeep
 !data/casablanca/raw/**/README.md
+data/casablanca/roads/*.graphml
+data/casablanca/roads/*.gpkg
+data/casablanca/pickup_candidates/*.gpkg
+_tmp_*.txt
 osmnx_cache/
+cache/
 .cache/
+*.pyc
+.DS_Store

@@ -1,0 +1,38 @@
+{
+  "retrieved_at_utc": "2026-11-06T22:28:36+00:00",
+  "source": "Mendeley Data",
+  "doi": "10.17632/8hj76bpzpv.1",
+  "version": "1",
+  "page": "https://data.mendeley.com/datasets/8hj76bpzpv/1",
+  "dataset_api": "https://data.mendeley.com/public-api/datasets/8hj76bpzpv",
+  "download_url": "https://data.mendeley.com/public-files/datasets/8hj76bpzpv/files/9da089a4-8fa9-489b-942a-ee7e04d2d861/file_downloaded",
+  "filename": "Dataset for traffic analysis in Casablanca, Morocco.xlsx",
+  "local_path": "data\\casablanca\\raw\\traffic\\Dataset for traffic analysis in Casablanca, Morocco.xlsx",
+  "bytes": 1720067,
+  "sha256": "4778abffbe3d7791afa58069fc8a98b6e89995174d4c64401d9367221c42d17d",
+  "expected_sha256": "4778abffbe3d7791afa58069fc8a98b6e89995174d4c64401d9367221c42d17d",
+  "expected_bytes": 1720067,
+  "checksum_matches_published": true,
+  "license": "CC BY 4.0",
+  "citation": "Rouky, N., & Bousouf, A. (2023). Dataset for traffic analysis in Casablanca, Morocco (Version 1) [Data set]. Mendeley Data. https://doi.org/10.17632/8hj76bpzpv.1",
+  "api_file_record": {
+    "filename": "Dataset for traffic analysis in Casablanca, Morocco.xlsx",
+    "id": "9da089a4-8fa9-489b-942a-ee7e04d2d861",
+    "content_details": {
+      "id": "9ec50069-e981-4f9a-9dfc-0192393b326a",
+      "sha256_hash": "4778abffbe3d7791afa58069fc8a98b6e89995174d4c64401d9367221c42d17d",
+      "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "size": 1720067,
+      "created_date": "2023-10-05T17:21:40.691Z",
+      "download_url": "https://data.mendeley.com/public-files/datasets/8hj76bpzpv/files/9da089a4-8fa9-489b-942a-ee7e04d2d861/file_downloaded",
+      "view_url": "https://data.mendeley.com/public-files/datasets/8hj76bpzpv/files/9da089a4-8fa9-489b-942a-ee7e04d2d861/file_viewed",
+      "download_expiry_time": "2126-11-06T22:28:06.92764011Z"
+    },
+    "metrics": {
+      "downloads": 0,
+      "previews": 0
+    },
+    "size": 1720067,
+    "status": "COMPLETED"
+  }
+}

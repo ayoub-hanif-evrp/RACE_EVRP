@@ -1,0 +1,144 @@
+{
+  "generated_at_utc": "2026-11-06T22:28:47+00:00",
+  "audit": {
+    "workbook": "Dataset for traffic analysis in Casablanca, Morocco.xlsx",
+    "n_communes": 22,
+    "commune_names": [
+      "Echchallalate",
+      "Sidi Maarouf",
+      "Anfa",
+      "Assoukhour Assawda",
+      "Ben Msick",
+      "Bou Chentouf",
+      "El Maarif",
+      "Hay Hassani",
+      "Hay Mohammadi",
+      "Ain Chock",
+      "Ain Sebaa",
+      "Al Fida",
+      "Al Idrissia",
+      "Lissasfa",
+      "Mers Sultan",
+      "Moulay Rachid",
+      "Sidi Belyout",
+      "Sidi Moumen",
+      "Sidi Othmane",
+      "Ahl Laghlam",
+      "Sidi Bernoussi",
+      "Moulay Youssef"
+    ],
+    "n_coordinate_points": 110,
+    "points_per_commune_median": 5.0,
+    "n_trajectory_hour_rows": 73920,
+    "n_od_rows_per_day_mean": 440.0,
+    "days": [
+      "Friday",
+      "Monday",
+      "Saturday",
+      "Sunday",
+      "Thursday",
+      "Tuesday",
+      "Wednesday"
+    ],
+    "hours": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "share_rows_with_od_coordinates": 1.0,
+    "distance_missing_share": 0.0,
+    "travel_time_missing_share": 0.0,
+    "tti_missing_share": 0.0,
+    "tti_summary": {
+      "min": 0.967785145000334,
+      "median": 2.4130804765378,
+      "max": 7.68858800773694
+    },
+    "bidirectional_pairs": 1540,
+    "land_use_columns": [
+      "Region area (m²)",
+      "Parking area (m²)",
+      "Industrial area  (m²)",
+      "Parks area  (m²)",
+      "Residential area (m²)",
+      "University/ Institution area (m²)",
+      "Number of Commercial Buildings"
+    ],
+    "route_geometry_present": false,
+    "coordinate_claim": "Origin and destination coordinates are present for each trajectory. Waze route polylines are not present, so OSM edge matching of the observed routes is not supported by this workbook alone."
+  },
+  "holdout_evaluation": {
+    "status": "ok",
+    "holdout_day": "Sunday",
+    "n_test_rows": 10560,
+    "mae": 0.4865195999849725,
+    "rmse": 0.614118174556852,
+    "median_abs_error": 0.39945233115482237
+  },
+  "fifo_check": {
+    "n_downward_jumps": 9,
+    "fifo_without_waiting": false,
+    "remedy": "wait_for_next_bucket_or_time_dependent_dijkstra",
+    "examples": [
+      {
+        "from_hour": 4,
+        "to_hour": 5,
+        "f0": 2.415097042562895,
+        "f1": 2.404816815724425
+      },
+      {
+        "from_hour": 6,
+        "to_hour": 7,
+        "f0": 2.40557854919481,
+        "f1": 2.37922705314009
+      },
+      {
+        "from_hour": 8,
+        "to_hour": 9,
+        "f0": 2.443846941761775,
+        "f1": 2.390282162859215
+      },
+      {
+        "from_hour": 12,
+        "to_hour": 13,
+        "f0": 2.478488746844515,
+        "f1": 2.4612682574026303
+      },
+      {
+        "from_hour": 13,
+        "to_hour": 14,
+        "f0": 2.4612682574026303,
+        "f1": 2.4212889889917797
+      }
+    ]
+  },
+  "outputs": {
+    "trajectory_hours": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\traffic\\trajectory_hours.parquet",
+    "profiles": [
+      "tti_zone_day_hour.csv",
+      "tti_city_day_hour.csv",
+      "tti_citywide_hour.csv"
+    ]
+  }
+}

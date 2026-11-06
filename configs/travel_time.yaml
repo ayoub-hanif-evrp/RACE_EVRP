@@ -1,0 +1,22 @@
+# Documented free-flow speed fallbacks by OSM highway class (km/h).
+# Used only when maxspeed is missing or unparsable.
+free_flow_speed_kmh:
+  motorway: 110
+  motorway_link: 70
+  trunk: 80
+  trunk_link: 50
+  primary: 50
+  primary_link: 40
+  secondary: 40
+  secondary_link: 35
+  tertiary: 35
+  tertiary_link: 30
+  residential: 30
+  living_street: 20
+  unclassified: 30
+  service: 20
+  default: 30
+
+min_speed_kmh: 5
+congestion_model: zone_day_hour_tti_multiplier
+fifo_policy: wait_if_needed
