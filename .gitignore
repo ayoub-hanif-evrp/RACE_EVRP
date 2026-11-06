@@ -19,3 +19,5 @@ cache/
 .cache/
 *.pyc
 .DS_Store
+
+_pytest_correction.txt
