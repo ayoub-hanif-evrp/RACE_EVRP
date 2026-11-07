@@ -282,12 +282,19 @@ def pin_boundary_artifact_checksums(zones_dir: Path) -> dict:
         "zone_crosswalk.gpkg": zones_dir / "zone_crosswalk.gpkg",
         "zone_crosswalk.csv": zones_dir / "zone_crosswalk.csv",
     }
+    from race_casablanca.paths import project_root
+
+    root = project_root()
     checksums = {}
     for name, path in artifacts.items():
         if not path.exists():
             raise FileNotFoundError(f"Missing pinned geography artifact: {path}")
+        try:
+            rel = str(path.resolve().relative_to(root.resolve())).replace("\\", "/")
+        except ValueError:
+            rel = name
         checksums[name] = {
-            "path": str(path),
+            "path": rel,
             "sha256": sha256_file(path),
             "bytes": int(path.stat().st_size),
         }

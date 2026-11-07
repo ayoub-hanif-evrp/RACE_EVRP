@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-11-07T14:59:43+00:00",
+  "generated_at_utc": "2026-11-07T15:58:51+00:00",
   "regime": "tight_windows",
   "seed": 102,
   "split": "validation",
-  "generator_version": "0.2.0",
+  "generator_version": "0.3.0",
   "n_requests": 30,
   "fleet": {
     "label": "hypothetical_light_ev_van",

@@ -1,4 +1,6 @@
-generator_version: "0.2.0"
+generator_version: "0.3.0"
+benchmark_version: "casablanca_stage1_5_v1"
+# Spatial probabilities come ONLY from data/casablanca/zones/demand_zone_weights.csv
 random_seed_base: 42
 splits:
   train_seeds: [1, 2, 3, 4, 5, 6, 7, 8]

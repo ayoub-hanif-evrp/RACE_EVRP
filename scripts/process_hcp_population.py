@@ -156,10 +156,12 @@ def main() -> int:
         pop_note = "All workbook communes matched to HCP population rows."
 
     merged = merged.drop(columns=["matched"], errors="ignore")
-    merged.to_csv(traffic_dir() / "communes.csv", index=False)
+    # Do NOT overwrite traffic/communes.csv (workbook populations). Demand weights
+    # are frozen separately in zones/demand_zone_weights.csv.
     zones_dir().mkdir(parents=True, exist_ok=True)
+    merged.to_csv(zones_dir() / "communes_hcp_joined.csv", index=False)
     out.to_csv(zones_dir() / "hcp_zone_population.csv", index=False)
-    # Keep measured-only table separate from modeling table.
+    # Measured-only: NaN population where HCP name match failed (no imputation).
     out.to_csv(zones_dir() / "hcp_population_measured_only.csv", index=False)
     summary = {
         "generated_at_utc": utc_now(),

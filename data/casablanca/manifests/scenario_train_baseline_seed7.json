@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-11-07T14:59:36+00:00",
+  "generated_at_utc": "2026-11-07T15:58:45+00:00",
   "regime": "baseline",
   "seed": 7,
   "split": "train",
-  "generator_version": "0.2.0",
+  "generator_version": "0.3.0",
   "n_requests": 12,
   "fleet": {
     "label": "hypothetical_light_ev_van",
@@ -44,38 +44,30 @@
       "vehicles": {
         "V1": {
           "final_node": 1849562461,
-          "battery_kwh": 26.20482602743009,
-          "load_kg": 103.88512064436443,
+          "battery_kwh": 27.961463999472574,
+          "load_kg": 95.77596043429442,
           "returned": true,
           "n_served": 7
         },
         "V2": {
           "final_node": 1849562461,
-          "battery_kwh": 28.132054855645617,
-          "load_kg": 50.82029646755163,
+          "battery_kwh": 30.77211705069346,
+          "load_kg": 77.8285201328969,
           "returned": true,
-          "n_served": 4
-        },
-        "V3": {
-          "final_node": 1849562461,
-          "battery_kwh": 32.48911495060032,
-          "load_kg": 18.899063455275247,
-          "returned": true,
-          "n_served": 1
+          "n_served": 5
         }
       },
       "timestamp_tol_min": 0.001
     },
     "n_requests": 12,
     "n_served": 12,
-    "n_returns": 3,
+    "n_returns": 2,
     "share_within_window": 1.0,
-    "min_battery_after_kwh": 26.20482602743009,
-    "total_travel_distance_m": 165870.0208316199,
+    "min_battery_after_kwh": 27.961463999472574,
+    "total_travel_distance_m": 106332.09474916983,
     "vehicles_used": [
       "V1",
-      "V2",
-      "V3"
+      "V2"
     ],
     "certificate": "graph_constructive_freeflow_path_td_eval_with_depot_return",
     "window_definition": "service_must_finish_by_tw_end",

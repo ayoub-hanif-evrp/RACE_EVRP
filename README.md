@@ -31,7 +31,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python scripts\process_casablanca_traffic.py
 .\.venv\Scripts\python scripts\process_hcp_population.py
 .\.venv\Scripts\python scripts\build_casablanca_boundary.py
-.\.venv\Scripts\python scripts\audit_zone_matching.py
+.\.venv\Scripts\python scripts\build_demand_zone_weights.py
 .\.venv\Scripts\python scripts\build_casablanca_network.py
 .\.venv\Scripts\python scripts\build_pickup_candidates.py
 .\.venv\Scripts\python scripts\generate_all_scenarios.py
@@ -42,9 +42,11 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python -m pytest
 ```
 
+Benchmark freeze ID: **`casablanca_stage1_5_v1`** (generator `0.3.0`). Demand spatial probabilities come only from `data/casablanca/zones/demand_zone_weights.csv`.
+
 `scripts/build_casablanca_boundary.py` **verifies** the committed SHA-256-pinned study boundary by default (no live Overpass/Nominatim). Optional audited regeneration: `scripts/build_casablanca_boundary.py --force-regenerate`.
 
-Roads and pickup candidates are extracted from the frozen Geofabrik `morocco-260101.osm.pbf` snapshot (not live Overpass). Congested travel times use a 60 km/h TTI-consistent free-flow baseline. Feasible labels require independently validated graph schedules; see `reports/STAGE1_FINAL_REVIEW.md`.
+Roads and pickup candidates are extracted from the frozen Geofabrik `morocco-260101.osm.pbf` snapshot (not live Overpass). Congested travel times use a 60 km/h TTI-consistent free-flow baseline. See `reports/STAGE1_5_HANDOFF.md`.
 
 
 Large raw downloads (OpenStreetMap PBF, census Excel, traffic workbook) and heavy GraphML/GeoPackage exports are fetched or rebuilt by scripts and recorded in manifests. Oversized binaries are gitignored.

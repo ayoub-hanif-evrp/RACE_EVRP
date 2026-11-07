@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-07T15:01:25+00:00",
+  "generated_at_utc": "2026-11-07T16:00:44+00:00",
   "dataset": "casablanca_stage1",
   "geography": "Casablanca study area = union of 22 workbook zones matched to OSM admin (with documented OD-hull fallbacks)",
   "claim_discipline": {
@@ -114,7 +114,8 @@
         "pinning_note",
         "geography_status_counts",
         "verified_admin",
-        "approximate_study_zone"
+        "approximate_study_zone",
+        "geometry_repair"
       ]
     },
     "casablanca_dataset_manifest.json": {
@@ -136,6 +137,22 @@
         "scenarios",
         "aggregate",
         "scientific_note"
+      ]
+    },
+    "demand_zone_weights_manifest.json": {
+      "keys": [
+        "generated_at_utc",
+        "path",
+        "sha256",
+        "n_zones",
+        "n_measured_hcp_population",
+        "n_commercial_only",
+        "n_eligible_sampling",
+        "population_weight_alpha",
+        "commercial_weight_beta",
+        "generator_version",
+        "benchmark_version",
+        "claim"
       ]
     },
     "hcp_join_manifest.json": {

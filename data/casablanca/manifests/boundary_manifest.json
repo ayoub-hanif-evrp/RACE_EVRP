@@ -6,7 +6,7 @@
   "boundary_path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\study_boundary.gpkg",
   "crosswalk_path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\zone_crosswalk.csv",
   "definition": "Union of OSM administrative polygons matched to the 22 workbook commune names. Not an arbitrary rectangle and not the full Casablanca-Settat region.",
-  "generated_at_utc": "2026-11-07T01:02:46+00:00",
+  "generated_at_utc": "2026-11-07T16:00:43+00:00",
   "envelope": {
     "west": -7.756392033086802,
     "south": 33.43147210659073,
@@ -22,19 +22,19 @@
     "policy": "Committed study_boundary.gpkg + zone_crosswalk.* are the pinned Stage-1 study geography. Rebuilds from live Overpass/Nominatim are non-bit-identical and must not silently overwrite these artifacts without an audited diff.",
     "artifacts": {
       "study_boundary.gpkg": {
-        "path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\study_boundary.gpkg",
-        "sha256": "c003b9edf69b4e8b24b65f2fcc0f4f2e7d2e7ced27148f5d81230f919af31699",
+        "path": "data/casablanca/zones/study_boundary.gpkg",
+        "sha256": "d6ef82b9be909c2be2610421b0dc3c6271094abf973dbbd156fa3cf469eab551",
         "bytes": 114688
       },
       "zone_crosswalk.gpkg": {
-        "path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\zone_crosswalk.gpkg",
-        "sha256": "ae781a13675c1bc786e71e1c0c8900d188f2e4f391cdb98bbfb9fd9e4dba528c",
+        "path": "data/casablanca/zones/zone_crosswalk.gpkg",
+        "sha256": "4f26b08debfeb59d3dac3a944398c6c6c4116286ce2c91e15db5f13b6ac7d615",
         "bytes": 159744
       },
       "zone_crosswalk.csv": {
-        "path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\zone_crosswalk.csv",
-        "sha256": "83fea5db99309038bcafc737394d971d54f580e8d4c9dc3a4627531226bd7045",
-        "bytes": 4743
+        "path": "data/casablanca/zones/zone_crosswalk.csv",
+        "sha256": "dcf6516e1c4d67b70a5c49a85412397fa08c23a45a23aad6bfebe87658ff4cd0",
+        "bytes": 3827
       }
     }
   },
@@ -68,5 +68,12 @@
     "Lissasfa",
     "Ahl Laghlam",
     "Moulay Youssef"
-  ]
+  ],
+  "geometry_repair": {
+    "repaired_communes": [
+      "Al Idrissia",
+      "Sidi Maarouf"
+    ],
+    "note": "Suspicious Nominatim geometries replaced with OD convex-hull study areas; not official admin polygons."
+  }
 }

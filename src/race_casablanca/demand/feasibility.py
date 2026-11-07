@@ -31,8 +31,13 @@ def _energy_kwh(length_m: float, consumption_kwh_per_km: float) -> float:
     return (length_m / 1000.0) * consumption_kwh_per_km
 
 
+def _best_edge_key(graph: nx.MultiDiGraph, u, v):
+    return min(graph[u][v].items(), key=lambda kv: edge_tti_baseline_free_flow_s(kv[1]))[0]
+
+
 def _best_edge(graph: nx.MultiDiGraph, u, v) -> dict:
-    return min(graph[u][v].values(), key=lambda d: edge_tti_baseline_free_flow_s(d))
+    key = _best_edge_key(graph, u, v)
+    return graph[u][v][key]
 
 
 def free_flow_path(graph: nx.MultiDiGraph, source, target) -> list:
@@ -45,22 +50,38 @@ def free_flow_path(graph: nx.MultiDiGraph, source, target) -> list:
     return nx.shortest_path(graph, source, target, weight=weight)
 
 
+def path_edge_keys(graph: nx.MultiDiGraph, path: list) -> list:
+    keys = []
+    for u, v in zip(path[:-1], path[1:]):
+        keys.append(_best_edge_key(graph, u, v))
+    return keys
+
+
 def evaluate_path(
     graph: nx.MultiDiGraph,
     path: list,
     ready_time_s: float,
     model: CongestionModel,
     day: str | None,
+    edge_keys: list | None = None,
 ) -> tuple[float, float, float]:
     """Evaluate a fixed node sequence under the time-dependent waiting model.
 
     Returns (arrival_time_s, travel_duration_s, length_m).
+    When edge_keys is provided, those MultiDiGraph keys are used; otherwise the
+    TTI-baseline shortest parallel edge is selected and recorded by the caller.
     """
 
     t = ready_time_s
     length_m = 0.0
-    for u, v in zip(path[:-1], path[1:]):
-        data = _best_edge(graph, u, v)
+    for i, (u, v) in enumerate(zip(path[:-1], path[1:])):
+        if edge_keys is not None:
+            key = edge_keys[i]
+            if key not in graph[u][v]:
+                raise KeyError(f"missing edge key {key} on ({u},{v})")
+            data = graph[u][v][key]
+        else:
+            data = _best_edge(graph, u, v)
         dep, dur = edge_departure_and_travel(
             edge_tti_baseline_free_flow_s(data),
             t,
@@ -81,6 +102,8 @@ def build_graph_feasible_witness(
     model: CongestionModel,
     day: str | None = "Monday",
     window_requires_finish: bool = True,
+    shift_start_s: float = 0.0,
+    shift_end_s: float | None = None,
 ) -> FeasibilityResult:
     """Constructive multi-vehicle schedule using directed road paths.
 
@@ -102,7 +125,7 @@ def build_graph_feasible_witness(
     state = {
         v: {
             "node": depot_node,
-            "time_s": 0.0,
+            "time_s": float(shift_start_s),
             "load": 0.0,
             "battery": usable * float(fleet["initial_soc"]),
             "distance_m": 0.0,
@@ -133,24 +156,31 @@ def build_graph_feasible_witness(
                 path = free_flow_path(graph, st["node"], cust)
             except (nx.NetworkXNoPath, nx.NodeNotFound):
                 continue
-            arrive_s, travel_s, length_m = evaluate_path(graph, path, st["time_s"], model, day)
+            keys = path_edge_keys(graph, path)
+            arrive_s, travel_s, length_m = evaluate_path(graph, path, st["time_s"], model, day, edge_keys=keys)
+            if arrive_s + 1e-9 < float(shift_start_s):
+                continue
             energy = _energy_kwh(length_m, consumption)
-            start_s = max(arrive_s, tw_start_s, release_s)
+            start_s = max(arrive_s, tw_start_s, release_s, float(shift_start_s))
             end_s = start_s + service_s
             within = (end_s <= tw_end_s + 1e-6) if window_requires_finish else (start_s <= tw_end_s + 1e-6)
             if not within:
+                continue
+            if shift_end_s is not None and end_s > float(shift_end_s) + 1e-6:
                 continue
             try:
                 ret_path = free_flow_path(graph, cust, depot_node)
             except (nx.NetworkXNoPath, nx.NodeNotFound):
                 continue
-            _ra, _rt, ret_len = evaluate_path(graph, ret_path, end_s, model, day)
+            ret_keys = path_edge_keys(graph, ret_path)
+            _ra, _rt, ret_len = evaluate_path(graph, ret_path, end_s, model, day, edge_keys=ret_keys)
             ret_energy = _energy_kwh(ret_len, consumption)
             if st["battery"] - energy - ret_energy < reserve - 1e-9:
                 continue
             cand = {
                 "vehicle_id": v,
                 "path": path,
+                "edge_keys": keys,
                 "length_m": length_m,
                 "energy_kwh": energy,
                 "arrive_s": arrive_s,
@@ -185,6 +215,7 @@ def build_graph_feasible_witness(
                 "from_node": best["from_node"],
                 "to_node": cust,
                 "path_nodes": " ".join(map(str, best["path"])),
+                "path_edge_keys": " ".join(map(str, best["edge_keys"])),
                 "travel_distance_m": best["length_m"],
                 "travel_time_s": best["travel_s"],
                 "vehicle_ready_min": ready_before / 60.0,
@@ -198,6 +229,8 @@ def build_graph_feasible_witness(
                 "witness_only": True,
                 "window_definition": "service_must_finish_by_tw_end",
                 "routing_note": "free_flow_path_with_time_dependent_evaluation",
+                "shift_start_s": float(shift_start_s),
+                "shift_end_s": float(shift_end_s) if shift_end_s is not None else None,
             }
         )
 
@@ -209,7 +242,9 @@ def build_graph_feasible_witness(
             path = free_flow_path(graph, st["node"], depot_node)
         except (nx.NetworkXNoPath, nx.NodeNotFound):
             return FeasibilityResult(False, pd.DataFrame(rows), "depot_return_unreachable", {"vehicle_id": v})
-        arrive_s, travel_s, length_m = evaluate_path(graph, path, st["time_s"], model, day)
+        keys = path_edge_keys(graph, path)
+        arrive_s, travel_s, length_m = evaluate_path(graph, path, st["time_s"], model, day, edge_keys=keys)
+        # Depot return may complete after shift_end; customer service must finish by shift_end.
         energy = _energy_kwh(length_m, consumption)
         if st["battery"] - energy < reserve - 1e-9:
             return FeasibilityResult(False, pd.DataFrame(rows), "insufficient_battery_for_depot_return", {"vehicle_id": v})
@@ -225,6 +260,7 @@ def build_graph_feasible_witness(
                 "from_node": path[0],
                 "to_node": depot_node,
                 "path_nodes": " ".join(map(str, path)),
+                "path_edge_keys": " ".join(map(str, keys)),
                 "travel_distance_m": length_m,
                 "travel_time_s": travel_s,
                 "vehicle_ready_min": (arrive_s - travel_s) / 60.0,
@@ -266,12 +302,15 @@ def validate_schedule(
     day: str | None = "Monday",
     window_requires_finish: bool = True,
     timestamp_tol_min: float = TIMESTAMP_TOL_MIN,
+    shift_start_s: float = 0.0,
+    shift_end_s: float | None = None,
 ) -> dict:
     """Independently reconstruct and certify a schedule against scenario inputs.
 
     A schedule is never valid merely because no rows were processed: every request
-    must appear exactly once, used vehicles must return to the actual depot, and
-    recorded timestamps must agree with reconstruction.
+    must appear exactly once at its snap_node, used vehicles must return to the
+    actual depot within the operating shift, and recorded timestamps must agree
+    with reconstruction.
     """
 
     violations: list[dict] = []
@@ -354,7 +393,7 @@ def validate_schedule(
         if v not in vehicle_state:
             vehicle_state[v] = {
                 "node": depot_node,
-                "time_s": 0.0,
+                "time_s": float(shift_start_s),
                 "load": 0.0,
                 "battery": usable * float(fleet["initial_soc"]),
                 "returned": False,
@@ -372,6 +411,23 @@ def validate_schedule(
         if not path:
             violations.append({"type": "empty_path", "request_id": rid})
             continue
+        edge_keys = None
+        if "path_edge_keys" in schedule.columns and pd.notna(row.get("path_edge_keys")) and str(row.get("path_edge_keys")).strip():
+            try:
+                edge_keys = [int(x) if str(x).lstrip("-").isdigit() else x for x in str(row["path_edge_keys"]).split()]
+            except (TypeError, ValueError):
+                violations.append({"type": "invalid_path_edge_keys", "request_id": rid})
+                continue
+            if len(edge_keys) != max(0, len(path) - 1):
+                violations.append(
+                    {
+                        "type": "path_edge_key_count",
+                        "request_id": rid,
+                        "n_keys": len(edge_keys),
+                        "n_hops": max(0, len(path) - 1),
+                    }
+                )
+                continue
         try:
             to_node = int(row["to_node"])
         except (TypeError, ValueError):
@@ -390,16 +446,37 @@ def validate_schedule(
             )
             continue
 
+        # Recorded ready time must not precede the operating-shift start.
+        if "vehicle_ready_min" in schedule.columns and pd.notna(row.get("vehicle_ready_min")):
+            recorded_ready_s = float(row["vehicle_ready_min"]) * 60.0
+            if recorded_ready_s + 1e-9 < float(shift_start_s):
+                violations.append(
+                    {
+                        "type": "departure_before_shift_start",
+                        "request_id": rid,
+                        "vehicle_ready_s": recorded_ready_s,
+                        "shift_start_s": float(shift_start_s),
+                    }
+                )
+
         ready_s = st["time_s"]
         t = ready_s
         dist = 0.0
         broken = False
-        for u, w in zip(path[:-1], path[1:]):
+        for i, (u, w) in enumerate(zip(path[:-1], path[1:])):
             if w not in graph[u]:
                 violations.append({"type": "missing_edge", "u": u, "v": w, "request_id": rid})
                 broken = True
                 break
-            data = _best_edge(graph, u, w)
+            if edge_keys is not None:
+                key = edge_keys[i]
+                if key not in graph[u][w]:
+                    violations.append({"type": "missing_edge_key", "u": u, "v": w, "key": key, "request_id": rid})
+                    broken = True
+                    break
+                data = graph[u][w][key]
+            else:
+                data = _best_edge(graph, u, w)
             dep, dur = edge_departure_and_travel(
                 edge_tti_baseline_free_flow_s(data),
                 t,
@@ -486,12 +563,36 @@ def validate_schedule(
             # Already flagged as unknown above; skip reconstruction details.
             continue
         req = req_map.loc[rid]
+        try:
+            snap = int(req["snap_node"])
+        except (TypeError, ValueError):
+            violations.append({"type": "request_missing_snap_node", "request_id": rid})
+            continue
+        if int(to_node) != snap or path[-1] != snap:
+            violations.append(
+                {
+                    "type": "wrong_customer_node",
+                    "request_id": rid,
+                    "to_node": int(to_node),
+                    "snap_node": snap,
+                }
+            )
+            continue
         release_s = float(req["release_min"]) * 60.0
         tw_start_s = float(req["tw_start_min"]) * 60.0
         tw_end_s = float(req["tw_end_min"]) * 60.0
         service_s = float(req["service_min"]) * 60.0
-        start_s = max(arrive_s, tw_start_s, release_s)
+        start_s = max(arrive_s, tw_start_s, release_s, float(shift_start_s))
         end_s = start_s + service_s
+        if shift_end_s is not None and end_s > float(shift_end_s) + 1e-6:
+            violations.append(
+                {
+                    "type": "service_after_shift_end",
+                    "request_id": rid,
+                    "end_s": end_s,
+                    "shift_end_s": float(shift_end_s),
+                }
+            )
 
         if start_s + 1e-9 < release_s:
             violations.append({"type": "before_release", "request_id": rid, "start_s": start_s, "release_s": release_s})

@@ -1,44 +1,33 @@
 # Casablanca dataset validation
 
+Benchmark: **`casablanca_stage1_5_v1`** · Generator **`0.3.0`**
+
 ## Automated checks
 
-`pytest` covers:
+Latest full run: **36 passed**.
 
-- traffic workbook commune count, trajectory-hour coverage, FIFO helper;
-- travel-time nonnegativity and waiting policy;
-- seeded demand reproducibility;
-- boundary CRS / non-empty geometry / geography_status;
-- directed network lengths, connectivity, free-flow times;
-- pickup snap accessibility rates;
-- fleet/package bounds, witness energy reserve, train/val/test seed isolation;
-- depot scenario-only labeling;
-- hardened feasibility validator adversarial suite.
+Covers traffic/FIFO helpers, earliest-arrival, hardened feasibility (coverage, fleet IDs, wrong customer node, shift start), boundary CRS/geography_status/checksums, network connectivity, candidate accessibility.
 
-Latest full run: **30 passed**.
+## Provenance
 
-## Provenance artifacts
-
-Manifests under `data/casablanca/manifests/` record retrieval UTC, URLs, hashes, and build summaries for traffic, OSM, HCP, boundary, network, candidates, scenarios, OD holdout, and the top-level `casablanca_dataset_manifest.json`.
-
-Boundary artifacts are **SHA-256 pinned** in `boundary_manifest.json`; live Overpass/Nominatim rebuilds must not silently overwrite them.
+- Workbook populations: `traffic/communes_workbook.csv`
+- HCP measured: `zones/hcp_population_measured_only.csv`
+- Demand weights (sole authority): `zones/demand_zone_weights.csv`
+- Boundary pins: `manifests/boundary_manifest.json` (LF CSV)
+- Freeze: `manifests/benchmark_freeze_casablanca_stage1_5_v1.json`
 
 ## Observed build outcomes
 
 | Component | Result |
 | --- | --- |
-| Traffic workbook | SHA verified; 73,920 trajectory-hour rows; milli-minute unit rule |
-| Mon–Sat→Sunday OD holdout | MAE 5.91 min / RMSE 8.25 min (118 compared; 2 collapsed OD) |
-| Morocco PBF | MD5/SHA verified |
-| HCP join | 16/22 direct matches; 6 household-scaled placeholders |
-| Boundary | 22 zones; 15 `verified_admin` + 7 `approximate_study_zone`; checksums pinned |
-| Network | 30,943 nodes / 47,787 edges (largest SCC); 17.5% nodes excluded by SCC filter |
-| Candidates | OSM-derived from frozen PBF; accessibility checked |
-| Scenarios | 14 dirs (incl. baseline_seed42) / 13 split-plan seeds; baselines independently certified |
-
-## Large local-only files
-
-Gitignored (rebuild from scripts): Morocco PBF, GraphML/GeoPackage road exports, candidate GeoPackage. Manifests, configs, CSVs, reports, and figures are retained in-repo when size allows.
+| Traffic workbook | 73,920 trajectory-hour rows; milli-minute units |
+| Sunday OD holdout | MAE ~3.02 min (60 km/h TTI baseline); not edge-calibrated |
+| Boundary | 15 verified_admin + 7 approximate_study_zone; checksum-pinned |
+| Network | 30,943 / 47,787 (largest SCC) |
+| Candidates | 46,995 |
+| Scenarios | baseline 12 / peak 40 / tight 30 customers; train/val/test seeds |
+| Demand weights | 15 measured HCP + 7 commercial-only; 17 eligible zones |
 
 ## Acceptance
 
-See `reports/STAGE1_FINAL_ACCEPTANCE.md` for PASS / CONDITIONAL PASS by task.
+See `reports/STAGE1_5_HANDOFF.md`.

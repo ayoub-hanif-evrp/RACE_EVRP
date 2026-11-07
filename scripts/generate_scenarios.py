@@ -11,7 +11,12 @@ import pandas as pd
 import yaml
 
 from race_casablanca.demand.feasibility import build_graph_feasible_witness, validate_schedule
-from race_casablanca.demand.generator import generate_requests, load_demand_config, zone_sampling_weights
+from race_casablanca.demand.generator import (
+    generate_requests,
+    load_demand_config,
+    load_demand_zone_weights,
+    zone_sampling_weights_from_table,
+)
 from race_casablanca.io_utils import utc_now, write_json
 from race_casablanca.network.travel_time import CongestionModel
 from race_casablanca.paths import (
@@ -22,6 +27,7 @@ from race_casablanca.paths import (
     roads_dir,
     scenarios_dir,
     traffic_dir,
+    zones_dir,
 )
 
 
@@ -48,10 +54,14 @@ def main() -> int:
         raise SystemExit(f"Unknown regime {args.regime}")
     regime = config["regimes"][args.regime]
 
-    communes = pd.read_csv(traffic_dir() / "communes.csv")
-    land = pd.read_csv(traffic_dir() / "land_use.csv")
+    weights_path = zones_dir() / "demand_zone_weights.csv"
+    if not weights_path.exists():
+        raise SystemExit(
+            f"Missing {weights_path}; run scripts/build_demand_zone_weights.py before generating scenarios"
+        )
+    weight_table = load_demand_zone_weights(weights_path)
+    weights = zone_sampling_weights_from_table(weight_table)
     candidates = pd.read_csv(candidates_dir() / "pickup_candidates.csv")
-    weights = zone_sampling_weights(communes, land, config)
 
     access = candidates[candidates["accessible"] == True].copy()  # noqa: E712
     depot_row = access.assign(
@@ -83,15 +93,32 @@ def main() -> int:
     if regime.get("attempt_feasible_certificate", False):
         graph = ox.load_graphml(roads_dir() / "casablanca_drive.graphml")
         model = _load_congestion_model()
+        shift_start_s = float(regime["start_hour"]) * 3600.0
+        shift_end_s = shift_start_s + float(regime["horizon_hours"]) * 3600.0
         result = build_graph_feasible_witness(
-            requests_df, fleet, depot.get("snap_node"), graph, model, day="Monday"
+            requests_df,
+            fleet,
+            depot.get("snap_node"),
+            graph,
+            model,
+            day="Monday",
+            shift_start_s=shift_start_s,
+            shift_end_s=shift_end_s,
         )
         witness_dir = scenario_dir / "witnesses"
         witness_dir.mkdir(exist_ok=True)
         if result.certified:
             result.schedule.to_csv(witness_dir / "reference_schedule.csv", index=False)
             validation = validate_schedule(
-                result.schedule, requests_df, fleet, depot.get("snap_node"), graph, model, day="Monday"
+                result.schedule,
+                requests_df,
+                fleet,
+                depot.get("snap_node"),
+                graph,
+                model,
+                day="Monday",
+                shift_start_s=shift_start_s,
+                shift_end_s=shift_end_s,
             )
             feasibility.update(
                 {

@@ -232,3 +232,33 @@ def test_malformed_vehicle_id_rejected():
     validation = validate_schedule(schedule, requests, _fleet(), 0, g, _model())
     assert not validation["valid"]
     assert any(v["type"] == "malformed_vehicle_id" for v in validation["violations"])
+
+
+def test_wrong_customer_node_rejected():
+    g = _tiny_graph()
+    requests = _requests()
+    result = build_graph_feasible_witness(requests, _fleet(), 0, g, _model())
+    assert result.certified
+    schedule = result.schedule.copy()
+    first = schedule.index[~schedule["request_id"].astype(str).str.startswith("RETURN-")][0]
+    # Serve r0 at node 2 instead of its snap_node 1, with a consistent path.
+    schedule.at[first, "to_node"] = 2
+    schedule.at[first, "path_nodes"] = "0 2"
+    if "path_edge_keys" in schedule.columns:
+        schedule.at[first, "path_edge_keys"] = "0"
+    validation = validate_schedule(schedule, requests, _fleet(), 0, g, _model())
+    assert not validation["valid"]
+    assert any(v["type"] == "wrong_customer_node" for v in validation["violations"])
+
+
+def test_departure_before_shift_start_rejected():
+    g = _tiny_graph()
+    requests = _requests()
+    # Build a valid schedule with shift starting at 0, then validate with a later shift.
+    result = build_graph_feasible_witness(requests, _fleet(), 0, g, _model(), shift_start_s=0.0)
+    assert result.certified
+    validation = validate_schedule(
+        result.schedule, requests, _fleet(), 0, g, _model(), shift_start_s=8 * 3600.0
+    )
+    assert not validation["valid"]
+    assert any(v["type"] == "departure_before_shift_start" for v in validation["violations"])

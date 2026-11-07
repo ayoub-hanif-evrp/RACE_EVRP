@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-11-07T14:57:20+00:00",
+  "generated_at_utc": "2026-11-07T15:57:08+00:00",
   "regime": "baseline",
   "seed": 4,
   "split": "train",
-  "generator_version": "0.2.0",
+  "generator_version": "0.3.0",
   "n_requests": 12,
   "fleet": {
     "label": "hypothetical_light_ev_van",
@@ -29,57 +29,11 @@
   },
   "feasibility": {
     "attempt_certificate": true,
-    "label": "baseline_attempt_certificate",
-    "certified_feasible": true,
+    "label": "uncertified",
+    "certified_feasible": false,
     "note": "Feasible only if graph witness is independently validated.",
-    "independent_validator": {
-      "valid": true,
-      "n_violations": 0,
-      "violations": [],
-      "coverage": {
-        "required": 12,
-        "served": 12,
-        "duplicates": 0
-      },
-      "vehicles": {
-        "V1": {
-          "final_node": 1849562461,
-          "battery_kwh": 25.36099695709743,
-          "load_kg": 109.81186680429512,
-          "returned": true,
-          "n_served": 8
-        },
-        "V2": {
-          "final_node": 1849562461,
-          "battery_kwh": 32.418040399779834,
-          "load_kg": 40.962338771578494,
-          "returned": true,
-          "n_served": 3
-        },
-        "V3": {
-          "final_node": 1849562461,
-          "battery_kwh": 39.186297853761346,
-          "load_kg": 12.243800585050291,
-          "returned": true,
-          "n_served": 1
-        }
-      },
-      "timestamp_tol_min": 0.001
-    },
-    "n_requests": 12,
-    "n_served": 12,
-    "n_returns": 3,
-    "share_within_window": 1.0,
-    "min_battery_after_kwh": 25.36099695709743,
-    "total_travel_distance_m": 115173.32394680697,
-    "vehicles_used": [
-      "V1",
-      "V2",
-      "V3"
-    ],
-    "certificate": "graph_constructive_freeflow_path_td_eval_with_depot_return",
-    "window_definition": "service_must_finish_by_tw_end",
-    "online_policy_must_not_read": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\scenarios\\train\\baseline_seed4\\witnesses"
+    "reason": "no_vehicle_can_serve_request_under_constraints",
+    "failed_request_id": "baseline-4-0011"
   },
   "claim": "Synthetic geographically grounded requests. Not observed Casablanca customer orders.",
   "arrival_process": "fixed_count_hourly_intensity_sampling"

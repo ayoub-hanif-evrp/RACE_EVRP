@@ -64,6 +64,9 @@ def main() -> int:
     out = traffic_dir()
     out.mkdir(parents=True, exist_ok=True)
     trajectories.to_parquet(out / "trajectory_hours.parquet", index=False)
+    # Workbook Table-1 populations only. Never the demand-weight authority.
+    # Demand uses zones/demand_zone_weights.csv (built by build_demand_zone_weights.py).
+    communes.to_csv(out / "communes_workbook.csv", index=False)
     communes.to_csv(out / "communes.csv", index=False)
     coords.to_csv(out / "coordinate_points.csv", index=False)
     land.to_csv(out / "land_use.csv", index=False)

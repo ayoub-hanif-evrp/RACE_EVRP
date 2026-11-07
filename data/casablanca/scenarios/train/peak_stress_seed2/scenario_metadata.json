@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-11-07T14:55:16+00:00",
+  "generated_at_utc": "2026-11-07T15:55:47+00:00",
   "regime": "peak_stress",
   "seed": 2,
   "split": "train",
-  "generator_version": "0.2.0",
+  "generator_version": "0.3.0",
   "n_requests": 40,
   "fleet": {
     "label": "hypothetical_light_ev_van",

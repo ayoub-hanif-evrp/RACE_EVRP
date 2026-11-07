@@ -1,0 +1,19 @@
+{
+  "benchmark_version": "casablanca_stage1_5_v1",
+  "generator_version": "0.3.0",
+  "demand_weights": "data/casablanca/zones/demand_zone_weights.csv",
+  "reports": [
+    "reports/DATA_LINEAGE_AUDIT.md",
+    "reports/GEOGRAPHIC_COVERAGE_AUDIT.md",
+    "reports/FEASIBILITY_CERTIFICATE_AUDIT.md",
+    "reports/REPRODUCIBILITY_FREEZE.md",
+    "reports/STAGE1_5_HANDOFF.md"
+  ],
+  "scenario_counts": {
+    "baseline_customers": 12,
+    "peak_stress_customers": 40,
+    "tight_windows_customers": 30,
+    "pickup_candidates": 46995
+  },
+  "claim": "Stage 1.5 scientific data-integrity freeze for the Casablanca electric pickup benchmark under documented assumptions. Not a Stage-2 algorithm release."
+}
