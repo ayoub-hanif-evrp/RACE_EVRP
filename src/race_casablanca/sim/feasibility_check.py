@@ -16,6 +16,9 @@ class FeasibilityCheck:
     added_travel_s: float = 0.0
     final_battery_kwh: float = 0.0
     energy_binding: bool = False
+    # Residual flexibility after a feasible conservative plan (depot return included)
+    energy_flex_kwh: float = 0.0
+    min_deadline_slack_s: float = 0.0
 
 
 def locked_prefix(vehicle: VehicleState) -> list[Stop]:
@@ -147,6 +150,7 @@ def simulate_plan_conservative(
 
     travel = 0.0
     energy_binding = False
+    min_slack = float("inf")
 
     for stop in plan:
         if stop.kind == "pickup":
@@ -170,6 +174,8 @@ def simulate_plan_conservative(
                 return FeasibilityCheck(False, "time_window")
             if t + req.service_s > shift_end_s + 1e-9:
                 return FeasibilityCheck(False, "shift_end")
+            slack = req.tw_end_s - (t + req.service_s)
+            min_slack = min(min_slack, slack)
             t = t + req.service_s
             load += req.weight_kg
             travel += rt.duration_s
@@ -212,8 +218,16 @@ def simulate_plan_conservative(
         bat -= e_cons
         travel += rt.duration_s
 
+    energy_flex = max(0.0, bat - energy.reserve_kwh)
+    slack_out = 0.0 if min_slack == float("inf") else float(min_slack)
     return FeasibilityCheck(
-        True, "", added_travel_s=travel, final_battery_kwh=bat, energy_binding=energy_binding
+        True,
+        "",
+        added_travel_s=travel,
+        final_battery_kwh=bat,
+        energy_binding=energy_binding,
+        energy_flex_kwh=energy_flex,
+        min_deadline_slack_s=slack_out,
     )
 
 

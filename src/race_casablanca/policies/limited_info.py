@@ -8,7 +8,9 @@ Same claim rule for all modes; only messaging differs:
 
 from __future__ import annotations
 
-from race_casablanca.policies.restricted_dispatch import restricted_claim_pass
+from dataclasses import replace
+
+from race_casablanca.policies.restricted_dispatch import intended_claim_id, restricted_claim_pass
 from race_casablanca.sim.policy_api import ActionInterface, FullInfoObservation, RestrictedObservation
 
 
@@ -27,6 +29,11 @@ class LimitedInfoCooperativePolicy:
         self.comm_mode = comm_mode
         self.value_threshold = value_threshold
         self.n_messages_sent_by_policy = 0
+        # Invocations triggered by a delivered peer message (not usefulness)
+        self.n_message_driven_decision_invocations = 0
+        # Counterfactual: intended claim differs with vs without peer snapshots
+        self.n_counterfactual_decision_changes = 0
+        # Deprecated alias retained for old scripts; equals counterfactual changes
         self.n_decision_changing_messages = 0
 
     def on_decision(
@@ -48,11 +55,16 @@ class LimitedInfoCooperativePolicy:
                 self.n_messages_sent_by_policy += 1
         # comm_mode == "none": never voluntary broadcast
 
-        before_peers = set(obs.peers.keys())
+        if reason == "message":
+            self.n_message_driven_decision_invocations += 1
+            with_peers = intended_claim_id(obs, actions)
+            empty = replace(obs, peers={})
+            without_peers = intended_claim_id(empty, actions)
+            if with_peers != without_peers:
+                self.n_counterfactual_decision_changes += 1
+                self.n_decision_changing_messages += 1
+
         restricted_claim_pass(obs, actions)
-        # Heuristic count: if we had peer info and claimed, count as potentially decision-relevant
-        if before_peers and reason == "message":
-            self.n_decision_changing_messages += 1
 
     def _should_send(self, obs: RestrictedObservation) -> bool:
         """Send if own commitment load or battery tightness may change peer claims.
@@ -61,13 +73,10 @@ class LimitedInfoCooperativePolicy:
         """
 
         v = obs.self_state
-        # High local load → peers should know not to defer incorrectly the other way
         load_pressure = 60.0 * len(v.committed)
-        # Low battery → energy-feasible set shrinks; peers may take tasks instead
         reserve_like = 0.15 * 40.0
         headroom = max(0.0, v.battery_kwh - reserve_like)
         energy_pressure = 300.0 / (1.0 + headroom) if v.battery_kwh < 20.0 else 0.0
-        # Many announced tasks while idle/busy mismatch
         announce_pressure = 40.0 * min(3, len(obs.announced)) if not v.busy else 20.0 * min(2, len(obs.announced))
         value = load_pressure + energy_pressure + announce_pressure
         return value >= self.value_threshold

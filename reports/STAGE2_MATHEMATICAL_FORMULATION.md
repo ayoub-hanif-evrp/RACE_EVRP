@@ -44,13 +44,14 @@ Lifecycle: `unreleased` → `available` → `committed` → `in_service` → `co
 
 Pickup at \(s_i\) starts at \(\max(\text{arrival},e_i,a_i)\) and lasts \(\sigma_i\). Payload \(L_v\leftarrow L_v+w_i\) if \(L_v+w_i\le L^{\max}\).
 
-**Energy (Stage 2.1):** for distance \(d\) km,
+**Energy (Stage 2.1 / 3A):** for distance \(d\) km,
 
 - Nominal: \(E^{\mathrm{nom}}(d)=c\cdot d\) with \(c=0.2\) kWh/km  
 - Conservative planning: \(E^{\mathrm{cons}}(d)=c\cdot d\cdot(1+\delta)\)  
+- **Unfinished active legs:** planning battery uses observed battery minus conservative remaining path energy — **not** the hidden realized disturbance sampled at departure (Stage 3A non-leakage). Realized \(\xi\) affects physical arrival only when the leg completes.  
 - Realized: \(E^{\mathrm{real}}(d)=c\cdot d\cdot(1+\xi)\) with \(\xi\in[-\delta,\delta]\) via CRN key \((s,v,\mathrm{leg})\) or adversarial \(\xi=+\delta\) (synthetic; **not** measured Casablanca van data)
 
-Feasibility is evaluated from the **projected post-lock state** (location, time, battery after the locked leg’s already-sampled realized energy, payload). A tour is energy-feasible if every editable prefix under \(E^{\mathrm{cons}}\) retains depot reachability with \(B\ge B^{\mathrm{res}}\).
+Feasibility is evaluated from the **projected post-lock state** (location, time, battery after conservative remaining energy on the unfinished locked leg, payload). A tour is energy-feasible if every editable prefix under \(E^{\mathrm{cons}}\) retains depot reachability with \(B\ge B^{\mathrm{res}}\).
 
 **Pre-dispatch gate:** a physical departure is allowed only if the same conservative check passes for that leg. Otherwise the vehicle does not travel (planned rejection and/or `emergency_stranded`). Under \(\xi\le\delta\), a gated policy must not produce reserve breaches attributable to bound violations.
 

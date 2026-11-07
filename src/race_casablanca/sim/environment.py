@@ -373,18 +373,30 @@ class OnlineSimulator:
         self.planned_energy_rejections = snap["planned_energy_rejections"]
 
     def commit_fleet_plans(self, assignment: dict[str, list[str]]) -> bool:
-        """Two-phase atomic fleet commit preserving exact pickup order.
+        """Two-phase atomic plan commit preserving exact pickup order.
 
-        1) Validate without mutating. 2) Commit ownership+plans. 3) Activate legs.
-        On any failure before completion, restore full physical/event/ownership state.
+        Partial updates: only vehicles listed in ``assignment`` are released/rebuilt.
+        Omitted vehicles keep their commitments, plans, and ownership unchanged.
+
+        Full-fleet replacement: pass every vehicle id (possibly with empty editable lists).
+
+        1) Validate without mutating. 2) Commit ownership+plans for touched vehicles.
+        3) Activate legs for touched idle vehicles. On failure, restore full state.
         """
 
+        if not assignment:
+            return True
+        unknown = [vid for vid in assignment if vid not in self.vehicles]
+        if unknown:
+            return False
+
+        touched = set(assignment.keys())
         locked_by_v: dict[str, list[str]] = {vid: [] for vid in self.vehicles}
         for vid, v in self.vehicles.items():
             if v.moving_to and v.moving_to.kind == "pickup" and v.moving_to.request_id:
                 locked_by_v[vid].append(v.moving_to.request_id)
 
-        # Unique ownership across fleet
+        # Unique ownership within the proposed touched assignment
         seen: set[str] = set()
         for vid, rids in assignment.items():
             for rid in rids:
@@ -402,7 +414,12 @@ class OnlineSimulator:
             for rid in editable:
                 if rid not in self.requests:
                     return False
-                if self.requests[rid].status not in {RequestStatus.AVAILABLE, RequestStatus.COMMITTED}:
+                st = self.requests[rid].status
+                if st not in {RequestStatus.AVAILABLE, RequestStatus.COMMITTED}:
+                    return False
+                # Cannot steal a commitment from an omitted vehicle in a partial update
+                owner = self.requests[rid].owner
+                if st == RequestStatus.COMMITTED and owner is not None and owner not in touched:
                     return False
             status_backup = {rid: self.requests[rid].status for rid in editable}
             for rid in editable:
@@ -424,9 +441,9 @@ class OnlineSimulator:
         }
         snap = self._snapshot_world()
         try:
-            # Phase 2 — commit exact routes without dispatching
-            # Release non-locked commitments fleet-wide
-            for vid, v in self.vehicles.items():
+            # Phase 2 — release editable commitments only for touched vehicles
+            for vid in touched:
+                v = self.vehicles[vid]
                 locked = set(locked_by_v.get(vid, []))
                 for rid in list(v.committed):
                     if rid in locked:
@@ -447,17 +464,22 @@ class OnlineSimulator:
                     for rid in rids
                     if rid not in locked
                 ]
-                # Exact optimized order
                 for stop in editable_stops:
                     rid = stop.request_id
                     assert rid is not None
                     if self.requests[rid].status == RequestStatus.COMMITTED and self.requests[rid].owner not in (None, vid):
-                        raise RuntimeError("ownership conflict during commit")
+                        # Owner must be another touched vehicle already released above
+                        other = self.requests[rid].owner
+                        if other not in touched:
+                            raise RuntimeError("ownership conflict during partial commit")
+                        self.registry.release(rid, other)
+                        self.requests[rid].status = RequestStatus.AVAILABLE
+                        self.requests[rid].owner = None
+                        if rid in self.vehicles[other].committed:
+                            self.vehicles[other].committed.remove(rid)
                     if not self.registry.try_claim(rid, vid, self.now_s):
-                        # already owned by vid after prior iteration
                         if self.registry.owner_of(rid) != vid:
                             raise RuntimeError(f"claim failed {rid}")
-                    # Count only first-time accepts of previously available tasks
                     if rid in newly_available:
                         self.n_claims += 1
                         newly_available.discard(rid)
@@ -467,8 +489,9 @@ class OnlineSimulator:
                         v.committed.append(rid)
                 v.plan = locked_stops + editable_stops
 
-            # Phase 3 — activate idle vehicles after all plans are committed
-            for vid, v in self.vehicles.items():
+            # Phase 3 — activate only touched idle vehicles
+            for vid in touched:
+                v = self.vehicles[vid]
                 if not v.busy and v.plan and v.mode != VehicleMode.EMERGENCY_STRANDED:
                     self._start_next_leg(vid)
             return True
@@ -477,6 +500,8 @@ class OnlineSimulator:
             return False
 
     def set_pickup_plan(self, vehicle_id: str, request_ids: list[str], *, charge: bool = False) -> bool:
+        """Partial plan update for one vehicle; other vehicles are left unchanged."""
+
         locked = []
         v = self.vehicles[vehicle_id]
         if v.moving_to and v.moving_to.kind == "pickup" and v.moving_to.request_id:

@@ -1,0 +1,31 @@
+{
+  "stage": "3B",
+  "scenarios": [
+    "baseline_seed1",
+    "peak_stress_seed2",
+    "tight_windows_seed3"
+  ],
+  "suites": [
+    "full_soc",
+    "soc35",
+    "soc35_delta20"
+  ],
+  "policies": [
+    "greedy",
+    "rolling_horizon",
+    "race",
+    "race_ablation",
+    "restricted_none"
+  ],
+  "rh_time_budget_s": 0.25,
+  "race_defaults": {
+    "alpha_energy": 240.0,
+    "beta_time": 0.5,
+    "e_typical_kwh": 2.0,
+    "t_typical_s": 900.0,
+    "charge_flex_threshold_kwh": 3.0
+  },
+  "seed": 1,
+  "dataset": "casablanca_release_v1",
+  "notes": "Training scenarios only; not tuned on test."
+}
