@@ -9,6 +9,11 @@ from dataclasses import dataclass
 import networkx as nx
 import pandas as pd
 
+# Workbook TTI is empirically relative to ~60 km/h free-flow
+# (distance / (obs_time / TTI) clusters at 60). Congestion multipliers must
+# therefore be applied to a matching baseline, not to independent OSM class speeds.
+TTI_REFERENCE_SPEED_KMH = 60.0
+
 
 @dataclass
 class CongestionModel:
@@ -28,14 +33,29 @@ class CongestionModel:
         return max(float(self.citywide_hour.get(hour, 1.0)), 1e-6)
 
 
+def edge_tti_baseline_free_flow_s(
+    data: dict,
+    reference_kmh: float = TTI_REFERENCE_SPEED_KMH,
+) -> float:
+    """Free-flow seconds consistent with workbook TTI reference speed.
+
+    Prefer length / reference_kmh. Fall back to stored OSM free_flow_time_s only
+    when length is missing (unit tests / incomplete edges).
+    """
+
+    length = float(data.get("length") or 0.0)
+    if length > 0 and reference_kmh > 0:
+        return length * 3.6 / reference_kmh
+    return float(data.get("free_flow_time_s") or 0.0)
+
+
 def _best_parallel_edge(edge_dict: dict) -> dict:
-    """Select the parallel edge with the smallest free-flow time."""
+    """Select the parallel edge with the smallest TTI-baseline free-flow time."""
 
     if not edge_dict:
         raise ValueError("empty parallel-edge dict")
     # NetworkX MultiDiGraph weight callbacks receive {key: attr_dict}.
-    return min(edge_dict.values(), key=lambda d: float(d.get("free_flow_time_s") or math.inf))
-
+    return min(edge_dict.values(), key=lambda d: edge_tti_baseline_free_flow_s(d))
 
 def edge_departure_and_travel(
     free_flow_s: float,
@@ -136,7 +156,7 @@ def earliest_arrival(
             break
         for _v, edge_dict in graph[u].items():
             for key, data in edge_dict.items():
-                free = float(data.get("free_flow_time_s") or 0.0)
+                free = edge_tti_baseline_free_flow_s(data)
                 commune = data.get("zone_commune")
                 dep, dur = edge_departure_and_travel(
                     free, arr_u, model, commune=commune, day=day, allow_wait=allow_wait
@@ -165,7 +185,8 @@ def earliest_arrival(
                 "travel_s": dur,
                 "arrival_s": dep + dur,
                 "length_m": float(data.get("length") or 0.0),
-                "free_flow_time_s": float(data.get("free_flow_time_s") or 0.0),
+                "free_flow_time_s": edge_tti_baseline_free_flow_s(data),
+                "osm_free_flow_time_s": float(data.get("free_flow_time_s") or 0.0),
                 "zone_commune": data.get("zone_commune"),
             }
         )
@@ -221,7 +242,7 @@ def exhaustive_earliest_arrival_dag(
             if graph.is_multigraph():
                 options = []
                 for _key, data in graph[u][v].items():
-                    free = float(data.get("free_flow_time_s") or 0.0)
+                    free = edge_tti_baseline_free_flow_s(data)
                     dep, dur = edge_departure_and_travel(
                         free, t, model, commune=data.get("zone_commune"), day=day, allow_wait=allow_wait
                     )
@@ -229,7 +250,7 @@ def exhaustive_earliest_arrival_dag(
                 t = min(options)
             else:
                 data = graph[u][v]
-                free = float(data.get("free_flow_time_s") or 0.0)
+                free = edge_tti_baseline_free_flow_s(data)
                 dep, dur = edge_departure_and_travel(
                     free, t, model, commune=data.get("zone_commune"), day=day, allow_wait=allow_wait
                 )

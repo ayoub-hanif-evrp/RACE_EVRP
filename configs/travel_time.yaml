@@ -20,3 +20,7 @@ free_flow_speed_kmh:
 min_speed_kmh: 5
 congestion_model: zone_day_hour_tti_multiplier
 fifo_policy: wait_if_needed
+# Workbook TTI is relative to this free-flow reference (km/h). Congested edge
+# time is (3.6 * length_m / tti_reference_speed_kmh) * TTI_factor — not OSM
+# class free-flow × TTI (which double-counts a slower baseline).
+tti_reference_speed_kmh: 60

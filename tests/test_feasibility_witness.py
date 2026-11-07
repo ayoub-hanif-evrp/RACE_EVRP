@@ -193,3 +193,42 @@ def test_service_before_release_rejected():
         v["type"] in {"before_release", "start_timestamp_mismatch", "end_timestamp_mismatch", "window_violation"}
         for v in validation["violations"]
     )
+
+
+def test_unknown_vehicle_id_rejected():
+    g = _tiny_graph()
+    requests = _requests()
+    result = build_graph_feasible_witness(requests, _fleet(), 0, g, _model())
+    schedule = result.schedule.copy()
+    schedule["vehicle_id"] = "V99"
+    validation = validate_schedule(schedule, requests, _fleet(), 0, g, _model())
+    assert not validation["valid"]
+    assert any(v["type"] == "unknown_vehicle" for v in validation["violations"])
+
+
+def test_too_many_vehicles_rejected():
+    g = _tiny_graph()
+    requests = _requests()
+    # Allowlist larger than n_vehicles so excess count (not unknown ID) is the failure mode.
+    fleet = _fleet(n_vehicles=2, vehicle_ids=["V1", "V2", "V3"])
+    result = build_graph_feasible_witness(requests, _fleet(n_vehicles=2), 0, g, _model())
+    assert result.certified
+    schedule = result.schedule.copy()
+    schedule = pd.concat(
+        [schedule, schedule.iloc[[0]].assign(vehicle_id="V3", request_id="RETURN-V3")],
+        ignore_index=True,
+    )
+    validation = validate_schedule(schedule, requests, fleet, 0, g, _model())
+    assert not validation["valid"]
+    assert any(v["type"] == "too_many_vehicles" for v in validation["violations"])
+
+
+def test_malformed_vehicle_id_rejected():
+    g = _tiny_graph()
+    requests = _requests()
+    result = build_graph_feasible_witness(requests, _fleet(), 0, g, _model())
+    schedule = result.schedule.copy()
+    schedule.loc[schedule.index[0], "vehicle_id"] = ""
+    validation = validate_schedule(schedule, requests, _fleet(), 0, g, _model())
+    assert not validation["valid"]
+    assert any(v["type"] == "malformed_vehicle_id" for v in validation["violations"])

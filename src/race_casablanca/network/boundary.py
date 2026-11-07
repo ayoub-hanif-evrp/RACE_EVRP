@@ -302,6 +302,42 @@ def pin_boundary_artifact_checksums(zones_dir: Path) -> dict:
     }
 
 
+def verify_boundary_checksums(zones_dir: Path, manifest: dict) -> dict:
+    """Verify on-disk geography matches pinned SHA-256 digests in the manifest."""
+
+    from race_casablanca.hashing import sha256_file
+
+    pinned = (manifest.get("checksums") or {}).get("artifacts") or {}
+    if not pinned:
+        raise RuntimeError(
+            "boundary_manifest.json has no pinned checksums; refuse to proceed without a pin"
+        )
+    mismatches = []
+    checked = {}
+    for name, meta in pinned.items():
+        path = zones_dir / name
+        if not path.exists():
+            mismatches.append({"artifact": name, "error": "missing_file", "expected": meta.get("sha256")})
+            continue
+        digest = sha256_file(path)
+        checked[name] = {"path": str(path), "sha256": digest, "expected": meta.get("sha256")}
+        if digest != meta.get("sha256"):
+            mismatches.append(
+                {
+                    "artifact": name,
+                    "error": "sha256_mismatch",
+                    "expected": meta.get("sha256"),
+                    "actual": digest,
+                }
+            )
+    return {
+        "ok": len(mismatches) == 0,
+        "n_checked": len(checked),
+        "checked": checked,
+        "mismatches": mismatches,
+    }
+
+
 def write_boundary_products(matched: gpd.GeoDataFrame, zones_dir: Path) -> dict:
     zones_dir.mkdir(parents=True, exist_ok=True)
     matched_path = zones_dir / "zone_crosswalk.gpkg"

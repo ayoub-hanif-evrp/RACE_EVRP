@@ -10,7 +10,8 @@ import osmnx as ox
 import pandas as pd
 import pytest
 
-from race_casablanca.paths import candidates_dir, roads_dir, traffic_dir, zones_dir
+from race_casablanca.network.boundary import verify_boundary_checksums
+from race_casablanca.paths import candidates_dir, manifest_dir, roads_dir, traffic_dir, zones_dir
 
 
 @pytest.fixture(scope="module")
@@ -60,7 +61,18 @@ def test_network_lengths_directions_connectivity():
     weak = max(len(c) for c in nx.weakly_connected_components(graph))
     assert weak == graph.number_of_nodes()
     assert nx.is_strongly_connected(graph)
-    assert graph.graph.get("race_source") in {None, "geofabrik_pbf"} or True
+    assert graph.graph.get("race_source") == "geofabrik_pbf"
+
+
+def test_pinned_boundary_checksums_match_manifest():
+    import json
+
+    manifest_path = manifest_dir() / "boundary_manifest.json"
+    assert manifest_path.exists()
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    result = verify_boundary_checksums(zones_dir(), manifest)
+    assert result["ok"], result["mismatches"]
+    assert result["n_checked"] >= 3
 
 
 def test_pickup_candidate_snap_stats():

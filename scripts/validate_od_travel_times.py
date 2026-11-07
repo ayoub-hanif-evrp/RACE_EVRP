@@ -109,30 +109,40 @@ def main() -> int:
         return 1
 
     peak = ok[ok["hour"].between(7, 10)]
+    signed_min = (ok["predicted_s"] - ok["observed_s"]) / 60.0
+    unique_od = ok.drop_duplicates(subset=["o_node", "d_node"]).shape[0] if not ok.empty else 0
     summary = {
         "generated_at_utc": utc_now(),
         "status": "ok",
         "holdout_day": holdout_day,
         "fit_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
         "congestion_profile": "tti_citywide_hour_fit_mon_sat.csv",
+        "travel_time_formulation": (
+            "t = (3.6 * length_m / 60 km/h) * citywide_TTI(hour); "
+            "TTI relative to workbook 60 km/h free-flow reference (not OSM class free-flow × TTI)."
+        ),
         "unit_note": (
             "Observed times from workbook minutes after correcting Excel milli-minute "
             "artifacts (values>180 divided by 1000, not 60)."
         ),
         "n_sampled": int(len(sample)),
         "n_compared": int(len(ok)),
+        "n_unique_od_pairs": int(unique_od),
         "n_snap_failures": int(snap_failures),
         "n_collapsed_same_node": int(collapsed),
         "mae_min": float(ok["abs_error_min"].mean()),
         "rmse_min": float(np.sqrt((ok["abs_error_min"] ** 2).mean())),
         "median_abs_error_min": float(ok["abs_error_min"].median()),
+        "signed_bias_min": float(signed_min.mean()),
+        "median_signed_bias_min": float(signed_min.median()),
         "mean_rel_error": float(ok["rel_error"].mean()),
         "peak_7_10_mae_min": float(peak["abs_error_min"].mean()) if not peak.empty else None,
         "median_obs_min": float((ok["observed_s"] / 60.0).median()),
         "median_pred_min": float((ok["predicted_s"] / 60.0).median()),
         "claim": (
-            "Sunday OD durations predicted with Mon–Sat-only citywide TTI. "
-            "Does not claim edge calibration or identical Waze/OSM routes."
+            "Sunday OD durations predicted with Mon–Sat-only citywide TTI on a "
+            "60 km/h TTI-consistent free-flow baseline. Does not claim edge calibration "
+            "or identical Waze/OSM routes. No Sunday tuning."
         ),
         "output": str(out_path),
     }

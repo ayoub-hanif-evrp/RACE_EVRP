@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-07T01:12:33+00:00",
+  "generated_at_utc": "2026-11-07T15:01:25+00:00",
   "dataset": "casablanca_stage1",
   "geography": "Casablanca study area = union of 22 workbook zones matched to OSM admin (with documented OD-hull fallbacks)",
   "claim_discipline": {
@@ -128,6 +128,16 @@
         "licenses"
       ]
     },
+    "constraint_binding_diagnosis.json": {
+      "keys": [
+        "generated_at_utc",
+        "fleet",
+        "n_certified_baselines",
+        "scenarios",
+        "aggregate",
+        "scientific_note"
+      ]
+    },
     "hcp_join_manifest.json": {
       "keys": [
         "generated_at_utc",
@@ -193,14 +203,18 @@
         "holdout_day",
         "fit_days",
         "congestion_profile",
+        "travel_time_formulation",
         "unit_note",
         "n_sampled",
         "n_compared",
+        "n_unique_od_pairs",
         "n_snap_failures",
         "n_collapsed_same_node",
         "mae_min",
         "rmse_min",
         "median_abs_error_min",
+        "signed_bias_min",
+        "median_signed_bias_min",
         "mean_rel_error",
         "peak_7_10_mae_min",
         "median_obs_min",
@@ -450,6 +464,17 @@
         "license",
         "citation",
         "api_file_record"
+      ]
+    },
+    "tti_baseline_diagnosis.json": {
+      "keys": [
+        "generated_at_utc",
+        "fit_days",
+        "tti_reference_speed_kmh",
+        "workbook_free_flow",
+        "closed_form_mon_sat",
+        "path_sample",
+        "decision"
       ]
     },
     "zone_audit_manifest.json": {

@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-07T01:01:14+00:00",
+  "generated_at_utc": "2026-11-07T14:51:32+00:00",
   "status": "ok",
   "holdout_day": "Sunday",
   "fit_days": [
@@ -11,18 +11,22 @@
     "Saturday"
   ],
   "congestion_profile": "tti_citywide_hour_fit_mon_sat.csv",
+  "travel_time_formulation": "t = (3.6 * length_m / 60 km/h) * citywide_TTI(hour); TTI relative to workbook 60 km/h free-flow reference (not OSM class free-flow × TTI).",
   "unit_note": "Observed times from workbook minutes after correcting Excel milli-minute artifacts (values>180 divided by 1000, not 60).",
   "n_sampled": 120,
   "n_compared": 118,
+  "n_unique_od_pairs": 104,
   "n_snap_failures": 0,
   "n_collapsed_same_node": 2,
-  "mae_min": 5.912792685536087,
-  "rmse_min": 8.251850209681132,
-  "median_abs_error_min": 3.9873758944757087,
-  "mean_rel_error": 1.0013057460584112,
-  "peak_7_10_mae_min": 5.994500293052249,
+  "mae_min": 3.0228445035427516,
+  "rmse_min": 4.539794745249089,
+  "median_abs_error_min": 1.7691634261893712,
+  "signed_bias_min": 1.8501635814016535,
+  "median_signed_bias_min": 1.1932642901504957,
+  "mean_rel_error": 0.4990662586928328,
+  "peak_7_10_mae_min": 3.2079400891521104,
   "median_obs_min": 6.15,
-  "median_pred_min": 9.715368195714866,
-  "claim": "Sunday OD durations predicted with Mon–Sat-only citywide TTI. Does not claim edge calibration or identical Waze/OSM routes.",
+  "median_pred_min": 6.752472126087014,
+  "claim": "Sunday OD durations predicted with Mon–Sat-only citywide TTI on a 60 km/h TTI-consistent free-flow baseline. Does not claim edge calibration or identical Waze/OSM routes. No Sunday tuning.",
   "output": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\traffic\\od_travel_time_holdout_sunday.csv"
 }

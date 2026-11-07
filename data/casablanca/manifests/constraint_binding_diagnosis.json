@@ -1,0 +1,141 @@
+{
+  "generated_at_utc": "2026-11-07T15:01:25+00:00",
+  "fleet": {
+    "usable_battery_kwh": 40.0,
+    "min_reserve_soc": 0.15,
+    "reserve_kwh": 6.0,
+    "payload_kg": 600.0,
+    "n_vehicles": 3
+  },
+  "n_certified_baselines": 5,
+  "scenarios": [
+    {
+      "n_pickups": 12,
+      "n_returns": 3,
+      "min_battery_after_kwh": 27.542555367192044,
+      "reserve_kwh": 6.0,
+      "battery_headroom_kwh": 20.944871228495664,
+      "max_load_kg": 106.58819484785353,
+      "payload_cap_kg": 600.0,
+      "payload_headroom_kg": 493.4118051521465,
+      "min_window_slack_min": null,
+      "median_window_slack_min": null,
+      "scenario": "train/baseline_seed1",
+      "certified_feasible": true,
+      "cert_min_battery_after_kwh": 26.944871228495664,
+      "cert_total_travel_distance_m": 126036.07237016116,
+      "cert_vehicles_used": [
+        "V1",
+        "V2",
+        "V3"
+      ],
+      "cert_share_within_window": 1.0,
+      "validator_min_battery_kwh": 26.944871228495664,
+      "validator_max_final_load_kg": 106.58819484785353
+    },
+    {
+      "n_pickups": 12,
+      "n_returns": 3,
+      "min_battery_after_kwh": 28.09291566164371,
+      "reserve_kwh": 6.0,
+      "battery_headroom_kwh": 19.36099695709743,
+      "max_load_kg": 109.81186680429512,
+      "payload_cap_kg": 600.0,
+      "payload_headroom_kg": 490.1881331957049,
+      "min_window_slack_min": null,
+      "median_window_slack_min": null,
+      "scenario": "train/baseline_seed4",
+      "certified_feasible": true,
+      "cert_min_battery_after_kwh": 25.36099695709743,
+      "cert_total_travel_distance_m": 115173.32394680697,
+      "cert_vehicles_used": [
+        "V1",
+        "V2",
+        "V3"
+      ],
+      "cert_share_within_window": 1.0,
+      "validator_min_battery_kwh": 25.36099695709743,
+      "validator_max_final_load_kg": 109.81186680429512
+    },
+    {
+      "n_pickups": 12,
+      "n_returns": 3,
+      "min_battery_after_kwh": 29.57415315173426,
+      "reserve_kwh": 6.0,
+      "battery_headroom_kwh": 21.932118699113396,
+      "max_load_kg": 90.67248972475711,
+      "payload_cap_kg": 600.0,
+      "payload_headroom_kg": 509.3275102752429,
+      "min_window_slack_min": null,
+      "median_window_slack_min": null,
+      "scenario": "train/baseline_seed42",
+      "certified_feasible": true,
+      "cert_min_battery_after_kwh": 27.932118699113396,
+      "cert_total_travel_distance_m": 121208.18931854627,
+      "cert_vehicles_used": [
+        "V1",
+        "V2",
+        "V3"
+      ],
+      "cert_share_within_window": 1.0,
+      "validator_min_battery_kwh": 27.932118699113396,
+      "validator_max_final_load_kg": 90.67248972475711
+    },
+    {
+      "n_pickups": 12,
+      "n_returns": 3,
+      "min_battery_after_kwh": 27.234031866049023,
+      "reserve_kwh": 6.0,
+      "battery_headroom_kwh": 20.20482602743009,
+      "max_load_kg": 103.88512064436443,
+      "payload_cap_kg": 600.0,
+      "payload_headroom_kg": 496.1148793556356,
+      "min_window_slack_min": null,
+      "median_window_slack_min": null,
+      "scenario": "train/baseline_seed7",
+      "certified_feasible": true,
+      "cert_min_battery_after_kwh": 26.20482602743009,
+      "cert_total_travel_distance_m": 165870.0208316199,
+      "cert_vehicles_used": [
+        "V1",
+        "V2",
+        "V3"
+      ],
+      "cert_share_within_window": 1.0,
+      "validator_min_battery_kwh": 26.20482602743009,
+      "validator_max_final_load_kg": 103.88512064436443
+    },
+    {
+      "n_pickups": 12,
+      "n_returns": 3,
+      "min_battery_after_kwh": 23.64480322276909,
+      "reserve_kwh": 6.0,
+      "battery_headroom_kwh": 17.044607605706716,
+      "max_load_kg": 114.12355940107203,
+      "payload_cap_kg": 600.0,
+      "payload_headroom_kg": 485.87644059892796,
+      "min_window_slack_min": null,
+      "median_window_slack_min": null,
+      "scenario": "test/baseline_seed202",
+      "certified_feasible": true,
+      "cert_min_battery_after_kwh": 23.044607605706716,
+      "cert_total_travel_distance_m": 115781.30180790837,
+      "cert_vehicles_used": [
+        "V1",
+        "V2",
+        "V3"
+      ],
+      "cert_share_within_window": 1.0,
+      "validator_min_battery_kwh": 23.044607605706716,
+      "validator_max_final_load_kg": 114.12355940107203
+    }
+  ],
+  "aggregate": {
+    "min_battery_headroom_kwh": 17.044607605706716,
+    "min_payload_headroom_kg": 485.87644059892796,
+    "energy_binds": false,
+    "payload_binds": false,
+    "windows_bind": null
+  },
+  "scientific_note": "Offline constructive witnesses with full request visibility. Comfortable residual battery/payload on baselines does not prove energy-risk coordination is a hard online problem; it only shows current baseline regimes are not energy- or payload-binding."
+}

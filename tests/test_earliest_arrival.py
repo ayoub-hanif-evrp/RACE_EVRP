@@ -26,7 +26,8 @@ def test_parallel_edges_choose_faster_edge():
     model = _model({})
     total, path, legs = earliest_arrival(g, 0, 1, 0.0, model)
     assert path == [0, 1]
-    assert abs(total - 2.0) < 1e-9
+    # TTI baseline: length/60 km/h → 20 m = 1.2 s
+    assert abs(total - 1.2) < 1e-9
     assert legs[0]["key"] == 1
 
 
@@ -70,6 +71,7 @@ def test_directed_reachability_one_way():
     model = _model({})
     total, path, _ = earliest_arrival(g, 0, 1, 0.0, model)
     assert path == [0, 1]
-    assert abs(total - 5.0) < 1e-9
+    # TTI baseline: 50 m / 60 km/h = 3.0 s
+    assert abs(total - 3.0) < 1e-9
     with pytest.raises(nx.NetworkXNoPath):
         earliest_arrival(g, 1, 0, 0.0, model)

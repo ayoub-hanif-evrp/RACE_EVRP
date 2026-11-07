@@ -108,22 +108,37 @@ Operational full-week profiles remain in `tti_citywide_hour.csv`. Genuine OD
 holdout predictions must use `tti_citywide_hour_fit_mon_sat.csv` (see
 `scripts/validate_od_travel_times.py`).
 
+## TTI free-flow baseline diagnosis (Mon–Sat only)
+
+Workbook free-flow implied by \(d/(t/\mathrm{TTI})\) has median **60.0 km/h**.
+Closed-form on workbook distances (no Sunday):
+
+| Formulation | MAE (min) | Signed bias (min) |
+| --- | ---: | ---: |
+| A: \(\mathrm{TTI}\cdot d/60\) | 0.24 | ≈ 0.03 |
+| B: \(\mathrm{TTI}\cdot d/30\) (OSM-like) | 7.64 | ≈ +7.64 |
+
+Path sample median ratio (OSM free-flow × TTI) / (60 km/h × TTI) ≈ **1.51**.
+Conclusion: apply TTI to a **60 km/h** length baseline, not to OSM class free-flow.
+See `reports/TTI_BASELINE_DIAGNOSIS.md` and `manifests/tti_baseline_diagnosis.json`.
+
 ## Genuine Sunday OD travel-time holdout (minutes)
 
-Fit congestion on Mon–Sat only; predict Sunday OD durations on OSM free-flow
-paths × citywide TTI. Manifest: `od_travel_time_validation.json`.
+Fit congestion on Mon–Sat only; predict Sunday OD with
+\(t=(3.6\cdot\ell/60)\cdot\mathrm{TTI}\). Manifest: `od_travel_time_validation.json`.
 
 | Metric | Value |
 | --- | --- |
 | N sampled / compared | 120 / 118 |
+| Unique OD pairs compared | 104 |
 | Snap failures | 0 |
 | Collapsed OD (`o_node == d_node`) | 2 |
-| MAE | 5.91 min |
-| RMSE | 8.25 min |
-| Median abs error | 3.99 min |
-| Peak 07–10 MAE | 5.99 min |
-| Median obs / pred | 6.15 / 9.72 min |
+| MAE | **3.02 min** |
+| RMSE | **4.54 min** |
+| Signed bias (pred − obs) | **+1.85 min** |
+| Median abs error | 1.77 min |
+| Peak 07–10 MAE | 3.21 min |
+| Median obs / pred | 6.15 / **6.75** min |
 
-Claim: usable aggregate travel-time check after unit correction. Does **not**
-claim edge calibration or identical Waze/OSM routes. Residual bias is reported
-in `reports/STAGE1_FINAL_ACCEPTANCE.md` (CONDITIONAL PASS).
+Claim: consistent TTI baseline after unit + reference-speed correction. Does **not**
+claim edge calibration or identical Waze/OSM routes. No Sunday tuning.

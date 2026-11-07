@@ -7,7 +7,11 @@ from dataclasses import dataclass
 import networkx as nx
 import pandas as pd
 
-from race_casablanca.network.travel_time import CongestionModel, edge_departure_and_travel
+from race_casablanca.network.travel_time import (
+    CongestionModel,
+    edge_departure_and_travel,
+    edge_tti_baseline_free_flow_s,
+)
 
 # Timestamp agreement tolerance between recorded schedule and reconstruction.
 TIMESTAMP_TOL_MIN = 1e-3
@@ -28,15 +32,15 @@ def _energy_kwh(length_m: float, consumption_kwh_per_km: float) -> float:
 
 
 def _best_edge(graph: nx.MultiDiGraph, u, v) -> dict:
-    return min(graph[u][v].values(), key=lambda d: float(d.get("free_flow_time_s") or float("inf")))
+    return min(graph[u][v].values(), key=lambda d: edge_tti_baseline_free_flow_s(d))
 
 
 def free_flow_path(graph: nx.MultiDiGraph, source, target) -> list:
-    """Static free-flow shortest path with correct MultiDiGraph parallel-edge weights."""
+    """Static shortest path under TTI-baseline free-flow (length / 60 km/h)."""
 
     def weight(u, v, edgedict):
-        data = min(edgedict.values(), key=lambda d: float(d.get("free_flow_time_s") or float("inf")))
-        return float(data.get("free_flow_time_s") or 0.0)
+        data = min(edgedict.values(), key=lambda d: edge_tti_baseline_free_flow_s(d))
+        return edge_tti_baseline_free_flow_s(data)
 
     return nx.shortest_path(graph, source, target, weight=weight)
 
@@ -58,7 +62,7 @@ def evaluate_path(
     for u, v in zip(path[:-1], path[1:]):
         data = _best_edge(graph, u, v)
         dep, dur = edge_departure_and_travel(
-            float(data.get("free_flow_time_s") or 0.0),
+            edge_tti_baseline_free_flow_s(data),
             t,
             model,
             commune=data.get("zone_commune"),
@@ -302,13 +306,51 @@ def validate_schedule(
     reserve = usable * float(fleet["min_reserve_soc"])
     consumption = float(fleet["consumption_wh_per_km"]) / 1000.0
     payload_cap = float(fleet["payload_kg"])
+    n_vehicles = int(fleet.get("n_vehicles", 1))
+    if fleet.get("vehicle_ids"):
+        allowed_vehicles = {str(x).strip() for x in fleet["vehicle_ids"] if str(x).strip()}
+    else:
+        allowed_vehicles = {f"V{i + 1}" for i in range(n_vehicles)}
+    if not allowed_vehicles:
+        violations.append({"type": "empty_fleet_definition", "n_vehicles": n_vehicles})
+
+    # Fleet membership: reject malformed / unknown IDs and excess vehicles.
+    raw_ids = schedule["vehicle_id"].tolist() if "vehicle_id" in schedule.columns else []
+    distinct_valid: set[str] = set()
+    for raw in raw_ids:
+        if raw is None or (isinstance(raw, float) and pd.isna(raw)):
+            violations.append({"type": "malformed_vehicle_id", "vehicle_id": raw})
+            continue
+        v = str(raw)
+        if not v.strip() or v.strip().lower() == "nan" or v != v.strip():
+            violations.append({"type": "malformed_vehicle_id", "vehicle_id": raw})
+            continue
+        if v not in allowed_vehicles:
+            violations.append({"type": "unknown_vehicle", "vehicle_id": v})
+            continue
+        distinct_valid.add(v)
+    if len(distinct_valid) > len(allowed_vehicles) or len(distinct_valid) > n_vehicles:
+        violations.append(
+            {
+                "type": "too_many_vehicles",
+                "n_used": int(len(distinct_valid)),
+                "n_vehicles": n_vehicles,
+                "allowed": sorted(allowed_vehicles),
+            }
+        )
+
     req_map = requests.set_index("request_id")
     vehicle_state: dict = {}
     vehicles_used: set[str] = set()
 
     ordered = schedule.sort_values(["vehicle_id", "planned_arrival_min", "planned_start_min"]).reset_index(drop=True)
     for _, row in ordered.iterrows():
-        v = str(row["vehicle_id"])
+        raw_v = row["vehicle_id"]
+        if raw_v is None or (isinstance(raw_v, float) and pd.isna(raw_v)):
+            continue
+        v = str(raw_v)
+        if not v.strip() or v.strip().lower() == "nan" or v != v.strip() or v not in allowed_vehicles:
+            continue
         if v not in vehicle_state:
             vehicle_state[v] = {
                 "node": depot_node,
@@ -359,7 +401,7 @@ def validate_schedule(
                 break
             data = _best_edge(graph, u, w)
             dep, dur = edge_departure_and_travel(
-                float(data.get("free_flow_time_s") or 0.0),
+                edge_tti_baseline_free_flow_s(data),
                 t,
                 model,
                 commune=data.get("zone_commune"),

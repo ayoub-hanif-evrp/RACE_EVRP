@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-07T01:09:00+00:00",
+  "generated_at_utc": "2026-11-07T14:57:20+00:00",
   "regime": "baseline",
   "seed": 4,
   "split": "train",
@@ -44,21 +44,21 @@
       "vehicles": {
         "V1": {
           "final_node": 1849562461,
-          "battery_kwh": 24.839998559746846,
+          "battery_kwh": 25.36099695709743,
           "load_kg": 109.81186680429512,
           "returned": true,
           "n_served": 8
         },
         "V2": {
           "final_node": 1849562461,
-          "battery_kwh": 31.74054205654248,
+          "battery_kwh": 32.418040399779834,
           "load_kg": 40.962338771578494,
           "returned": true,
           "n_served": 3
         },
         "V3": {
           "final_node": 1849562461,
-          "battery_kwh": 39.093994314345224,
+          "battery_kwh": 39.186297853761346,
           "load_kg": 12.243800585050291,
           "returned": true,
           "n_served": 1
@@ -70,8 +70,8 @@
     "n_served": 12,
     "n_returns": 3,
     "share_within_window": 1.0,
-    "min_battery_after_kwh": 24.839998559746846,
-    "total_travel_distance_m": 121627.32534682726,
+    "min_battery_after_kwh": 25.36099695709743,
+    "total_travel_distance_m": 115173.32394680697,
     "vehicles_used": [
       "V1",
       "V2",
