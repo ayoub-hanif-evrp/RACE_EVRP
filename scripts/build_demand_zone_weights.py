@@ -11,6 +11,7 @@ and are never silently filled with incompatible HCP or workbook census numbers.
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -21,11 +22,26 @@ from race_casablanca.io_utils import utc_now, write_json
 from race_casablanca.paths import candidates_dir, config_dir, manifest_dir, traffic_dir, zones_dir
 
 
+def _require_newer(derived: Path, source: Path, label: str) -> None:
+    if not derived.exists():
+        raise SystemExit(f"Missing {label}: {derived}")
+    if not source.exists():
+        raise SystemExit(f"Missing source for {label}: {source}")
+    if derived.stat().st_mtime + 1.0 < source.stat().st_mtime:
+        raise SystemExit(
+            f"Stale input for demand weights: {derived} is older than {source}. Rebuild candidates/network first."
+        )
+
+
 def main() -> int:
     config = yaml.safe_load((config_dir() / "demand_default.yaml").read_text(encoding="utf-8"))
     alpha = float(config["spatial"]["population_weight"])
     beta = float(config["spatial"]["commercial_weight"])
     gen_ver = str(config["generator_version"])
+
+    candidates_path = candidates_dir() / "pickup_candidates.csv"
+    boundary_path = zones_dir() / "study_boundary.gpkg"
+    _require_newer(candidates_path, boundary_path, "pickup_candidates vs boundary")
 
     workbook = pd.read_csv(traffic_dir() / "communes_workbook.csv")
     if workbook.empty:
@@ -33,7 +49,7 @@ def main() -> int:
     land = pd.read_csv(traffic_dir() / "land_use.csv")
     hcp = pd.read_csv(zones_dir() / "hcp_population_measured_only.csv")
     crosswalk = pd.read_csv(zones_dir() / "zone_crosswalk.csv")
-    candidates = pd.read_csv(candidates_dir() / "pickup_candidates.csv")
+    candidates = pd.read_csv(candidates_path)
 
     commercial_cols = [c for c in land.columns if "commercial" in c.lower()]
     if not commercial_cols:
@@ -112,7 +128,7 @@ def main() -> int:
     frame["population_weight_alpha"] = alpha
     frame["commercial_weight_beta"] = beta
     frame["generator_version"] = gen_ver
-    frame["benchmark_version"] = "casablanca_stage1_5_v1"
+    frame["benchmark_version"] = str(config.get("benchmark_version", "casablanca_release_v1"))
 
     # Validate invariants.
     assert frame["zone_id"].is_unique
@@ -134,7 +150,7 @@ def main() -> int:
         "population_weight_alpha": alpha,
         "commercial_weight_beta": beta,
         "generator_version": gen_ver,
-        "benchmark_version": "casablanca_stage1_5_v1",
+        "benchmark_version": str(config.get("benchmark_version", "casablanca_release_v1")),
         "claim": (
             "Demand spatial weights freeze measured HCP population only for verified_admin "
             "zones with HCP name matches. Approximate zones are commercial-only. "

@@ -1,14 +1,14 @@
 {
-  "generated_at_utc": "2026-11-07T15:49:45+00:00",
+  "generated_at_utc": "2026-11-07T16:32:30+00:00",
   "path": "data/casablanca/zones/demand_zone_weights.csv",
-  "sha256": "3de32dadfbb50914af919f87480e95715188428f850bf7b3806543f42e35593e",
+  "sha256": "45d3ad2894d736de6d71e253a8720de1496cdc7ed6201c375be973c0b1cf6798",
   "n_zones": 22,
   "n_measured_hcp_population": 15,
   "n_commercial_only": 7,
   "n_eligible_sampling": 17,
   "population_weight_alpha": 0.6,
   "commercial_weight_beta": 0.4,
-  "generator_version": "0.3.0",
-  "benchmark_version": "casablanca_stage1_5_v1",
+  "generator_version": "0.3.1",
+  "benchmark_version": "casablanca_release_v1",
   "claim": "Demand spatial weights freeze measured HCP population only for verified_admin zones with HCP name matches. Approximate zones are commercial-only. Generator must read this file exclusively."
 }

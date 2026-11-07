@@ -1,0 +1,24 @@
+{
+  "generated_at_utc": "2026-11-07T16:38:49+00:00",
+  "pipeline": [
+    "verify_boundary",
+    "build_network",
+    "build_candidates",
+    "build_demand_weights",
+    "generate_scenarios",
+    "write_dataset_manifest"
+  ],
+  "boundary_sha256": "d6ef82b9be909c2be2610421b0dc3c6271094abf973dbbd156fa3cf469eab551",
+  "crosswalk_sha256": "dcf6516e1c4d67b70a5c49a85412397fa08c23a45a23aad6bfebe87658ff4cd0",
+  "pbf_sha256": "dace94a528619cf4f8ac3bf3f817d5330d4642a61486c7190c05fcd33cabedec",
+  "graph_sha256": "aaa0e100e844e2902f854373bc14cab60c1bce6db8c6eb1361740ab387403f49",
+  "candidates_sha256": "da75e66abb6b0b924de35cdd2dd8e763e5db320c5e1d9679797196e05a88854e",
+  "demand_weights_sha256": "45d3ad2894d736de6d71e253a8720de1496cdc7ed6201c375be973c0b1cf6798",
+  "paths": {
+    "boundary": "data/casablanca/zones/study_boundary.gpkg",
+    "crosswalk": "data/casablanca/zones/zone_crosswalk.csv",
+    "graph": "data/casablanca/roads/casablanca_drive.graphml",
+    "candidates": "data/casablanca/pickup_candidates/pickup_candidates.csv",
+    "weights": "data/casablanca/zones/demand_zone_weights.csv"
+  }
+}

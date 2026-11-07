@@ -1,11 +1,13 @@
-generator_version: "0.3.0"
-benchmark_version: "casablanca_stage1_5_v1"
+generator_version: "0.3.1"
+benchmark_version: "casablanca_release_v1"
 # Spatial probabilities come ONLY from data/casablanca/zones/demand_zone_weights.csv
+# Active release scenarios are exactly the seeds below (no legacy seed42).
 random_seed_base: 42
 splits:
   train_seeds: [1, 2, 3, 4, 5, 6, 7, 8]
   validation_seeds: [101, 102]
   test_seeds: [201, 202, 203]
+  exclude_legacy_seeds: [42]
 
 # Spatial weights are scenario parameters, not an empirically validated
 # Casablanca parcel-demand model.

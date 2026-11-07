@@ -1,0 +1,33 @@
+{
+  "mode": "full",
+  "benchmark_version": "casablanca_release_v1",
+  "generator_version": "0.3.1",
+  "n_scenario_metadata": 13,
+  "generator_versions_found": [
+    "0.3.1"
+  ],
+  "demand_stats": {
+    "n_zones": 22,
+    "n_eligible": 17,
+    "n_positive_weight": 16,
+    "zero_weight_with_candidates": [
+      "Ahl Laghlam"
+    ]
+  },
+  "geo_point_in_polygon_checked": 65,
+  "geo_point_in_polygon_ok": 65,
+  "n_errors": 0,
+  "n_warnings": 1,
+  "errors": [],
+  "warnings": [
+    "zones with accessible candidates but ~0 weight: Ahl Laghlam"
+  ],
+  "pbf_sha256": "dace94a528619cf4f8ac3bf3f817d5330d4642a61486c7190c05fcd33cabedec",
+  "graph_sha256": "aaa0e100e844e2902f854373bc14cab60c1bce6db8c6eb1361740ab387403f49",
+  "baseline_seed1_revalidation": {
+    "valid": true,
+    "n_violations": 0
+  },
+  "generated_at_utc": "2026-11-07T16:39:33+00:00",
+  "ok": true
+}

@@ -1,7 +1,9 @@
 {
-  "generated_at_utc": "2026-11-07T16:00:44+00:00",
-  "dataset": "casablanca_stage1",
-  "geography": "Casablanca study area = union of 22 workbook zones matched to OSM admin (with documented OD-hull fallbacks)",
+  "generated_at_utc": "2026-11-07T16:40:41+00:00",
+  "dataset": "casablanca_release_v1",
+  "generator_version": "0.3.1",
+  "benchmark_version": "casablanca_release_v1",
+  "geography": "Casablanca study area = union of 22 workbook zones (verified_admin OSM polygons + documented OD-hull approximate study zones)",
   "claim_discipline": {
     "allowed": [
       "published Waze-derived zonal/hourly congestion",
@@ -21,80 +23,146 @@
       {
         "regime": "baseline",
         "seed": 1,
-        "path": "data\\casablanca\\scenarios\\train\\baseline_seed1"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": true,
+        "path": "data/casablanca/scenarios/train/baseline_seed1"
       },
       {
         "regime": "baseline",
         "seed": 4,
-        "path": "data\\casablanca\\scenarios\\train\\baseline_seed4"
-      },
-      {
-        "regime": "baseline",
-        "seed": 42,
-        "path": "data\\casablanca\\scenarios\\train\\baseline_seed42"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": false,
+        "path": "data/casablanca/scenarios/train/baseline_seed4"
       },
       {
         "regime": "baseline",
         "seed": 7,
-        "path": "data\\casablanca\\scenarios\\train\\baseline_seed7"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": true,
+        "path": "data/casablanca/scenarios/train/baseline_seed7"
       },
       {
         "regime": "peak_stress",
         "seed": 2,
-        "path": "data\\casablanca\\scenarios\\train\\peak_stress_seed2"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": false,
+        "path": "data/casablanca/scenarios/train/peak_stress_seed2"
       },
       {
         "regime": "peak_stress",
         "seed": 5,
-        "path": "data\\casablanca\\scenarios\\train\\peak_stress_seed5"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": false,
+        "path": "data/casablanca/scenarios/train/peak_stress_seed5"
       },
       {
         "regime": "peak_stress",
         "seed": 8,
-        "path": "data\\casablanca\\scenarios\\train\\peak_stress_seed8"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": false,
+        "path": "data/casablanca/scenarios/train/peak_stress_seed8"
       },
       {
         "regime": "tight_windows",
         "seed": 3,
-        "path": "data\\casablanca\\scenarios\\train\\tight_windows_seed3"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": false,
+        "path": "data/casablanca/scenarios/train/tight_windows_seed3"
       },
       {
         "regime": "tight_windows",
         "seed": 6,
-        "path": "data\\casablanca\\scenarios\\train\\tight_windows_seed6"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": false,
+        "path": "data/casablanca/scenarios/train/tight_windows_seed6"
       }
     ],
     "validation": [
       {
         "regime": "peak_stress",
         "seed": 101,
-        "path": "data\\casablanca\\scenarios\\validation\\peak_stress_seed101"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": false,
+        "path": "data/casablanca/scenarios/validation/peak_stress_seed101"
       },
       {
         "regime": "tight_windows",
         "seed": 102,
-        "path": "data\\casablanca\\scenarios\\validation\\tight_windows_seed102"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": false,
+        "path": "data/casablanca/scenarios/validation/tight_windows_seed102"
       }
     ],
     "test": [
       {
         "regime": "baseline",
         "seed": 202,
-        "path": "data\\casablanca\\scenarios\\test\\baseline_seed202"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": true,
+        "path": "data/casablanca/scenarios/test/baseline_seed202"
       },
       {
         "regime": "peak_stress",
         "seed": 203,
-        "path": "data\\casablanca\\scenarios\\test\\peak_stress_seed203"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": false,
+        "path": "data/casablanca/scenarios/test/peak_stress_seed203"
       },
       {
         "regime": "tight_windows",
         "seed": 201,
-        "path": "data\\casablanca\\scenarios\\test\\tight_windows_seed201"
+        "generator_version": "0.3.1",
+        "benchmark_version": "casablanca_release_v1",
+        "certified_feasible": false,
+        "path": "data/casablanca/scenarios/test/tight_windows_seed201"
       }
     ]
   },
+  "skipped_non_release_scenarios": [],
   "component_manifests": {
+    "benchmark_freeze_casablanca_stage1_5_v1.json": {
+      "keys": [
+        "benchmark_version",
+        "generator_version",
+        "demand_weights",
+        "reports",
+        "scenario_counts",
+        "claim"
+      ]
+    },
+    "benchmark_release_verification.json": {
+      "keys": [
+        "mode",
+        "benchmark_version",
+        "generator_version",
+        "n_scenario_metadata",
+        "generator_versions_found",
+        "demand_stats",
+        "geo_point_in_polygon_checked",
+        "geo_point_in_polygon_ok",
+        "n_errors",
+        "n_warnings",
+        "errors",
+        "warnings",
+        "pbf_sha256",
+        "graph_sha256",
+        "baseline_seed1_revalidation",
+        "generated_at_utc",
+        "ok"
+      ]
+    },
     "boundary_manifest.json": {
       "keys": [
         "n_workbook_communes",
@@ -122,11 +190,27 @@
       "keys": [
         "generated_at_utc",
         "dataset",
+        "generator_version",
+        "benchmark_version",
         "geography",
         "claim_discipline",
         "splits",
+        "skipped_non_release_scenarios",
         "component_manifests",
         "licenses"
+      ]
+    },
+    "casablanca_release_build.json": {
+      "keys": [
+        "generated_at_utc",
+        "pipeline",
+        "boundary_sha256",
+        "crosswalk_sha256",
+        "pbf_sha256",
+        "graph_sha256",
+        "candidates_sha256",
+        "demand_weights_sha256",
+        "paths"
       ]
     },
     "constraint_binding_diagnosis.json": {
@@ -259,12 +343,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_test_peak_stress_seed203.json": {
@@ -274,12 +361,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_test_tight_windows_seed201.json": {
@@ -289,12 +379,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_train_baseline_seed1.json": {
@@ -304,12 +397,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_train_baseline_seed4.json": {
@@ -319,27 +415,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
-      ]
-    },
-    "scenario_train_baseline_seed42.json": {
-      "keys": [
-        "generated_at_utc",
-        "regime",
-        "seed",
-        "split",
-        "generator_version",
-        "n_requests",
-        "fleet",
-        "depot",
-        "feasibility",
-        "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_train_baseline_seed7.json": {
@@ -349,12 +433,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_train_peak_stress_seed2.json": {
@@ -364,12 +451,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_train_peak_stress_seed5.json": {
@@ -379,12 +469,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_train_peak_stress_seed8.json": {
@@ -394,12 +487,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_train_tight_windows_seed3.json": {
@@ -409,12 +505,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_train_tight_windows_seed6.json": {
@@ -424,12 +523,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_validation_peak_stress_seed101.json": {
@@ -439,12 +541,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "scenario_validation_tight_windows_seed102.json": {
@@ -454,12 +559,15 @@
         "seed",
         "split",
         "generator_version",
+        "benchmark_version",
         "n_requests",
         "fleet",
         "depot",
         "feasibility",
+        "inputs",
         "claim",
-        "arrival_process"
+        "arrival_process",
+        "shift_policy"
       ]
     },
     "traffic_workbook_manifest.json": {

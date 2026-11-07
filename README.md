@@ -22,7 +22,9 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python -m pip install -e ".[dev]"
 ```
 
-## Reproduce Stage 1
+## Reproduce Stage 1 (release integrity)
+
+Dependency order is mandatory: boundary → network → candidates → demand weights → scenarios.
 
 ```powershell
 .\.venv\Scripts\python scripts\download_casablanca_traffic.py
@@ -30,23 +32,31 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python scripts\download_hcp_population.py
 .\.venv\Scripts\python scripts\process_casablanca_traffic.py
 .\.venv\Scripts\python scripts\process_hcp_population.py
-.\.venv\Scripts\python scripts\build_casablanca_boundary.py
-.\.venv\Scripts\python scripts\build_demand_zone_weights.py
-.\.venv\Scripts\python scripts\build_casablanca_network.py
-.\.venv\Scripts\python scripts\build_pickup_candidates.py
-.\.venv\Scripts\python scripts\generate_all_scenarios.py
+# Or one-shot rebuild after pinned boundary is verified:
+.\.venv\Scripts\python scripts\build_casablanca_release.py
 .\.venv\Scripts\python scripts\diagnose_tti_baseline.py
 .\.venv\Scripts\python scripts\validate_od_travel_times.py
-.\.venv\Scripts\python scripts\write_dataset_manifest.py
-.\.venv\Scripts\python scripts\make_casablanca_figures.py
+.\.venv\Scripts\python scripts\verify_benchmark_release.py
 .\.venv\Scripts\python -m pytest
 ```
 
-Benchmark freeze ID: **`casablanca_stage1_5_v1`** (generator `0.3.0`). Demand spatial probabilities come only from `data/casablanca/zones/demand_zone_weights.csv`.
+Manual step order (same as `build_casablanca_release.py`):
 
-`scripts/build_casablanca_boundary.py` **verifies** the committed SHA-256-pinned study boundary by default (no live Overpass/Nominatim). Optional audited regeneration: `scripts/build_casablanca_boundary.py --force-regenerate`.
+1. `build_casablanca_boundary.py` (verify pins)
+2. `build_casablanca_network.py`
+3. `build_pickup_candidates.py`
+4. `build_demand_zone_weights.py`
+5. `generate_all_scenarios.py`
+6. `write_dataset_manifest.py`
 
-Roads and pickup candidates are extracted from the frozen Geofabrik `morocco-260101.osm.pbf` snapshot (not live Overpass). Congested travel times use a 60 km/h TTI-consistent free-flow baseline. See `reports/STAGE1_5_HANDOFF.md`.
+Benchmark release ID: **`casablanca_release_v1`** (generator `0.3.1`). Demand spatial probabilities come only from `data/casablanca/zones/demand_zone_weights.csv`.
+
+`scripts/build_casablanca_boundary.py` **verifies** the committed SHA-256-pinned study boundary by default. Optional audited regeneration: `--force-regenerate`.
+
+Light CI (no 240 MB PBF rebuild): `.\.venv\Scripts\python scripts\verify_benchmark_release.py --light`  
+Full validation (requires local Morocco PBF): `.\.venv\Scripts\python scripts\verify_benchmark_release.py`
+
+See `reports/STAGE1_RELEASE_HANDOFF.md`.
 
 
 Large raw downloads (OpenStreetMap PBF, census Excel, traffic workbook) and heavy GraphML/GeoPackage exports are fetched or rebuilt by scripts and recorded in manifests. Oversized binaries are gitignored.

@@ -51,7 +51,8 @@ def main() -> int:
     ]
     final = zoned[keep_cols].copy()
     final.to_file(out / "pickup_candidates.gpkg", driver="GPKG")
-    final.drop(columns="geometry").to_csv(out / "pickup_candidates.csv", index=False)
+    final.drop(columns="geometry").to_csv(out / "pickup_candidates.csv", index=False, lineterminator="\n")
+
     summary = {
         "generated_at_utc": utc_now(),
         "source": "geofabrik_morocco-260101.osm.pbf",

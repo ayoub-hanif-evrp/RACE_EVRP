@@ -1,9 +1,10 @@
 {
-  "generated_at_utc": "2026-11-07T15:55:47+00:00",
+  "generated_at_utc": "2026-11-07T16:34:17+00:00",
   "regime": "peak_stress",
   "seed": 2,
   "split": "train",
-  "generator_version": "0.3.0",
+  "generator_version": "0.3.1",
+  "benchmark_version": "casablanca_release_v1",
   "n_requests": 40,
   "fleet": {
     "label": "hypothetical_light_ev_van",
@@ -33,6 +34,19 @@
     "certified_feasible": false,
     "note": "Stressful by construction parameters; not a certified infeasibility class."
   },
+  "inputs": {
+    "demand_zone_weights": "data/casablanca/zones/demand_zone_weights.csv",
+    "demand_zone_weights_sha256": "45d3ad2894d736de6d71e253a8720de1496cdc7ed6201c375be973c0b1cf6798",
+    "pickup_candidates": "data/casablanca/pickup_candidates/pickup_candidates.csv",
+    "pickup_candidates_sha256": "da75e66abb6b0b924de35cdd2dd8e763e5db320c5e1d9679797196e05a88854e",
+    "drive_graph": "data/casablanca/roads/casablanca_drive.graphml"
+  },
   "claim": "Synthetic geographically grounded requests. Not observed Casablanca customer orders.",
-  "arrival_process": "fixed_count_hourly_intensity_sampling"
+  "arrival_process": "fixed_count_hourly_intensity_sampling",
+  "shift_policy": {
+    "start_hour": 7,
+    "horizon_hours": 8,
+    "customer_service_must_finish_by_shift_end": true,
+    "depot_return_may_finish_after_shift_end": true
+  }
 }

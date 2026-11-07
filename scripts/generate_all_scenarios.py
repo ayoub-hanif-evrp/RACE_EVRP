@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 import sys
 
 import yaml
 
-from race_casablanca.paths import config_dir, project_root
+from race_casablanca.paths import config_dir, project_root, scenarios_dir
 
 
 def main() -> int:
@@ -32,6 +33,16 @@ def main() -> int:
             result = subprocess.run(cmd, cwd=project_root())
             if result.returncode != 0:
                 failures.append({"split": split, "seed": seed, "regime": regime, "code": result.returncode})
+
+    # Remove legacy/extra scenarios excluded from the active release.
+    for seed in splits.get("exclude_legacy_seeds", []):
+        for split_dir in (scenarios_dir() / "train", scenarios_dir() / "validation", scenarios_dir() / "test"):
+            if not split_dir.exists():
+                continue
+            for path in split_dir.glob(f"*_seed{seed}"):
+                print(f"Removing legacy scenario from release: {path}")
+                shutil.rmtree(path, ignore_errors=True)
+
     if failures:
         print({"failures": failures})
         return 1
