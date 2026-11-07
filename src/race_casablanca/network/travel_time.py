@@ -19,17 +19,22 @@ TTI_REFERENCE_SPEED_KMH = 60.0
 class CongestionModel:
     citywide_hour: pd.Series
     zone_day_hour: pd.DataFrame | None = None
+    _zone_index: dict[tuple[str, str, int], float] | None = None
+
+    def __post_init__(self) -> None:
+        # O(1) factor lookup — required for online simulation over long paths.
+        if self.zone_day_hour is not None and self._zone_index is None:
+            idx: dict[tuple[str, str, int], float] = {}
+            for row in self.zone_day_hour.itertuples(index=False):
+                idx[(str(row.commune), str(row.day), int(row.hour) % 24)] = float(row.tti_factor)
+            self._zone_index = idx
 
     def factor(self, hour: int, commune: str | None = None, day: str | None = None) -> float:
         hour = int(hour) % 24
-        if self.zone_day_hour is not None and commune is not None and day is not None:
-            hit = self.zone_day_hour[
-                (self.zone_day_hour["commune"] == commune)
-                & (self.zone_day_hour["day"] == day)
-                & (self.zone_day_hour["hour"] == hour)
-            ]
-            if not hit.empty:
-                return max(float(hit.iloc[0]["tti_factor"]), 1e-6)
+        if self._zone_index is not None and commune is not None and day is not None:
+            hit = self._zone_index.get((str(commune), str(day), hour))
+            if hit is not None:
+                return max(float(hit), 1e-6)
         return max(float(self.citywide_hour.get(hour, 1.0)), 1e-6)
 
 
