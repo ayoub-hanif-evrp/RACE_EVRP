@@ -1,4 +1,4 @@
-"""Non-learning online dispatch baselines (Stage 2)."""
+"""Non-learning online dispatch baselines."""
 
 from race_casablanca.policies.greedy import GreedyInsertionPolicy
 from race_casablanca.policies.limited_info import LimitedInfoCooperativePolicy

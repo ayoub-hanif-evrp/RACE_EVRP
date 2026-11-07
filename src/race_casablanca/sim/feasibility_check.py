@@ -54,10 +54,9 @@ def projected_state_after_lock(
 ) -> ProjectedState:
     """Planning origin after finishing the currently locked leg/service.
 
-    For an active en-route leg, battery uses the already-sampled realized en-route
-    energy (committed physical disturbance). Arrival/service timing uses the
-    scheduled path evaluation from current node at depart time when available,
-    otherwise re-routes for projection.
+    Hidden realized en-route energy must NOT enter planning. For an unfinished
+    leg, remaining consumption uses the conservative bound on the known path
+    length (or re-routed length). Arrival timing uses deterministic TTI routing.
     """
 
     if vehicle.mode == VehicleMode.EMERGENCY_STRANDED:
@@ -80,8 +79,12 @@ def projected_state_after_lock(
         )
 
     stop = vehicle.moving_to
-    # Battery after finishing current leg (realized energy already fixed at depart)
-    bat = vehicle.battery_kwh - float(vehicle.en_route_energy_kwh)
+    # Conservative remaining energy for unfinished travel (no realized xi leakage).
+    if vehicle.path_length_m > 0:
+        e_remain = energy.conservative_kwh(vehicle.path_length_m)
+    else:
+        e_remain = float(vehicle.en_route_conservative_kwh or 0.0)
+    bat = vehicle.battery_kwh - e_remain
     load = vehicle.load_kg
     locked_ids: list[str] = []
 
@@ -89,8 +92,7 @@ def projected_state_after_lock(
         assert stop.request_id is not None
         req = requests[stop.request_id]
         locked_ids.append(req.request_id)
-        # Arrival time: if departed, use path length evaluation from depart
-        if vehicle.departed_s is not None and vehicle.path_length_m >= 0:
+        if vehicle.departed_s is not None:
             rt = router.route(vehicle.node, req.snap_node, vehicle.departed_s)
             arr = rt.arrival_s
         else:
@@ -98,12 +100,10 @@ def projected_state_after_lock(
             arr = rt.arrival_s
         start = max(arr, req.tw_start_s, now_s)
         ready = start + req.service_s
-        # Payload after service
         load = load + req.weight_kg
         node = req.snap_node
         return ProjectedState(node, ready, bat, load, tuple(locked_ids))
 
-    # Depot leg
     if vehicle.departed_s is not None:
         rt = router.route(vehicle.node, depot_node, vehicle.departed_s)
         arr = rt.arrival_s

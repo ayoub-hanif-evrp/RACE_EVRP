@@ -55,6 +55,8 @@ class SimConfig:
     seed: int = 0
     day: str = "Monday"
     realization_mode: str = "crn"  # crn | adversarial_worst | stochastic
+    # Genuine periodic broadcast clock (seconds); 0 disables independent timer
+    periodic_broadcast_s: float = 0.0
     extras: dict[str, Any] = field(default_factory=dict)
 
 
@@ -142,6 +144,11 @@ class OnlineSimulator:
             self._schedule(req.release_s, EventType.REQUEST_RELEASE, {"request_id": req.request_id})
         self._schedule(self.shift_end_s, EventType.SHIFT_END, {})
         self._schedule(self.shift_end_s + 24 * 3600.0, EventType.EPISODE_END, {})
+        if self.config.periodic_broadcast_s and self.config.periodic_broadcast_s > 0:
+            t = self.shift_start_s + float(self.config.periodic_broadcast_s)
+            while t <= self.shift_end_s:
+                self._schedule(t, EventType.PERIODIC_BROADCAST, {})
+                t += float(self.config.periodic_broadcast_s)
 
     def _schedule(self, time_s: float, etype: EventType, payload: dict) -> None:
         pri = int(getattr(EventPriority, etype.name))
@@ -188,7 +195,14 @@ class OnlineSimulator:
             self.now_s,
         )
 
-    def try_assign(self, vehicle_id: str, request_id: str, *, force_position: int | None = None) -> bool:
+    def try_assign(
+        self,
+        vehicle_id: str,
+        request_id: str,
+        *,
+        force_position: int | None = None,
+        start_leg: bool = True,
+    ) -> bool:
         """Claim + insert into editable suffix only; active leg immutable."""
 
         req = self.requests[request_id]
@@ -241,7 +255,6 @@ class OnlineSimulator:
             if not chk_cons.feasible:
                 if chk_cons.energy_binding:
                     self.planned_energy_rejections += 1
-                    v.planned_energy_rejections += 1
                 continue
             if best_cost is None or chk_cons.added_travel_s < best_cost:
                 best_cost = chk_cons.added_travel_s
@@ -256,11 +269,10 @@ class OnlineSimulator:
         req.owner = vehicle_id
         if request_id not in v.committed:
             v.committed.append(request_id)
-        # Rebuild plan = locked + editable suffix (preserve depot trailing stops in old suffix)
         depot_tail = [s for s in editable_suffix(v) if s.kind.startswith("depot")]
         v.plan = list(locked) + list(best_suffix) + depot_tail
         self.n_claims += 1
-        if not v.busy:
+        if start_leg and not v.busy:
             self._start_next_leg(vehicle_id)
         return True
 
@@ -332,46 +344,70 @@ class OnlineSimulator:
         tv.n_reassignments += 1
         return True
 
-    def commit_fleet_plans(self, assignment: dict[str, list[str]]) -> bool:
-        """Atomically apply RH assignment: validate all, then commit; else no change."""
-
-        # Snapshot world
-        snap_vehicles = {vid: (list(v.plan), list(v.committed)) for vid, v in self.vehicles.items()}
-        snap_reqs = {
-            rid: (r.status, r.owner)
-            for rid, r in self.requests.items()
-            if r.status in {RequestStatus.AVAILABLE, RequestStatus.COMMITTED}
+    def _snapshot_world(self) -> dict[str, Any]:
+        return {
+            "vehicles": copy.deepcopy(self.vehicles),
+            "requests": {
+                rid: (r.status, r.owner, list(getattr(r, "__dict__", {})))
+                for rid, r in self.requests.items()
+            },
+            "req_simple": {rid: (r.status, r.owner) for rid, r in self.requests.items()},
+            "registry": copy.deepcopy(self.registry.claims),
+            "eq": list(self._eq),
+            "seq": self._seq,
+            "n_claims": self.n_claims,
+            "n_failed_claims": self.n_failed_claims,
+            "planned_energy_rejections": self.planned_energy_rejections,
         }
-        snap_registry = dict(self.registry.claims)
 
-        # Collect reassignable pool currently committed/available
-        locked_by_v: dict[str, list[str]] = {}
+    def _restore_world(self, snap: dict[str, Any]) -> None:
+        self.vehicles = snap["vehicles"]
+        for rid, (st, owner) in snap["req_simple"].items():
+            self.requests[rid].status = st
+            self.requests[rid].owner = owner
+        self.registry.claims = snap["registry"]
+        self._eq = list(snap["eq"])
+        self._seq = snap["seq"]
+        self.n_claims = snap["n_claims"]
+        self.n_failed_claims = snap["n_failed_claims"]
+        self.planned_energy_rejections = snap["planned_energy_rejections"]
+
+    def commit_fleet_plans(self, assignment: dict[str, list[str]]) -> bool:
+        """Two-phase atomic fleet commit preserving exact pickup order.
+
+        1) Validate without mutating. 2) Commit ownership+plans. 3) Activate legs.
+        On any failure before completion, restore full physical/event/ownership state.
+        """
+
+        locked_by_v: dict[str, list[str]] = {vid: [] for vid in self.vehicles}
         for vid, v in self.vehicles.items():
-            locked_by_v[vid] = []
             if v.moving_to and v.moving_to.kind == "pickup" and v.moving_to.request_id:
                 locked_by_v[vid].append(v.moving_to.request_id)
 
-        # Validate each vehicle's proposed editable plan from projected state
+        # Unique ownership across fleet
+        seen: set[str] = set()
         for vid, rids in assignment.items():
-            v = self.vehicles[vid]
-            locked = locked_by_v[vid]
+            for rid in rids:
+                if rid in seen:
+                    return False
+                seen.add(rid)
+
+        # Phase 1 — validate (shadow statuses only, then restore)
+        for vid, rids in assignment.items():
+            locked = locked_by_v.get(vid, [])
             for rid in locked:
                 if rid not in rids:
-                    # locked must remain assigned to this vehicle
                     return False
             editable = [rid for rid in rids if rid not in locked]
-            plan = [Stop("pickup", rid, self.requests[rid].snap_node) for rid in editable]
-            # Temporarily treat editable targets as committed-ok for status check:
-            # simulate_plan rejects in_service/completed; editable must be available or committed
             for rid in editable:
-                st = self.requests[rid].status
-                if st not in {RequestStatus.AVAILABLE, RequestStatus.COMMITTED}:
+                if rid not in self.requests:
                     return False
-            # Shadow status to AVAILABLE for feasibility of committed ones owned elsewhere
-            status_backup = {}
+                if self.requests[rid].status not in {RequestStatus.AVAILABLE, RequestStatus.COMMITTED}:
+                    return False
+            status_backup = {rid: self.requests[rid].status for rid in editable}
             for rid in editable:
-                status_backup[rid] = self.requests[rid].status
                 self.requests[rid].status = RequestStatus.AVAILABLE
+            plan = [Stop("pickup", rid, self.requests[rid].snap_node) for rid in editable]
             proj = self.projected(vid)
             chk = simulate_plan_conservative(
                 proj, plan, self.requests, self.router, self.energy,
@@ -382,46 +418,62 @@ class OnlineSimulator:
             if not chk.feasible:
                 return False
 
-        # Apply: release all non-locked commitments, then assign in assignment order
+        # Track which requests were newly available before this transaction
+        newly_available = {
+            rid for rid, r in self.requests.items() if r.status == RequestStatus.AVAILABLE
+        }
+        snap = self._snapshot_world()
         try:
+            # Phase 2 — commit exact routes without dispatching
+            # Release non-locked commitments fleet-wide
             for vid, v in self.vehicles.items():
-                locked = set(locked_by_v[vid])
+                locked = set(locked_by_v.get(vid, []))
                 for rid in list(v.committed):
                     if rid in locked:
                         continue
-                    if self.requests[rid].status == RequestStatus.COMMITTED:
+                    if self.requests[rid].status == RequestStatus.COMMITTED and self.requests[rid].owner == vid:
                         self.registry.release(rid, vid)
                         self.requests[rid].status = RequestStatus.AVAILABLE
                         self.requests[rid].owner = None
+                    if rid in v.committed:
                         v.committed.remove(rid)
-                # Keep locked stop at front of plan
-                v.plan = list(locked_prefix(v))
 
             for vid, rids in assignment.items():
-                locked = set(locked_by_v[vid])
-                for rid in rids:
-                    if rid in locked:
-                        continue
-                    if self.requests[rid].status == RequestStatus.AVAILABLE:
-                        if not self.try_assign(vid, rid):
-                            raise RuntimeError(f"commit failed assigning {rid} to {vid}")
-                    elif self.requests[rid].owner == vid:
-                        continue
-                    else:
-                        # Should have been released
-                        if self.requests[rid].status == RequestStatus.COMMITTED and self.requests[rid].owner:
-                            if not self.try_reassign(self.requests[rid].owner, vid, rid):
-                                raise RuntimeError(f"commit reassign failed {rid}")
+                v = self.vehicles[vid]
+                locked = locked_by_v.get(vid, [])
+                locked_stops = list(locked_prefix(v))
+                editable_stops = [
+                    Stop("pickup", rid, self.requests[rid].snap_node)
+                    for rid in rids
+                    if rid not in locked
+                ]
+                # Exact optimized order
+                for stop in editable_stops:
+                    rid = stop.request_id
+                    assert rid is not None
+                    if self.requests[rid].status == RequestStatus.COMMITTED and self.requests[rid].owner not in (None, vid):
+                        raise RuntimeError("ownership conflict during commit")
+                    if not self.registry.try_claim(rid, vid, self.now_s):
+                        # already owned by vid after prior iteration
+                        if self.registry.owner_of(rid) != vid:
+                            raise RuntimeError(f"claim failed {rid}")
+                    # Count only first-time accepts of previously available tasks
+                    if rid in newly_available:
+                        self.n_claims += 1
+                        newly_available.discard(rid)
+                    self.requests[rid].status = RequestStatus.COMMITTED
+                    self.requests[rid].owner = vid
+                    if rid not in v.committed:
+                        v.committed.append(rid)
+                v.plan = locked_stops + editable_stops
+
+            # Phase 3 — activate idle vehicles after all plans are committed
+            for vid, v in self.vehicles.items():
+                if not v.busy and v.plan and v.mode != VehicleMode.EMERGENCY_STRANDED:
+                    self._start_next_leg(vid)
             return True
         except Exception:
-            # Full rollback
-            self.registry.claims = snap_registry
-            for vid, (plan, committed) in snap_vehicles.items():
-                self.vehicles[vid].plan = plan
-                self.vehicles[vid].committed = committed
-            for rid, (st, owner) in snap_reqs.items():
-                self.requests[rid].status = st
-                self.requests[rid].owner = owner
+            self._restore_world(snap)
             return False
 
     def set_pickup_plan(self, vehicle_id: str, request_ids: list[str], *, charge: bool = False) -> bool:
@@ -492,7 +544,6 @@ class OnlineSimulator:
         )
         if not gate.feasible:
             self.planned_energy_rejections += 1
-            v.planned_energy_rejections += 1
             # Cannot safely depart — strip unsafe stop if optional depot, else emergency
             if stop.kind.startswith("depot"):
                 v.plan.pop(0)
@@ -698,21 +749,16 @@ class OnlineSimulator:
             return
         t0 = time.perf_counter()
         if self.config.info_mode == "restricted":
-            # Each vehicle acts on its own restricted view
             for vid in self.vehicles:
                 obs = build_restricted_observation(self, vid)
                 for peer in obs.peers.values():
                     self.info_ages.append(max(0.0, obs.now_s - peer.as_of_s))
                 actions = ActionInterface(self, actor_vehicle_id=vid)
                 self.policy.on_decision(obs, actions, reason)
-                self.n_claims += actions.n_claims
-                self.n_failed_claims += actions.n_failed_claims
         else:
             obs = build_full_observation(self)
             actions = ActionInterface(self, actor_vehicle_id=None)
             self.policy.on_decision(obs, actions, reason)
-            self.n_claims += actions.n_claims
-            self.n_failed_claims += actions.n_failed_claims
         self._decision_runtimes.append(time.perf_counter() - t0)
 
     def broadcast_state(self, vehicle_id: str) -> None:
@@ -765,6 +811,11 @@ class OnlineSimulator:
                     peer = msg.payload["vehicle_id"]
                     self.local_views.setdefault(msg.recipient, {})[peer] = dict(msg.payload)
                 self._maybe_decide("message")
+            elif ev.type == EventType.PERIODIC_BROADCAST:
+                # Independent clock: broadcast only, then allow decision with delivered info later
+                for vid in self.vehicles:
+                    self.broadcast_state(vid)
+                self._maybe_decide("periodic_broadcast")
             elif ev.type == EventType.SHIFT_END:
                 self._expire_open_requests()
                 for vid, v in self.vehicles.items():
@@ -823,8 +874,7 @@ class OnlineSimulator:
             energy_consumed_kwh=sum(v.energy_consumed_kwh for v in self.vehicles.values()),
             battery_reserve_violations=sum(v.reserve_violations for v in self.vehicles.values()),
             battery_exhaustion=sum(v.battery_exhaustion for v in self.vehicles.values()),
-            planned_energy_rejections=self.planned_energy_rejections
-            + sum(v.planned_energy_rejections for v in self.vehicles.values()),
+            planned_energy_rejections=self.planned_energy_rejections,
             payload_violations=sum(v.payload_violations for v in self.vehicles.values()),
             n_depot_returns=sum(v.n_depot_returns for v in self.vehicles.values()),
             n_charges=sum(v.n_charges for v in self.vehicles.values()),

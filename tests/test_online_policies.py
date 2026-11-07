@@ -47,8 +47,14 @@ def test_rolling_horizon_baseline_runs():
 
 def test_limited_info_baseline_runs():
     sim, m = _run(
-        LimitedInfoCooperativePolicy(broadcast_period_s=5.0),
-        SimConfig(info_mode="restricted", message_delay_s=5.0, seed=0, n_vehicles=2),
+        LimitedInfoCooperativePolicy(comm_mode="periodic"),
+        SimConfig(
+            info_mode="restricted",
+            message_delay_s=5.0,
+            seed=0,
+            n_vehicles=2,
+            periodic_broadcast_s=30.0,
+        ),
         n_vehicles=2,
     )
     assert m.policy == "limited_info_cooperative"

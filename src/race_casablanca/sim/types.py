@@ -31,6 +31,7 @@ class EventType(str, Enum):
     SERVICE_END = "service_end"
     CHARGE_END = "charge_end"
     MESSAGE_DELIVER = "message_deliver"
+    PERIODIC_BROADCAST = "periodic_broadcast"
     DECISION_EPOCH = "decision_epoch"
     SHIFT_END = "shift_end"
     EPISODE_END = "episode_end"
@@ -44,9 +45,10 @@ class EventPriority(IntEnum):
     VEHICLE_ARRIVAL = 2
     SERVICE_END = 3
     CHARGE_END = 4
-    DECISION_EPOCH = 5
-    SHIFT_END = 6
-    EPISODE_END = 7
+    PERIODIC_BROADCAST = 5
+    DECISION_EPOCH = 6
+    SHIFT_END = 7
+    EPISODE_END = 8
 
 
 @dataclass(order=True)

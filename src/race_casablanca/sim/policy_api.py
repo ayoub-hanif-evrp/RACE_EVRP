@@ -1,6 +1,7 @@
 """Immutable observation / controlled action boundary for policies.
 
 Restricted policies must not receive a mutable simulator or peer true states.
+Policy-visible vehicle state excludes hidden future energy realizations.
 """
 
 from __future__ import annotations
@@ -10,7 +11,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Protocol
 
 from race_casablanca.sim.feasibility_check import FeasibilityCheck
-from race_casablanca.sim.types import Request, RequestStatus, VehicleState
+from race_casablanca.sim.types import Request, RequestStatus, VehicleMode, VehicleState
 
 if TYPE_CHECKING:
     from race_casablanca.sim.environment import OnlineSimulator
@@ -37,11 +38,48 @@ class PeerSnapshot:
     as_of_s: float
 
 
+@dataclass(frozen=True)
+class VisibleVehicleState:
+    """Policy-visible vehicle fields — no hidden en-route realized energy."""
+
+    vehicle_id: str
+    node: int
+    ready_s: float
+    battery_kwh: float
+    load_kg: float
+    busy: bool
+    mode: str
+    committed: tuple[str, ...]
+    plan_pickup_ids: tuple[str, ...]
+    locked_request_id: str | None
+    path_length_m: float  # known geometry of active leg; not realized energy
+
+
+def to_visible(v: VehicleState) -> VisibleVehicleState:
+    locked = None
+    if v.moving_to and v.moving_to.kind == "pickup":
+        locked = v.moving_to.request_id
+    pickups = tuple(s.request_id for s in v.plan if s.kind == "pickup" and s.request_id)
+    return VisibleVehicleState(
+        vehicle_id=v.vehicle_id,
+        node=v.node,
+        ready_s=v.ready_s,
+        battery_kwh=v.battery_kwh,
+        load_kg=v.load_kg,
+        busy=v.busy,
+        mode=v.mode.value if isinstance(v.mode, VehicleMode) else str(v.mode),
+        committed=tuple(v.committed),
+        plan_pickup_ids=pickups,
+        locked_request_id=locked,
+        path_length_m=float(v.path_length_m) if v.busy else 0.0,
+    )
+
+
 @dataclass
 class FullInfoObservation:
     now_s: float
     available: list[TaskAnnouncement]
-    vehicles: dict[str, VehicleState]
+    vehicles: dict[str, VisibleVehicleState]
     released_requests: dict[str, Request]
     info_mode: str = "full"
 
@@ -50,7 +88,7 @@ class FullInfoObservation:
 class RestrictedObservation:
     now_s: float
     vehicle_id: str
-    self_state: VehicleState
+    self_state: VisibleVehicleState
     own_committed: tuple[str, ...]
     announced: list[TaskAnnouncement]
     peers: dict[str, PeerSnapshot]
@@ -64,8 +102,6 @@ class ActionInterface:
     def __init__(self, sim: "OnlineSimulator", actor_vehicle_id: str | None = None):
         self._sim = sim
         self.actor_vehicle_id = actor_vehicle_id
-        self.n_claims = 0
-        self.n_failed_claims = 0
 
     def list_announced_tasks(self) -> list[TaskAnnouncement]:
         out = []
@@ -87,12 +123,8 @@ class ActionInterface:
         if self._sim.config.info_mode == "restricted":
             if self.actor_vehicle_id is None or vehicle_id != self.actor_vehicle_id:
                 raise PermissionError("restricted policy may only claim for self")
-        ok = self._sim.try_assign(vehicle_id, request_id)
-        if ok:
-            self.n_claims += 1
-        else:
-            self.n_failed_claims += 1
-        return ok
+        # Single source of truth: simulator counters only
+        return self._sim.try_assign(vehicle_id, request_id)
 
     def reject_request(self, request_id: str) -> None:
         self._sim.reject_request(request_id)
@@ -113,15 +145,16 @@ class ActionInterface:
 class Policy(Protocol):
     name: str
 
-    def on_decision(self, obs: FullInfoObservation | RestrictedObservation, actions: ActionInterface, reason: str) -> None: ...
+    def on_decision(
+        self, obs: FullInfoObservation | RestrictedObservation, actions: ActionInterface, reason: str
+    ) -> None: ...
 
 
 def build_full_observation(sim: "OnlineSimulator") -> FullInfoObservation:
-    available = []
-    for r in sim.available_requests():
-        available.append(
-            TaskAnnouncement(r.request_id, r.snap_node, r.tw_start_s, r.tw_end_s, r.service_s, r.weight_kg)
-        )
+    available = [
+        TaskAnnouncement(r.request_id, r.snap_node, r.tw_start_s, r.tw_end_s, r.service_s, r.weight_kg)
+        for r in sim.available_requests()
+    ]
     released = {
         rid: copy.deepcopy(r)
         for rid, r in sim.requests.items()
@@ -130,7 +163,7 @@ def build_full_observation(sim: "OnlineSimulator") -> FullInfoObservation:
     return FullInfoObservation(
         now_s=sim.now_s,
         available=available,
-        vehicles={k: copy.deepcopy(v) for k, v in sim.vehicles.items()},
+        vehicles={k: to_visible(v) for k, v in sim.vehicles.items()},
         released_requests=released,
     )
 
@@ -149,15 +182,14 @@ def build_restricted_observation(sim: "OnlineSimulator", vehicle_id: str) -> Res
             committed=tuple(snap.get("committed") or ()),
             as_of_s=float(snap.get("as_of_s", sim.now_s)),
         )
-    announced = []
-    for r in sim.available_requests():
-        announced.append(
-            TaskAnnouncement(r.request_id, r.snap_node, r.tw_start_s, r.tw_end_s, r.service_s, r.weight_kg)
-        )
+    announced = [
+        TaskAnnouncement(r.request_id, r.snap_node, r.tw_start_s, r.tw_end_s, r.service_s, r.weight_kg)
+        for r in sim.available_requests()
+    ]
     return RestrictedObservation(
         now_s=sim.now_s,
         vehicle_id=vehicle_id,
-        self_state=copy.deepcopy(v),
+        self_state=to_visible(v),
         own_committed=tuple(v.committed),
         announced=announced,
         peers=peers,

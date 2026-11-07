@@ -1,0 +1,9 @@
+{
+  "source_commit_hint": "Stage3A local run",
+  "scenarios": [
+    "train/baseline_seed1",
+    "train/peak_stress_seed2"
+  ],
+  "seed": 1,
+  "note": "Same restricted_claim_pass dispatch for none/periodic/triggered."
+}

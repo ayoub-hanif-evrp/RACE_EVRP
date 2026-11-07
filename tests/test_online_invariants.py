@@ -104,7 +104,7 @@ def test_charging_triggers_positive_interval():
 
 def test_restricted_messages_deliver_with_delay():
     base = make_two_request_scenario()
-    policy = LimitedInfoCooperativePolicy(broadcast_period_s=1.0)
+    policy = LimitedInfoCooperativePolicy(comm_mode="periodic")
     sim = OnlineSimulator(
         scenario_id=base["scenario_id"],
         graph=base["graph"],
@@ -114,7 +114,13 @@ def test_restricted_messages_deliver_with_delay():
         depot_node=base["depot_node"],
         shift_start_s=base["shift_start_s"],
         shift_end_s=base["shift_end_s"],
-        config=SimConfig(info_mode="restricted", message_delay_s=25.0, seed=0, n_vehicles=2),
+        config=SimConfig(
+            info_mode="restricted",
+            message_delay_s=25.0,
+            seed=0,
+            n_vehicles=2,
+            periodic_broadcast_s=60.0,
+        ),
         policy=policy,
     )
     m = sim.run()
