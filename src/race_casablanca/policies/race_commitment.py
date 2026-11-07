@@ -1,18 +1,22 @@
-"""RACE — Risk-Aware Commitment and Energy management (non-learning prototype).
+"""RACE — Risk-Aware Commitment and Energy management (Stage 3C).
 
-Hard constraints: same conservative energy / time-window / payload / depot-return
-feasibility gate as the baselines.
+Hard constraints: same conservative feasibility gate as baselines.
+Soft ranking: minimize J(v,p) over ALL feasible vehicles and insertion positions.
 
-Soft ranking among feasible insertions: state-dependent residual flexibility
-opportunity cost (energy and deadline slack), not a fixed weighted penalty.
+Ablation flags are independent:
+- use_flexibility_pricing
+- allow_reassign
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
 
+from race_casablanca.policies.charging_controller import ChargingController
 from race_casablanca.sim.feasibility_check import (
     editable_suffix,
+    evaluate_insertion,
     projected_state_after_lock,
     simulate_plan_conservative,
 )
@@ -22,34 +26,29 @@ from race_casablanca.sim.types import RequestStatus
 
 @dataclass
 class RaceCommitmentPolicy:
-    """Full-information risk-aware commitment policy.
-
-    Parameters
-    ----------
-    use_opportunity_cost:
-        If False, ranking reduces to min conservative travel among feasible
-        insertions (robust greedy ablation).
-    alpha_energy:
-        Base seconds-equivalent scale for energy-flexibility scarcity.
-    beta_time:
-        Relative weight on temporal-slack loss.
-    e_typical_kwh / t_typical_s:
-        Normalization scales for residual flexibility (not demand forecasts).
-    charge_flex_threshold_kwh:
-        Idle vehicles below this energy headroom may return to charge.
-    allow_reassign:
-        One bounded flexibility-driven reassignment pass after primary claims.
-    """
-
     name: str = "race_commitment"
-    use_opportunity_cost: bool = True
+    use_flexibility_pricing: bool = True
+    allow_reassign: bool = True
+    # pricing mode: inverse_slack (default) | fixed_weight
+    pricing_mode: str = "inverse_slack"
     alpha_energy: float = 240.0
     beta_time: float = 0.5
+    # fixed-weight reference constants (seconds per kWh / dimensionless mix)
+    fixed_mu_e: float = 120.0
+    fixed_mu_t: float = 0.35
     e_typical_kwh: float = 2.0
     t_typical_s: float = 900.0
-    charge_flex_threshold_kwh: float = 3.0
-    allow_reassign: bool = True
     eps: float = 0.25
+    charging: ChargingController = field(
+        default_factory=lambda: ChargingController(mode="adaptive_headroom")
+    )
+    decision_traces: list[dict[str, Any]] = field(default_factory=list)
+    # Legacy alias used by Stage 3B scripts/tests
+    use_opportunity_cost: bool | None = None
+
+    def __post_init__(self) -> None:
+        if self.use_opportunity_cost is not None:
+            self.use_flexibility_pricing = bool(self.use_opportunity_cost)
 
     def on_decision(
         self,
@@ -59,6 +58,7 @@ class RaceCommitmentPolicy:
     ) -> None:
         if isinstance(obs, RestrictedObservation):
             self._restricted_self_pass(obs, actions)
+            self.charging.apply(actions._sim, actions)
             return
         if not isinstance(obs, FullInfoObservation):
             return
@@ -68,43 +68,114 @@ class RaceCommitmentPolicy:
         sim = actions._sim
         available = sorted(obs.available, key=lambda t: t.tw_end_s)
         for task in available:
-            best_v = None
-            best_score = None
-            for vid in obs.vehicles:
-                score = self._insertion_score(sim, vid, task.request_id)
-                if score is None:
-                    continue
-                if best_score is None or score < best_score:
-                    best_score = score
-                    best_v = vid
-            if best_v is None:
+            best = self._best_assignment(sim, task.request_id)
+            if best is None:
                 if task.tw_end_s <= obs.now_s:
                     actions.reject_request(task.request_id)
                 continue
-            actions.claim_task(best_v, task.request_id)
+            vid, pos, score, detail = best
+            ok = actions.claim_task(vid, task.request_id, force_position=pos)
+            if ok and detail.get("differs_from_min_travel"):
+                self.decision_traces.append(
+                    {
+                        "time_s": sim.now_s,
+                        "request_id": task.request_id,
+                        "chosen_vehicle": vid,
+                        "chosen_position": pos,
+                        "score": score,
+                        **detail,
+                    }
+                )
 
-        if self.allow_reassign and self.use_opportunity_cost:
+        if self.allow_reassign:
             self._reassignment_pass(sim)
 
-        self._maybe_charge(sim, actions)
+        self.charging.apply(sim, actions)
 
     def _restricted_self_pass(self, obs: RestrictedObservation, actions: ActionInterface) -> None:
-        """Restricted-info variant: decide only for self (no peer truth)."""
-
         sim = actions._sim
         best_task = None
+        best_pos = None
         best_score = None
         for task in sorted(obs.announced, key=lambda t: t.tw_end_s):
-            score = self._insertion_score(sim, obs.vehicle_id, task.request_id)
-            if score is None:
+            cands = self._vehicle_candidates(sim, obs.vehicle_id, task.request_id)
+            if not cands:
                 if task.tw_end_s <= obs.now_s:
                     actions.reject_request(task.request_id)
                 continue
+            score, pos, _ = cands[0]
             if best_score is None or score < best_score:
                 best_score = score
                 best_task = task.request_id
+                best_pos = pos
         if best_task is not None:
-            actions.claim_task(obs.vehicle_id, best_task)
+            actions.claim_task(obs.vehicle_id, best_task, force_position=best_pos)
+
+    def _shadow_prices(self, phi_e: float, phi_t: float) -> tuple[float, float]:
+        if self.pricing_mode == "fixed_weight":
+            return float(self.fixed_mu_e), float(self.fixed_mu_t)
+        mu_e = self.alpha_energy / (self.eps + max(0.0, phi_e) / max(1e-6, self.e_typical_kwh))
+        mu_t = self.beta_time * (
+            self.t_typical_s / (self.eps * self.t_typical_s + max(0.0, phi_t))
+        )
+        return mu_e, mu_t
+
+    def _score_candidate(self, chk) -> float:
+        dt = float(chk.marginal_travel_s)
+        if not self.use_flexibility_pricing:
+            return dt
+        phi_e0 = float(chk.baseline_energy_flex_kwh)
+        phi_t0 = float(chk.baseline_min_deadline_slack_s)
+        d_e = max(0.0, phi_e0 - float(chk.energy_flex_kwh))
+        d_t = max(0.0, phi_t0 - float(chk.min_deadline_slack_s))
+        mu_e, mu_t = self._shadow_prices(phi_e0, phi_t0)
+        return dt + mu_e * d_e + mu_t * d_t
+
+    def _vehicle_candidates(self, sim, vehicle_id: str, request_id: str) -> list[tuple[float, int, Any]]:
+        req = sim.requests[request_id]
+        cands = evaluate_insertion(
+            sim.vehicles[vehicle_id],
+            req,
+            sim.requests,
+            sim.router,
+            sim.energy,
+            sim.depot_node,
+            sim.payload_max,
+            sim.shift_end_s,
+            sim.now_s,
+        )
+        scored = []
+        for chk in cands:
+            assert chk.insert_position is not None
+            scored.append((self._score_candidate(chk), chk.insert_position, chk))
+        scored.sort(key=lambda x: x[0])
+        return scored
+
+    def _best_assignment(self, sim, request_id: str):
+        best = None
+        min_travel = None
+        min_travel_choice = None
+        for vid in sim.vehicles:
+            for score, pos, chk in self._vehicle_candidates(sim, vid, request_id):
+                if min_travel is None or chk.marginal_travel_s < min_travel:
+                    min_travel = chk.marginal_travel_s
+                    min_travel_choice = (vid, pos)
+                if best is None or score < best[2]:
+                    best = (vid, pos, score, chk)
+        if best is None:
+            return None
+        vid, pos, score, chk = best
+        differs = min_travel_choice is not None and (vid, pos) != min_travel_choice
+        detail = {
+            "marginal_travel_s": chk.marginal_travel_s,
+            "marginal_energy_kwh": chk.marginal_energy_kwh,
+            "d_energy_flex": max(0.0, chk.baseline_energy_flex_kwh - chk.energy_flex_kwh),
+            "d_deadline_slack": max(0.0, chk.baseline_min_deadline_slack_s - chk.min_deadline_slack_s),
+            "min_travel_vehicle": None if min_travel_choice is None else min_travel_choice[0],
+            "min_travel_position": None if min_travel_choice is None else min_travel_choice[1],
+            "differs_from_min_travel": differs,
+        }
+        return vid, pos, score, detail
 
     def _current_plan_metrics(self, sim, vehicle_id: str):
         v = sim.vehicles[vehicle_id]
@@ -123,34 +194,7 @@ class RaceCommitmentPolicy:
             sim.shift_end_s,
         )
 
-    def _shadow_prices(self, phi_e: float, phi_t: float) -> tuple[float, float]:
-        mu_e = self.alpha_energy / (self.eps + max(0.0, phi_e) / max(1e-6, self.e_typical_kwh))
-        mu_t = self.beta_time * (
-            self.t_typical_s / (self.eps * self.t_typical_s + max(0.0, phi_t))
-        )
-        return mu_e, mu_t
-
-    def _insertion_score(self, sim, vehicle_id: str, request_id: str) -> float | None:
-        base = self._current_plan_metrics(sim, vehicle_id)
-        has_edit = any(s.kind == "pickup" for s in editable_suffix(sim.vehicles[vehicle_id]))
-        if not base.feasible and has_edit:
-            return None
-        chk = sim.check_insertion(vehicle_id, request_id)
-        if not chk.feasible:
-            return None
-        travel = float(chk.added_travel_s)
-        if not self.use_opportunity_cost:
-            return travel
-        phi_e0 = float(base.energy_flex_kwh) if base.feasible else 0.0
-        phi_t0 = float(base.min_deadline_slack_s) if base.feasible else 0.0
-        phi_e1 = float(chk.energy_flex_kwh)
-        phi_t1 = float(chk.min_deadline_slack_s)
-        mu_e, mu_t = self._shadow_prices(phi_e0, phi_t0)
-        return travel + mu_e * max(0.0, phi_e0 - phi_e1) + mu_t * max(0.0, phi_t0 - phi_t1)
-
     def _reassignment_pass(self, sim) -> None:
-        """Move a non-locked commitment from a scarce vehicle to a more flexible one."""
-
         movable: list[tuple[str, str]] = []
         for vid, v in sim.vehicles.items():
             locked = v.moving_to.request_id if (v.moving_to and v.moving_to.kind == "pickup") else None
@@ -167,10 +211,11 @@ class RaceCommitmentPolicy:
             if not base_from.feasible:
                 continue
             if base_from.energy_flex_kwh >= self.e_typical_kwh:
-                continue  # not scarce enough to justify churn
+                continue
 
             best_to = None
             best_score = None
+            best_pos = None
             req = sim.requests[rid]
             snap_st, snap_ow = req.status, req.owner
             req.status = RequestStatus.AVAILABLE
@@ -180,31 +225,20 @@ class RaceCommitmentPolicy:
                     if to_v == from_v:
                         continue
                     base_to = self._current_plan_metrics(sim, to_v)
-                    if not base_to.feasible and any(
-                        s.kind == "pickup" for s in editable_suffix(sim.vehicles[to_v])
-                    ):
-                        continue
                     if base_to.feasible and base_to.energy_flex_kwh <= base_from.energy_flex_kwh:
                         continue
-                    score = self._insertion_score(sim, to_v, rid)
-                    if score is None:
+                    cands = self._vehicle_candidates(sim, to_v, rid)
+                    if not cands:
                         continue
+                    score, pos, _ = cands[0]
                     if best_score is None or score < best_score:
                         best_score = score
                         best_to = to_v
+                        best_pos = pos
             finally:
                 req.status, req.owner = snap_st, snap_ow
 
             if best_to is not None:
-                sim.try_reassign(from_v, best_to, rid)
-
-    def _maybe_charge(self, sim, actions: ActionInterface) -> None:
-        for vid, v in sim.vehicles.items():
-            if v.busy or str(v.mode.value) == "emergency_stranded":
-                continue
-            if any(s.kind == "pickup" for s in v.plan):
-                continue
-            headroom = v.battery_kwh - sim.energy.reserve_kwh
-            if headroom < self.charge_flex_threshold_kwh:
-                sim.config.charge_on_return = True
-                actions.request_return_depot(vid, charge=True)
+                # try_reassign uses check_insertion (min marginal travel); force via assign path
+                if sim.try_reassign(from_v, best_to, rid) and best_pos is not None:
+                    pass

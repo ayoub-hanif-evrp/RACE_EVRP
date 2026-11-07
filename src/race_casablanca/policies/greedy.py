@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
+from race_casablanca.policies.charging_controller import ChargingController
 from race_casablanca.sim.policy_api import ActionInterface, FullInfoObservation, RestrictedObservation
 
 
+@dataclass
 class GreedyInsertionPolicy:
-    name = "greedy_insertion"
+    name: str = "greedy_insertion"
+    charging: ChargingController = field(
+        default_factory=lambda: ChargingController(mode="adaptive_headroom")
+    )
 
     def on_decision(
         self,
@@ -15,21 +22,24 @@ class GreedyInsertionPolicy:
         reason: str,
     ) -> None:
         if not isinstance(obs, FullInfoObservation):
-            # Full-info greedy should not run under restricted observations.
             return
         available = sorted(obs.available, key=lambda t: t.tw_end_s)
         for task in available:
             best_v = None
+            best_pos = None
             best_cost = None
             for vid in obs.vehicles:
                 chk = actions.check_insertion(vid, task.request_id)
                 if not chk.feasible:
                     continue
-                if best_cost is None or chk.added_travel_s < best_cost:
-                    best_cost = chk.added_travel_s
+                cost = float(chk.marginal_travel_s)
+                if best_cost is None or cost < best_cost:
+                    best_cost = cost
                     best_v = vid
+                    best_pos = chk.insert_position
             if best_v is None:
                 if task.tw_end_s <= obs.now_s:
                     actions.reject_request(task.request_id)
                 continue
-            actions.claim_task(best_v, task.request_id)
+            actions.claim_task(best_v, task.request_id, force_position=best_pos)
+        self.charging.apply(actions._sim, actions)

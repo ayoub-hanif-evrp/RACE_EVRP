@@ -6,8 +6,9 @@ Builds a full fleet assignment offline, validates it, then commits atomically.
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
+from race_casablanca.policies.charging_controller import ChargingController
 from race_casablanca.policies.greedy import GreedyInsertionPolicy
 from race_casablanca.sim.feasibility_check import projected_state_after_lock, simulate_plan_conservative
 from race_casablanca.sim.policy_api import ActionInterface, FullInfoObservation, RestrictedObservation
@@ -20,6 +21,9 @@ class RollingHorizonPolicy:
     time_budget_s: float = 0.25
     reoptimize_every_s: float = 300.0
     _last_reopt_s: float = -1e18
+    charging: ChargingController = field(
+        default_factory=lambda: ChargingController(mode="adaptive_headroom")
+    )
 
     def on_decision(
         self,
@@ -31,14 +35,18 @@ class RollingHorizonPolicy:
             return
         if reason == "message":
             return
-        sim = actions._sim  # authorized full-info path via ActionInterface
+        sim = actions._sim
+        fill = GreedyInsertionPolicy(charging=ChargingController(mode="none"))
         if reason != "request_release" and (sim.now_s - self._last_reopt_s) < self.reoptimize_every_s:
-            GreedyInsertionPolicy().on_decision(obs, actions, "fill")
+            fill.on_decision(obs, actions, "fill")
+            self.charging.apply(sim, actions)
             return
         self._reoptimize(sim)
         self._last_reopt_s = sim.now_s
-        # Record budget in metrics config
         sim.config.extras["rh_time_budget_s"] = self.time_budget_s
+        # Insert any remaining available via marginal-cost greedy, then shared charging
+        fill.on_decision(obs, actions, "fill")
+        self.charging.apply(sim, actions)
 
     def _reoptimize(self, sim) -> None:
         t_end = time.perf_counter() + self.time_budget_s
@@ -62,7 +70,6 @@ class RollingHorizonPolicy:
             for vid, rids in assign.items():
                 v = sim.vehicles[vid]
                 edit = [rid for rid in rids if rid not in locked[vid]]
-                # Shadow statuses
                 backup = {}
                 for rid in edit:
                     backup[rid] = sim.requests[rid].status
@@ -83,6 +90,8 @@ class RollingHorizonPolicy:
             return True
 
         def total_cost(assign: dict[str, list[str]]) -> float:
+            """Sum of total planned travel times (consistent Stage 3C semantics)."""
+
             total = 0.0
             for vid, rids in assign.items():
                 v = sim.vehicles[vid]
@@ -102,7 +111,7 @@ class RollingHorizonPolicy:
                 )
                 for rid, st in backup.items():
                     sim.requests[rid].status = st
-                total += chk.added_travel_s if chk.feasible else 1e18
+                total += chk.total_travel_s if chk.feasible else 1e18
             return total
 
         for rid in sorted(pool, key=lambda x: sim.requests[x].tw_end_s):
@@ -140,5 +149,4 @@ class RollingHorizonPolicy:
                         improved = True
                         break
 
-        # Atomic commit of the optimized assignment (exact order preserved)
         sim.commit_fleet_plans(assignment)

@@ -119,12 +119,14 @@ class ActionInterface:
                 raise PermissionError("restricted policy may only check insertion for self")
         return self._sim.check_insertion(vehicle_id, request_id)
 
-    def claim_task(self, vehicle_id: str, request_id: str) -> bool:
+    def claim_task(
+        self, vehicle_id: str, request_id: str, *, force_position: int | None = None
+    ) -> bool:
         if self._sim.config.info_mode == "restricted":
             if self.actor_vehicle_id is None or vehicle_id != self.actor_vehicle_id:
                 raise PermissionError("restricted policy may only claim for self")
         # Single source of truth: simulator counters only
-        return self._sim.try_assign(vehicle_id, request_id)
+        return self._sim.try_assign(vehicle_id, request_id, force_position=force_position)
 
     def reject_request(self, request_id: str) -> None:
         self._sim.reject_request(request_id)

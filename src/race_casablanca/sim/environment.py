@@ -236,6 +236,11 @@ class OnlineSimulator:
             realization_mode=self.energy.realization_mode,
             scenario_seed=self.energy.scenario_seed,
         )
+        base_chk = simulate_plan_conservative(
+            proj, suffix_pickups, self.requests, self.router, self.energy,
+            self.depot_node, self.payload_max, self.shift_end_s,
+        )
+        base_travel = float(base_chk.total_travel_s) if base_chk.feasible else 0.0
 
         for pos in positions:
             new_suffix = list(suffix_pickups)
@@ -256,8 +261,10 @@ class OnlineSimulator:
                 if chk_cons.energy_binding:
                     self.planned_energy_rejections += 1
                 continue
-            if best_cost is None or chk_cons.added_travel_s < best_cost:
-                best_cost = chk_cons.added_travel_s
+            # Marginal travel vs current editable plan (force_position still validated)
+            cost = float(chk_cons.total_travel_s) - base_travel
+            if best_cost is None or cost < best_cost:
+                best_cost = cost
                 best_suffix = new_suffix
 
         if best_suffix is None:
@@ -509,16 +516,17 @@ class OnlineSimulator:
         proposed = locked + [rid for rid in request_ids if rid not in locked]
         ok = self.commit_fleet_plans({vehicle_id: proposed})
         if ok and charge:
-            self.config.extras["prefer_charge"] = True
-            if self.config.charge_on_return is False:
-                self.config.charge_on_return = True
+            # Explicit charge on this vehicle only — do not flip episode-wide config
+            self.request_return_depot(vehicle_id, charge=True)
         return ok
 
     def request_return_depot(self, vehicle_id: str, *, charge: bool | None = None) -> None:
         v = self.vehicles[vehicle_id]
         if v.mode == VehicleMode.EMERGENCY_STRANDED:
             return
-        kind = "depot_charge" if (self.config.charge_on_return if charge is None else charge) else "depot_unload"
+        # Explicit charge arg wins; otherwise episode default. Never mutate config here.
+        do_charge = self.config.charge_on_return if charge is None else bool(charge)
+        kind = "depot_charge" if do_charge else "depot_unload"
         if v.busy:
             if not any(s.kind.startswith("depot") for s in editable_suffix(v)):
                 v.plan = list(locked_prefix(v)) + editable_suffix(v) + [Stop(kind, None, self.depot_node)]

@@ -1,0 +1,35 @@
+{
+  "stage": "3C",
+  "train_scenarios": [
+    "baseline_seed1",
+    "baseline_seed4",
+    "peak_stress_seed2",
+    "peak_stress_seed5",
+    "tight_windows_seed3",
+    "tight_windows_seed6"
+  ],
+  "validation_scenarios": [
+    "peak_stress_seed101",
+    "tight_windows_seed102"
+  ],
+  "suites": [
+    "full_soc",
+    "soc35",
+    "soc35_delta20"
+  ],
+  "primary_charge_mode": "adaptive_headroom",
+  "headroom_threshold_kwh": 3.0,
+  "policies": [
+    "greedy",
+    "rolling_horizon",
+    "A",
+    "B",
+    "C",
+    "D",
+    "fixed_weight"
+  ],
+  "rh_time_budget_s": 0.25,
+  "seed": 1,
+  "dataset": "casablanca_release_v1",
+  "notes": "Marginal insertion costs; shared adaptive charging; 2x2 ablation."
+}

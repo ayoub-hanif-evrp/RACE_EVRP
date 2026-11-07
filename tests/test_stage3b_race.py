@@ -111,9 +111,11 @@ def test_race_opportunity_cost_prefers_higher_energy_flex_when_travel_ties(monke
     sim = _sim(policy=RaceCommitmentPolicy())
     sim.now_s = 0.0
     sim.requests["R1"].status = RequestStatus.AVAILABLE
-    pol = RaceCommitmentPolicy(use_opportunity_cost=True)
-    score = pol._insertion_score(sim, next(iter(sim.vehicles)), "R1")
-    assert score is not None and score >= 0.0
+    pol = RaceCommitmentPolicy(use_flexibility_pricing=True)
+    cands = pol._vehicle_candidates(sim, next(iter(sim.vehicles)), "R1")
+    assert cands
+    score, _pos, _chk = cands[0]
+    assert score >= 0.0
 
 
 def test_intended_claim_id_is_non_mutating():
