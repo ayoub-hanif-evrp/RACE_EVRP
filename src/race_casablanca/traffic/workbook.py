@@ -83,23 +83,33 @@ def _normalize_distance(value: float) -> float:
 def _normalize_travel_time_min(value: float) -> float:
     """Return travel time in minutes.
 
-    Some workbook cells store seconds (values > 180), others store minutes.
-    Values above 180 are treated as seconds and converted.
+    Sheet headers label the field as minutes. Empirically, ~57% of cells on
+    Tue–Sun are integers >180 that match minutes×1000 (Excel decimal artifacts),
+    not seconds: after /1000, free-flow speeds cluster at 60 km/h and coincide
+    with the minute-scale distribution. Values ≤180 are kept as minutes.
     """
 
     if not np.isfinite(value):
         return np.nan
     if value > 180:
-        return float(value) / 60.0
+        return float(value) / 1000.0
     return float(value)
+
+
+def _find_commune_header_row(raw: pd.DataFrame) -> int:
+    for i in range(min(20, len(raw))):
+        if str(raw.iloc[i, 1]).strip().upper() == "COMMUNE":
+            return int(i)
+    raise RuntimeError("Could not locate COMMUNE header row in day sheet")
 
 
 def _parse_day_sheet(path: Path, day: str, sheet: str) -> pd.DataFrame:
     raw = pd.read_excel(path, sheet_name=sheet, header=None)
+    header_idx = _find_commune_header_row(raw)
     records = []
     current_commune = None
     current_zip = None
-    for _, row in raw.iloc[10:].iterrows():
+    for _, row in raw.iloc[header_idx + 1 :].iterrows():
         values = row.tolist()
         if isinstance(values[1], str) and values[1].strip() and values[1].strip() != "COMMUNE":
             current_commune = values[1].strip()
@@ -108,30 +118,41 @@ def _parse_day_sheet(path: Path, day: str, sheet: str) -> pd.DataFrame:
             continue
         if pd.isna(values[3]) or pd.isna(values[7]):
             continue
-        o_idx, o_lat, o_lon = values[3], values[5], values[6]
-        d_idx, d_lat, d_lon = values[7], values[9], values[10]
+        try:
+            o_idx = int(float(values[3]))
+            d_idx = int(float(values[7]))
+            o_lat, o_lon = float(values[5]), float(values[6])
+            d_lat, d_lon = float(values[9]), float(values[10])
+        except (TypeError, ValueError):
+            continue
         distance = values[11]
         travel_hours = values[12:36]
         tti_hours = values[36:60]
         for hour in range(24):
             travel = travel_hours[hour] if hour < len(travel_hours) else np.nan
             tti = tti_hours[hour] if hour < len(tti_hours) else np.nan
+            try:
+                travel_f = float(travel) if pd.notna(travel) else np.nan
+                tti_f = float(tti) if pd.notna(tti) else np.nan
+            except (TypeError, ValueError):
+                continue
             records.append(
                 {
                     "day": day,
                     "commune": current_commune,
                     "zip_code": str(current_zip),
-                    "origin_index": int(float(o_idx)),
-                    "dest_index": int(float(d_idx)),
-                    "origin_lat": float(o_lat),
-                    "origin_lon": float(o_lon),
-                    "dest_lat": float(d_lat),
-                    "dest_lon": float(d_lon),
+                    "origin_index": o_idx,
+                    "dest_index": d_idx,
+                    "origin_lat": o_lat,
+                    "origin_lon": o_lon,
+                    "dest_lat": d_lat,
+                    "dest_lon": d_lon,
                     "distance_raw": float(distance) if pd.notna(distance) else np.nan,
                     "distance_m": _normalize_distance(float(distance)) if pd.notna(distance) else np.nan,
                     "hour": hour,
-                    "travel_time_min": _normalize_travel_time_min(float(travel)) if pd.notna(travel) else np.nan,
-                    "tti": float(tti) if pd.notna(tti) else np.nan,
+                    "travel_time_min": _normalize_travel_time_min(travel_f) if pd.notna(travel_f) else np.nan,
+                    "travel_time_raw": travel_f,
+                    "tti": tti_f,
                 }
             )
     return pd.DataFrame.from_records(records)

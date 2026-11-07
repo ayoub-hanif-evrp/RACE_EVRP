@@ -6,7 +6,7 @@
   "boundary_path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\study_boundary.gpkg",
   "crosswalk_path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\zone_crosswalk.csv",
   "definition": "Union of OSM administrative polygons matched to the 22 workbook commune names. Not an arbitrary rectangle and not the full Casablanca-Settat region.",
-  "generated_at_utc": "2026-11-06T22:51:28+00:00",
+  "generated_at_utc": "2026-11-07T01:02:46+00:00",
   "envelope": {
     "west": -7.756392033086802,
     "south": 33.43147210659073,
@@ -16,5 +16,57 @@
   "method": "overpass_plus_nominatim_fill+od_hull_fallback",
   "n_admin_candidates": 89,
   "n_osm_admin_matched": 17,
-  "n_od_hull_fallback": 5
+  "n_od_hull_fallback": 5,
+  "checksums": {
+    "pinned": true,
+    "policy": "Committed study_boundary.gpkg + zone_crosswalk.* are the pinned Stage-1 study geography. Rebuilds from live Overpass/Nominatim are non-bit-identical and must not silently overwrite these artifacts without an audited diff.",
+    "artifacts": {
+      "study_boundary.gpkg": {
+        "path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\study_boundary.gpkg",
+        "sha256": "c003b9edf69b4e8b24b65f2fcc0f4f2e7d2e7ced27148f5d81230f919af31699",
+        "bytes": 114688
+      },
+      "zone_crosswalk.gpkg": {
+        "path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\zone_crosswalk.gpkg",
+        "sha256": "ae781a13675c1bc786e71e1c0c8900d188f2e4f391cdb98bbfb9fd9e4dba528c",
+        "bytes": 159744
+      },
+      "zone_crosswalk.csv": {
+        "path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\zones\\zone_crosswalk.csv",
+        "sha256": "83fea5db99309038bcafc737394d971d54f580e8d4c9dc3a4627531226bd7045",
+        "bytes": 4743
+      }
+    }
+  },
+  "pinning_note": "Checksums refreshed against committed artifacts only. Live rebuilds are non-bit-identical and must not overwrite without audit.",
+  "geography_status_counts": {
+    "verified_admin": 15,
+    "approximate_study_zone": 7
+  },
+  "verified_admin": [
+    "Anfa",
+    "Assoukhour Assawda",
+    "Ben Msick",
+    "El Maarif",
+    "Hay Hassani",
+    "Hay Mohammadi",
+    "Ain Chock",
+    "Ain Sebaa",
+    "Al Fida",
+    "Mers Sultan",
+    "Moulay Rachid",
+    "Sidi Belyout",
+    "Sidi Moumen",
+    "Sidi Othmane",
+    "Sidi Bernoussi"
+  ],
+  "approximate_study_zone": [
+    "Echchallalate",
+    "Sidi Maarouf",
+    "Bou Chentouf",
+    "Al Idrissia",
+    "Lissasfa",
+    "Ahl Laghlam",
+    "Moulay Youssef"
+  ]
 }

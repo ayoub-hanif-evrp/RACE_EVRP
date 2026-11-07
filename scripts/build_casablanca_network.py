@@ -54,12 +54,25 @@ def main() -> int:
         data["zone_commune"] = zone_map.get((u, v, key))
 
     paths = export_graph(graph, roads_dir())
+    connectivity = dict(graph.graph.get("race_connectivity_filter") or {})
     manifest = {
         "generated_at_utc": utc_now(),
         "method": "pyrosm_extract_from_geofabrik_morocco-260101.osm.pbf clipped to study boundary",
         "pbf_path": str(pbf),
         "pbf_sha256": sha256_file(pbf) if pbf.exists() else None,
         "integrity": integrity,
+        "connectivity_filter": connectivity,
+        "scc_exclusion": {
+            "pre_scc_nodes": connectivity.get("pre_scc_nodes"),
+            "pre_scc_edges": connectivity.get("pre_scc_edges"),
+            "post_scc_nodes": connectivity.get("post_scc_nodes"),
+            "post_scc_edges": connectivity.get("post_scc_edges"),
+            "nodes_excluded": connectivity.get("nodes_excluded_by_scc"),
+            "edges_excluded": connectivity.get("edges_excluded_by_scc"),
+            "fraction_nodes_excluded": connectivity.get("fraction_nodes_excluded_by_scc"),
+            "fraction_edges_excluded": connectivity.get("fraction_edges_excluded_by_scc"),
+            "note": graph.graph.get("race_scc_note"),
+        },
         "paths": paths,
         "speed_config": str(config_dir() / "travel_time.yaml"),
         "osm_attribution": "© OpenStreetMap contributors (ODbL)",

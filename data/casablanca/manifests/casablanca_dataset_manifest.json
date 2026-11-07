@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-06T23:51:42+00:00",
+  "generated_at_utc": "2026-11-07T01:12:33+00:00",
   "dataset": "casablanca_stage1",
   "geography": "Casablanca study area = union of 22 workbook zones matched to OSM admin (with documented OD-hull fallbacks)",
   "claim_discipline": {
@@ -27,6 +27,11 @@
         "regime": "baseline",
         "seed": 4,
         "path": "data\\casablanca\\scenarios\\train\\baseline_seed4"
+      },
+      {
+        "regime": "baseline",
+        "seed": 42,
+        "path": "data\\casablanca\\scenarios\\train\\baseline_seed42"
       },
       {
         "regime": "baseline",
@@ -104,7 +109,12 @@
         "method",
         "n_admin_candidates",
         "n_osm_admin_matched",
-        "n_od_hull_fallback"
+        "n_od_hull_fallback",
+        "checksums",
+        "pinning_note",
+        "geography_status_counts",
+        "verified_admin",
+        "approximate_study_zone"
       ]
     },
     "casablanca_dataset_manifest.json": {
@@ -168,6 +178,8 @@
         "pbf_path",
         "pbf_sha256",
         "integrity",
+        "connectivity_filter",
+        "scc_exclusion",
         "paths",
         "speed_config",
         "osm_attribution",
@@ -179,13 +191,20 @@
         "generated_at_utc",
         "status",
         "holdout_day",
+        "fit_days",
+        "congestion_profile",
+        "unit_note",
+        "n_sampled",
         "n_compared",
-        "n_failures",
+        "n_snap_failures",
+        "n_collapsed_same_node",
         "mae_min",
         "rmse_min",
         "median_abs_error_min",
         "mean_rel_error",
         "peak_7_10_mae_min",
+        "median_obs_min",
+        "median_pred_min",
         "claim",
         "output"
       ]
@@ -263,6 +282,21 @@
       ]
     },
     "scenario_train_baseline_seed4.json": {
+      "keys": [
+        "generated_at_utc",
+        "regime",
+        "seed",
+        "split",
+        "generator_version",
+        "n_requests",
+        "fleet",
+        "depot",
+        "feasibility",
+        "claim",
+        "arrival_process"
+      ]
+    },
+    "scenario_train_baseline_seed42.json": {
       "keys": [
         "generated_at_utc",
         "regime",

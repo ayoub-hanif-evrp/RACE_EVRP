@@ -63,11 +63,14 @@ def build_drive_graph_from_pbf(pbf_path: Path, boundary_geom, speed_config: dict
     except Exception:  # noqa: BLE001
         pass
     # Keep largest weakly connected component for a contiguous study network.
+    pre_wcc_nodes, pre_wcc_edges = graph.number_of_nodes(), graph.number_of_edges()
     if not nx.is_weakly_connected(graph):
         largest = max(nx.weakly_connected_components(graph), key=len)
         graph = graph.subgraph(largest).copy()
+    post_wcc_nodes, post_wcc_edges = graph.number_of_nodes(), graph.number_of_edges()
     # Restrict further to the largest strongly connected component so depot
     # returns and directed tours are graph-feasible under one-way constraints.
+    pre_scc_nodes, pre_scc_edges = post_wcc_nodes, post_wcc_edges
     if not nx.is_strongly_connected(graph):
         scc = max(nx.strongly_connected_components(graph), key=len)
         graph = graph.subgraph(scc).copy()
@@ -75,6 +78,25 @@ def build_drive_graph_from_pbf(pbf_path: Path, boundary_geom, speed_config: dict
             "Retained largest strongly connected component from the PBF drive extract "
             "so directed tours with depot return remain feasible under one-way streets."
         )
+    post_scc_nodes, post_scc_edges = graph.number_of_nodes(), graph.number_of_edges()
+    graph.graph["race_connectivity_filter"] = {
+        "pre_wcc_nodes": int(pre_wcc_nodes),
+        "pre_wcc_edges": int(pre_wcc_edges),
+        "post_wcc_nodes": int(post_wcc_nodes),
+        "post_wcc_edges": int(post_wcc_edges),
+        "pre_scc_nodes": int(pre_scc_nodes),
+        "pre_scc_edges": int(pre_scc_edges),
+        "post_scc_nodes": int(post_scc_nodes),
+        "post_scc_edges": int(post_scc_edges),
+        "nodes_excluded_by_scc": int(pre_scc_nodes - post_scc_nodes),
+        "edges_excluded_by_scc": int(pre_scc_edges - post_scc_edges),
+        "fraction_nodes_excluded_by_scc": float(
+            (pre_scc_nodes - post_scc_nodes) / pre_scc_nodes if pre_scc_nodes else 0.0
+        ),
+        "fraction_edges_excluded_by_scc": float(
+            (pre_scc_edges - post_scc_edges) / pre_scc_edges if pre_scc_edges else 0.0
+        ),
+    }
     for u, v, key, data in graph.edges(keys=True, data=True):
         highway = data.get("highway")
         speed = free_flow_speed_kmh(highway, data.get("maxspeed"), speed_config)

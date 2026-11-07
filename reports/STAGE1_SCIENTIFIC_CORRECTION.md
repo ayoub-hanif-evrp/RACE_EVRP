@@ -58,8 +58,11 @@ Claim updated: not all 22 zones are verified official communes.
 
 | Topic | Change |
 | --- | --- |
-| Travel-time units | Workbook cells mix minutes and seconds; values >180 normalized to minutes |
-| OD validation | Held-out Sunday comparison in minutes (`validate_od_travel_times.py`) |
+| Travel-time units | Values >180 are minutes×1000 (Excel artifacts), not seconds; normalize `/1000` |
+| OD validation | Genuine Mon–Sat fit → Sunday OD holdout (`validate_od_travel_times.py`) |
+| Feasibility validator | Coverage, depot returns, timestamp reconstruction, release checks |
+| Boundary pin | SHA-256 of committed `study_boundary.gpkg` + crosswalk; no silent live overwrite |
+| SCC filter | Pre/post SCC node/edge counts + exclusion fraction in `network_manifest.json` |
 | HCP provenance | `population_source` = `hcp_rgph2024_matched` or `imputed_household_scaled` |
 | Arrival process | Renamed to fixed-count hourly intensity sampling (not NHPP) |
 | Fleet relevance | Documented ~170 km usable range; baseline tours ~84–134 km across 3 vehicles |
@@ -83,16 +86,16 @@ Requires local `data/casablanca/raw/osm/morocco-260101.osm.pbf` (gitignored; MD5
 
 ## 4. Actual test results
 
-Executed on this machine after corrections:
+Executed on this machine after final acceptance hardening:
 
 ```text
-22 passed in 5.27s
+30 passed
 ```
 
 Critical non-skipping checks:
 - earliest-arrival parallel-edge / DAG / waiting / disconnect tests;
 - feasibility certifies a tiny feasible instance;
-- feasibility rejects insufficient-battery and impossible-window instances;
+- adversarial validator rejects empty/missing/duplicate/bad-return/broken-path/timestamp/release cases;
 - witness artifacts must include `path_nodes` and `travel_distance_m` (fail if absent).
 
 ## 5. Independently validated route example
@@ -107,18 +110,19 @@ Scenario: `data/casablanca/scenarios/train/baseline_seed1/`
 
 ## 6. OD travel-time comparison (held-out Sunday)
 
-After unit normalization:
+After milli-minute unit correction and **Mon–Sat-only** profile fit:
 
 | Metric | Value |
 | --- | --- |
-| N compared | 80 |
-| Failures | 0 |
-| MAE | 69.1 min |
-| RMSE | 91.8 min |
-| Median abs error | 65.4 min |
-| Mean relative error | 0.95 |
+| N sampled / compared | 120 / 118 |
+| Snap failures / collapsed OD | 0 / 2 |
+| MAE | 5.91 min |
+| RMSE | 8.25 min |
+| Median abs error | 3.99 min |
+| Mean relative error | ≈ 1.00 |
+| Median obs / pred | 6.15 / 9.72 min |
 
-Interpretation: the OSM+TTI model is systematically faster than many Waze OD durations. This is reported as a limitation, not a calibration success. Possible causes include optimistic free-flow speeds, citywide/zonal (not edge) congestion, and route disagreement between OSM and Waze. No edge-level twin claim is made.
+Interpretation: absolute-minute error is now scientifically usable for Stage-1 congestion factors, but predictions remain biased long vs this sample. Citywide/zonal TTI on OSM paths is **not** an edge-calibrated Waze twin. See `reports/STAGE1_FINAL_ACCEPTANCE.md` (CONDITIONAL PASS on Task 2).
 
 ## 7. Remaining assumptions and Stage-2 readiness
 
@@ -127,15 +131,10 @@ Still assumed / limited:
 - constant Wh/km;
 - free-flow path topology inside certificates (TD evaluation along path; not full TD optimal routing in construction);
 - approximate study zones retained for unmatched geography;
-- OD predictive accuracy remains weak.
+- OD residual bias after unit fix.
 
-**Suitable for Stage 2?** Conditionally closer, but **not fully approved** until:
-1. OD travel-time bias is reduced or explicitly scoped out of claims;
-2. certificate construction optionally uses full earliest-arrival paths if runtime allows;
-3. energy-binding regimes are demonstrated more strongly if energy-risk learning is the novelty.
-
-Stage 2 algorithms should not start from the pre-correction 2 km witnesses.
+**Final acceptance:** CONDITIONAL PASS — see `reports/STAGE1_FINAL_ACCEPTANCE.md`. Stop before Stage-2 algorithms.
 
 ## 8. Git discipline
 
-Previous history preserved. Correction is a new commit (no rewrite).
+Previous history preserved. Final acceptance is a new commit (no rewrite).

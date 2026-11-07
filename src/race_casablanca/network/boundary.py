@@ -272,6 +272,36 @@ def union_boundary(matched: gpd.GeoDataFrame):
     return unary_union(geoms)
 
 
+def pin_boundary_artifact_checksums(zones_dir: Path) -> dict:
+    """SHA-256 pin of committed study geography (do not overwrite from live APIs)."""
+
+    from race_casablanca.hashing import sha256_file
+
+    artifacts = {
+        "study_boundary.gpkg": zones_dir / "study_boundary.gpkg",
+        "zone_crosswalk.gpkg": zones_dir / "zone_crosswalk.gpkg",
+        "zone_crosswalk.csv": zones_dir / "zone_crosswalk.csv",
+    }
+    checksums = {}
+    for name, path in artifacts.items():
+        if not path.exists():
+            raise FileNotFoundError(f"Missing pinned geography artifact: {path}")
+        checksums[name] = {
+            "path": str(path),
+            "sha256": sha256_file(path),
+            "bytes": int(path.stat().st_size),
+        }
+    return {
+        "pinned": True,
+        "policy": (
+            "Committed study_boundary.gpkg + zone_crosswalk.* are the pinned Stage-1 "
+            "study geography. Rebuilds from live Overpass/Nominatim are non-bit-identical "
+            "and must not silently overwrite these artifacts without an audited diff."
+        ),
+        "artifacts": checksums,
+    }
+
+
 def write_boundary_products(matched: gpd.GeoDataFrame, zones_dir: Path) -> dict:
     zones_dir.mkdir(parents=True, exist_ok=True)
     matched_path = zones_dir / "zone_crosswalk.gpkg"
@@ -282,7 +312,7 @@ def write_boundary_products(matched: gpd.GeoDataFrame, zones_dir: Path) -> dict:
     boundary_gdf.to_file(boundary_path, layer="boundary", driver="GPKG")
     crosswalk_csv = zones_dir / "zone_crosswalk.csv"
     matched.drop(columns="geometry").to_csv(crosswalk_csv, index=False)
-    return {
+    summary = {
         "n_workbook_communes": int(len(matched)),
         "n_matched": int(matched["matched"].sum()),
         "n_unmatched": int((~matched["matched"]).sum()),
@@ -294,3 +324,5 @@ def write_boundary_products(matched: gpd.GeoDataFrame, zones_dir: Path) -> dict:
             "Not an arbitrary rectangle and not the full Casablanca-Settat region."
         ),
     }
+    summary["checksums"] = pin_boundary_artifact_checksums(zones_dir)
+    return summary

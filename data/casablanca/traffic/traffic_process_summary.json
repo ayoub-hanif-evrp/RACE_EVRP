@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-06T23:50:12+00:00",
+  "generated_at_utc": "2026-11-07T01:00:43+00:00",
   "audit": {
     "workbook": "Dataset for traffic analysis in Casablanca, Morocco.xlsx",
     "n_communes": 22,
@@ -88,6 +88,15 @@
     "route_geometry_present": false,
     "coordinate_claim": "Origin and destination coordinates are present for each trajectory. Waze route polylines are not present, so OSM edge matching of the observed routes is not supported by this workbook alone."
   },
+  "unit_audit": {
+    "rule": "values>180 interpreted as minutes*1000 (Excel decimal artifacts), else minutes",
+    "rejected_rule": "values>180 as seconds (/60) — yields ~1.5 km/h median speeds (invalid)",
+    "share_raw_values_gt_180": 0.5705357142857143,
+    "median_travel_min": 7.017,
+    "median_speed_kmh": 24.92339342467921,
+    "median_free_flow_speed_kmh": 59.99999999999988,
+    "share_speed_5_to_120": 1.0
+  },
   "holdout_evaluation": {
     "status": "ok",
     "holdout_day": "Sunday",
@@ -139,6 +148,10 @@
       "tti_zone_day_hour.csv",
       "tti_city_day_hour.csv",
       "tti_citywide_hour.csv"
+    ],
+    "holdout_fit_profiles": [
+      "tti_citywide_hour_fit_mon_sat.csv",
+      "tti_zone_day_hour_fit_mon_sat.csv"
     ]
   }
 }

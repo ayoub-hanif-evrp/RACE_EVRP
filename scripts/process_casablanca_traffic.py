@@ -38,8 +38,28 @@ def main() -> int:
     coords = load_coordinates(workbook)
     land = load_land_use(workbook)
     profiles = build_tti_profiles(trajectories)
+    profiles_mon_sat = build_tti_profiles(trajectories, exclude_days=["Sunday"])
     holdout = held_out_zone_hour_error(trajectories)
     fifo = fifo_check_piecewise_constant(profiles["citywide_hour"].set_index("hour")["tti_factor"])
+
+    # Unit-audit diagnostics after milli-minute correction.
+    tt = trajectories.dropna(subset=["travel_time_min", "distance_m", "tti"]).copy()
+    tt = tt[(tt["travel_time_min"] > 0) & (tt["distance_m"] > 0) & (tt["tti"] > 0)]
+    tt["speed_kmh"] = (tt["distance_m"] / 1000.0) / (tt["travel_time_min"] / 60.0)
+    tt["ff_speed_kmh"] = (tt["distance_m"] / 1000.0) / ((tt["travel_time_min"] / tt["tti"]) / 60.0)
+    if "travel_time_raw" in trajectories.columns:
+        raw_big = float((trajectories["travel_time_raw"] > 180).mean())
+    else:
+        raw_big = None
+    unit_audit = {
+        "rule": "values>180 interpreted as minutes*1000 (Excel decimal artifacts), else minutes",
+        "rejected_rule": "values>180 as seconds (/60) — yields ~1.5 km/h median speeds (invalid)",
+        "share_raw_values_gt_180": raw_big,
+        "median_travel_min": float(tt["travel_time_min"].median()),
+        "median_speed_kmh": float(tt["speed_kmh"].median()),
+        "median_free_flow_speed_kmh": float(tt["ff_speed_kmh"].median()),
+        "share_speed_5_to_120": float(((tt["speed_kmh"] >= 5) & (tt["speed_kmh"] <= 120)).mean()),
+    }
 
     out = traffic_dir()
     out.mkdir(parents=True, exist_ok=True)
@@ -49,15 +69,22 @@ def main() -> int:
     land.to_csv(out / "land_use.csv", index=False)
     for name, frame in profiles.items():
         frame.to_csv(out / f"tti_{name}.csv", index=False)
+    profiles_mon_sat["citywide_hour"].to_csv(out / "tti_citywide_hour_fit_mon_sat.csv", index=False)
+    profiles_mon_sat["zone_day_hour"].to_csv(out / "tti_zone_day_hour_fit_mon_sat.csv", index=False)
 
     summary = {
         "generated_at_utc": utc_now(),
         "audit": audit,
+        "unit_audit": unit_audit,
         "holdout_evaluation": holdout,
         "fifo_check": fifo,
         "outputs": {
             "trajectory_hours": str(out / "trajectory_hours.parquet"),
             "profiles": [f"tti_{name}.csv" for name in profiles],
+            "holdout_fit_profiles": [
+                "tti_citywide_hour_fit_mon_sat.csv",
+                "tti_zone_day_hour_fit_mon_sat.csv",
+            ],
         },
     }
     write_json(out / "traffic_process_summary.json", summary)
@@ -109,13 +136,29 @@ The workbook contains Summary, Table 0 coordinates, Tables 1–4 zone attributes
 
 {audit['coordinate_claim']}
 
+## Travel-time unit interpretation
+
+Workbook headers label travel times as minutes. Across Tue–Sun, many cells are
+integers >180. Treating those as seconds (/60) produces impossible ~1.5 km/h
+median speeds. Treating them as minutes×1000 (/1000) aligns distributions with
+true-minute cells and yields free-flow speeds clustered at ~60 km/h (matching
+the workbook TTI definition).
+
+{json.dumps(summary['unit_audit'], indent=2)}
+
 ## FIFO check on citywide hourly factors
 
 {json.dumps(summary['fifo_check'], indent=2)}
 
 ## Held-out day evaluation of citywide hourly TTI
 
+TTI profile fitted on Mon–Sat and scored on Sunday (profile-level, not OD minutes):
+
 {json.dumps(summary['holdout_evaluation'], indent=2)}
+
+Operational full-week profiles remain in `tti_citywide_hour.csv`. Genuine OD
+holdout predictions must use `tti_citywide_hour_fit_mon_sat.csv` (see
+`scripts/validate_od_travel_times.py`).
 """
 
 

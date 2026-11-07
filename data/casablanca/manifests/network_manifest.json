@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-06T23:22:26+00:00",
+  "generated_at_utc": "2026-11-07T01:02:24+00:00",
   "method": "pyrosm_extract_from_geofabrik_morocco-260101.osm.pbf clipped to study boundary",
   "pbf_path": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\raw\\osm\\morocco-260101.osm.pbf",
   "pbf_sha256": "dace94a528619cf4f8ac3bf3f817d5330d4642a61486c7190c05fcd33cabedec",
@@ -16,6 +16,31 @@
     "mean_edge_length_m": 68.08180926701553,
     "nonpositive_length_edges": 0,
     "turn_restriction_note": "OSMnx drive graphs encode one-way restrictions on edges. Complex turn restrictions that require relation-level turn bans are not fully enforced by a simple directed graph representation."
+  },
+  "connectivity_filter": {
+    "pre_wcc_nodes": 37563,
+    "pre_wcc_edges": 56954,
+    "post_wcc_nodes": 37487,
+    "post_wcc_edges": 56895,
+    "pre_scc_nodes": 37487,
+    "pre_scc_edges": 56895,
+    "post_scc_nodes": 30943,
+    "post_scc_edges": 47787,
+    "nodes_excluded_by_scc": 6544,
+    "edges_excluded_by_scc": 9108,
+    "fraction_nodes_excluded_by_scc": 0.17456718329020726,
+    "fraction_edges_excluded_by_scc": 0.16008436593725284
+  },
+  "scc_exclusion": {
+    "pre_scc_nodes": 37487,
+    "pre_scc_edges": 56895,
+    "post_scc_nodes": 30943,
+    "post_scc_edges": 47787,
+    "nodes_excluded": 6544,
+    "edges_excluded": 9108,
+    "fraction_nodes_excluded": 0.17456718329020726,
+    "fraction_edges_excluded": 0.16008436593725284,
+    "note": "Retained largest strongly connected component from the PBF drive extract so directed tours with depot return remain feasible under one-way streets."
   },
   "paths": {
     "graphml": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\roads\\casablanca_drive.graphml",

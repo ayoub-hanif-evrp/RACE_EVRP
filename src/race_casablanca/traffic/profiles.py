@@ -6,9 +6,11 @@ import numpy as np
 import pandas as pd
 
 
-def build_tti_profiles(trajectories: pd.DataFrame) -> dict[str, pd.DataFrame]:
+def build_tti_profiles(trajectories: pd.DataFrame, exclude_days: list[str] | None = None) -> dict[str, pd.DataFrame]:
     clean = trajectories.dropna(subset=["tti"]).copy()
     clean = clean[clean["tti"] > 0]
+    if exclude_days:
+        clean = clean[~clean["day"].isin(exclude_days)]
     zone_hour = (
         clean.groupby(["commune", "day", "hour"], as_index=False)["tti"]
         .median()
