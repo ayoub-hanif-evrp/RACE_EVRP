@@ -17,6 +17,14 @@ class RequestStatus(str, Enum):
     REJECTED = "rejected"
 
 
+class VehicleMode(str, Enum):
+    IDLE = "idle"
+    EN_ROUTE = "en_route"
+    SERVING = "serving"
+    CHARGING = "charging"
+    EMERGENCY_STRANDED = "emergency_stranded"
+
+
 class EventType(str, Enum):
     REQUEST_RELEASE = "request_release"
     VEHICLE_ARRIVAL = "vehicle_arrival"
@@ -74,6 +82,17 @@ class Stop:
 
 
 @dataclass
+class ProjectedState:
+    """State after completing the locked active leg/service (planning origin)."""
+
+    node: int
+    ready_s: float
+    battery_kwh: float
+    load_kg: float
+    locked_request_ids: tuple[str, ...] = ()
+
+
+@dataclass
 class VehicleState:
     vehicle_id: str
     node: int
@@ -81,6 +100,7 @@ class VehicleState:
     battery_kwh: float
     load_kg: float
     busy: bool = False
+    mode: VehicleMode = VehicleMode.IDLE
     plan: list[Stop] = field(default_factory=list)
     committed: list[str] = field(default_factory=list)
     moving_to: Stop | None = None
@@ -88,6 +108,8 @@ class VehicleState:
     path_length_m: float = 0.0
     departed_s: float | None = None
     en_route_energy_kwh: float = 0.0
+    en_route_conservative_kwh: float = 0.0
+    leg_seq: int = 0
     total_distance_m: float = 0.0
     total_travel_s: float = 0.0
     total_wait_s: float = 0.0
@@ -95,4 +117,7 @@ class VehicleState:
     n_depot_returns: int = 0
     n_charges: int = 0
     reserve_violations: int = 0
+    battery_exhaustion: int = 0
     payload_violations: int = 0
+    planned_energy_rejections: int = 0
+    n_reassignments: int = 0

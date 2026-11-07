@@ -1,12 +1,12 @@
-"""Baseline C — limited-information cooperative dispatch.
+"""Baseline C — restricted-information cooperative dispatch.
 
-Each vehicle claims tasks using own state + delayed peer updates.
+Uses only own state, delivered peer snapshots, and public announcements.
 Task ownership uses the central registry (not fully decentralized).
 """
 
 from __future__ import annotations
 
-from race_casablanca.sim.environment import OnlineSimulator
+from race_casablanca.sim.policy_api import ActionInterface, FullInfoObservation, RestrictedObservation
 
 
 class LimitedInfoCooperativePolicy:
@@ -14,44 +14,44 @@ class LimitedInfoCooperativePolicy:
 
     def __init__(self, broadcast_period_s: float = 120.0):
         self.broadcast_period_s = broadcast_period_s
-        self._last_broadcast_s = -1e18
+        self._last_broadcast_s: dict[str, float] = {}
 
-    def on_decision(self, sim: OnlineSimulator, reason: str) -> None:
-        # Periodic state exchange — never from message delivery (avoids feedback storms).
-        if reason != "message" and sim.now_s - self._last_broadcast_s >= self.broadcast_period_s:
-            for vid in sim.vehicles:
-                sim.broadcast_state(vid)
-            self._last_broadcast_s = sim.now_s
+    def on_decision(
+        self,
+        obs: FullInfoObservation | RestrictedObservation,
+        actions: ActionInterface,
+        reason: str,
+    ) -> None:
+        if isinstance(obs, FullInfoObservation):
+            # If mistakenly invoked in full mode, act only for each vehicle via restriction
+            # by refusing — experiments must set info_mode=restricted.
+            return
+        assert isinstance(obs, RestrictedObservation)
+        vid = obs.vehicle_id
 
-        available = list(sim.available_requests())
-        available.sort(key=lambda r: r.tw_end_s)
+        if reason != "message":
+            last = self._last_broadcast_s.get(vid, -1e18)
+            if obs.now_s - last >= self.broadcast_period_s:
+                actions.broadcast_own_state(vid)
+                self._last_broadcast_s[vid] = obs.now_s
 
-        for req in available:
-            # Rank idle-ish vehicles by travel time from their *known* position.
-            # In restricted mode we still use true own state for the acting vehicle;
-            # peers only affect tie-breaking via stale views.
-            candidates: list[tuple[float, str]] = []
-            for vid, v in sim.vehicles.items():
-                if v.busy and len(v.committed) >= 3:
-                    continue
-                chk = sim.check_insertion(vid, req.request_id)
-                if not chk.feasible:
-                    continue
-                # Penalty if peer stale view suggests peer is closer (coordination heuristic)
-                peer_penalty = 0.0
-                for peer, view in sim.local_views.get(vid, {}).items():
-                    if peer == vid:
-                        continue
-                    # If a peer announced fewer commitments and higher battery, defer slightly
-                    if len(view.get("committed", [])) < len(v.committed):
-                        peer_penalty += 30.0
-                candidates.append((chk.added_travel_s + peer_penalty, vid))
-            if not candidates:
-                if req.tw_end_s <= sim.now_s:
-                    sim.reject_request(req.request_id)
-                continue
-            candidates.sort()
-            # First feasible claim wins via registry (duplicate claims rejected)
-            for _cost, vid in candidates:
-                if sim.try_assign(vid, req.request_id):
+        # Defer if a peer snapshot (stale) looks clearly better for a task
+        announced = sorted(obs.announced, key=lambda t: t.tw_end_s)
+        self_load = len(obs.own_committed)
+        for task in announced:
+            # Skip claiming if a fresher peer message says they have fewer commitments
+            defer = False
+            for peer in obs.peers.values():
+                if len(peer.committed) < self_load:
+                    defer = True
                     break
+            if defer and self_load > 0:
+                continue
+
+            chk = actions.check_insertion(vid, task.request_id)
+            if not chk.feasible:
+                if task.tw_end_s <= obs.now_s:
+                    actions.reject_request(task.request_id)
+                continue
+            if actions.claim_task(vid, task.request_id):
+                break

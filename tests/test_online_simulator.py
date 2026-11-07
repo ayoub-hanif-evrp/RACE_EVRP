@@ -1,4 +1,4 @@
-"""Online simulator: synthetic exact routing/energy and basic Casablanca smoke."""
+"""Online simulator: synthetic exact routing/energy and reproducibility."""
 
 from __future__ import annotations
 
@@ -18,7 +18,6 @@ def test_synthetic_route_and_energy_exact():
     assert abs(rt.duration_s - 180.0) < 1e-6
     energy = EnergyModel(0.2, 0.0, 40.0, 0.15, 22.0)
     assert abs(energy.nominal_kwh(3000.0) - 0.6) < 1e-12
-    assert abs(energy.conservative_kwh(3000.0) - 0.6) < 1e-12
 
 
 def test_synthetic_greedy_episode_serves_and_conserves_energy():
@@ -38,7 +37,6 @@ def test_synthetic_greedy_episode_serves_and_conserves_energy():
     m = sim.run()
     assert m.n_served >= 1
     assert m.payload_violations == 0
-    # Energy conservation: consumed ≈ distance * 0.2 kWh/km
     expected = (m.total_distance_m / 1000.0) * 0.2
     assert abs(m.energy_consumed_kwh - expected) < 1e-9
     v = sim.vehicles["V1"]
@@ -57,7 +55,7 @@ def test_reproducibility_same_seed():
             depot_node=base["depot_node"],
             shift_start_s=base["shift_start_s"],
             shift_end_s=base["shift_end_s"],
-            config=SimConfig(info_mode="full", seed=seed, energy_uncertainty_delta=0.2),
+            config=SimConfig(info_mode="full", seed=seed, energy_uncertainty_delta=0.2, realization_mode="crn"),
             policy=GreedyInsertionPolicy(),
         )
         return sim.run().to_dict()

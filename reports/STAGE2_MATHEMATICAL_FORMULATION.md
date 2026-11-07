@@ -2,7 +2,7 @@
 
 Benchmark: `casablanca_release_v1` · Scope: online electric parcel pickup, depot-only charging.
 
-This formulation describes **implemented** Stage-2 simulator semantics. It is not a claim of novelty.
+This formulation describes **implemented** Stage-2 / Stage-2.1 simulator semantics. It is not a claim of novelty.
 
 ## 1. Network and travel times
 
@@ -23,7 +23,10 @@ Fleet \(\mathcal{V}=\{1,\ldots,m\}\). Vehicle \(v\) state at time \(\tau\):
 - location node \(n_v\), free/busy flag, clock ready time \(r_v\)
 - battery energy \(B_v\in[0,B^{\max}]\) (kWh)
 - onboard payload mass \(L_v\in[0,L^{\max}]\) (kg)
-- committed request set \(C_v\) and route plan \(\Pi_v\)
+- committed request set \(C_v\) and route plan \(\Pi_v=\Pi_v^{\mathrm{lock}}\oplus\Pi_v^{\mathrm{edit}}\)
+- active leg / service lock \(\Pi_v^{\mathrm{lock}}\) (immutable while executing)
+- editable suffix \(\Pi_v^{\mathrm{edit}}\) only
+- mode \(\in\{\mathrm{idle},\mathrm{en\_route},\mathrm{serving},\mathrm{charging},\mathrm{emergency\_stranded}\}\)
 - shift window \([\tau^{\mathrm{start}},\tau^{\mathrm{end}}]\)
 
 Reference parameters: \(B^{\max}=40\), \(L^{\max}=600\), reserve \(B^{\mathrm{res}}=0.15 B^{\max}\), charge power \(P^{\mathrm{ch}}=22\) kW (depot only).
@@ -41,49 +44,48 @@ Lifecycle: `unreleased` → `available` → `committed` → `in_service` → `co
 
 Pickup at \(s_i\) starts at \(\max(\text{arrival},e_i,a_i)\) and lasts \(\sigma_i\). Payload \(L_v\leftarrow L_v+w_i\) if \(L_v+w_i\le L^{\max}\).
 
-**Energy (Stage 2):** for distance \(d\) km,
+**Energy (Stage 2.1):** for distance \(d\) km,
 
-- Nominal planning: \(E^{\mathrm{nom}}(d)=c\cdot d\) with \(c=0.2\) kWh/km  
-- Realized: \(E^{\mathrm{real}}(d)=c\cdot d\cdot(1+\xi)\), \(\xi\sim\mathrm{Uniform}[-\delta,\delta]\) (documented synthetic disturbance; **not** measured Casablanca van data)  
-- Conservative planning bound: \(E^{\mathrm{cons}}(d)=c\cdot d\cdot(1+\delta)\)
+- Nominal: \(E^{\mathrm{nom}}(d)=c\cdot d\) with \(c=0.2\) kWh/km  
+- Conservative planning: \(E^{\mathrm{cons}}(d)=c\cdot d\cdot(1+\delta)\)  
+- Realized: \(E^{\mathrm{real}}(d)=c\cdot d\cdot(1+\xi)\) with \(\xi\in[-\delta,\delta]\) via CRN key \((s,v,\mathrm{leg})\) or adversarial \(\xi=+\delta\) (synthetic; **not** measured Casablanca van data)
 
-A planned tour is energy-feasible if, after every prefix under \(E^{\mathrm{cons}}\), remaining energy can reach the depot and stay \(\ge B^{\mathrm{res}}\). Realized SOC uses \(E^{\mathrm{real}}\); reserve violations under realization are recorded even if planning passed.
+Feasibility is evaluated from the **projected post-lock state** (location, time, battery after the locked leg’s already-sampled realized energy, payload). A tour is energy-feasible if every editable prefix under \(E^{\mathrm{cons}}\) retains depot reachability with \(B\ge B^{\mathrm{res}}\).
 
-Depot return unloads all payload. Optional depot charging: \(\Delta t = \Delta B / P^{\mathrm{ch}}\) hours, vehicle unavailable while charging. No en-route chargers.
+**Pre-dispatch gate:** a physical departure is allowed only if the same conservative check passes for that leg. Otherwise the vehicle does not travel (planned rejection and/or `emergency_stranded`). Under \(\xi\le\delta\), a gated policy must not produce reserve breaches attributable to bound violations.
 
-Customer service must finish by \(\tau^{\mathrm{end}}\); depot return may finish after \(\tau^{\mathrm{end}}\).
+Depot return unloads all payload. Optional depot charging: \(\Delta t = \Delta B / P^{\mathrm{ch}}\) hours. No en-route chargers.
+
+Customer **acceptance** requires finish-by \(\ell_i\) and shift end for planned service. If already `in_service` at shift end, service completes; on-time flag records whether \(\ell_i\) was met. Depot return may finish after \(\tau^{\mathrm{end}}\).
 
 ## 9. Acceptance / reassignment
 
-- Acceptance: assign available request \(i\) to vehicle \(v\) only if insertion into \(\Pi_v\) is feasible under time windows, payload, and conservative energy-to-depot.  
-- Reassignment: only while status is `committed` and pickup has not started.  
-- Cancellation / expiry: if \(\ell_i\) passes without service start/finish per policy rules.  
-- Ownership: at most one vehicle holds a request (central registry in both information modes; see §11).
+- Acceptance: insert into \(\Pi_v^{\mathrm{edit}}\) only; \(\Pi_v^{\mathrm{lock}}\) immutable.  
+- Reassignment: only `committed` and not locked; **atomic** (validate both sides, else restore).  
+- RH commits a full fleet plan atomically or rolls back.  
+- Ownership: central registry (not fully decentralized); see §11.
 
 ## 10. Objectives
 
-Primary evaluation metrics (not a single scalar “utility” forced on all policies):
+Metrics: serve rate; on-time of served and of all requests; distance; energy; planned energy rejections; reserve violations; exhaustion; depot returns; charges; messages; claims; failed claims; reassignments; info age; decision runtime.
 
-- serve rate, on-time rate, driving distance, energy consumed  
-- reserve / payload violations (realized)  
-- depot returns, charging events, messages, decision runtime  
-- rejected / expired requests  
-
-Secondary scalar used by insertion heuristics (documented weights): minimize added travel time subject to feasibility; reject if infeasible.
+Insertion heuristics minimize added travel time subject to feasibility.
 
 ## 11. Information structure
 
-**Full-information (centralized):** dispatcher observes all released requests and all vehicle states \((n_v,r_v,B_v,L_v,C_v)\). Does **not** observe unreleased requests or future \(\xi\).
+Policies receive an **immutable observation** and a **controlled action interface** (no mutable simulator).
 
-**Restricted-information:** vehicle \(v\) observes own state, own commitments, and messages delivered by time \(\tau\). Peers’ SOC/location unknown unless messaged. Task ownership uses a minimal central registry (not fully decentralized). Message delay \(\Delta^{\mathrm{msg}}\ge 0\); each send incurs unit communication cost.
+**Full-information:** all released tasks and all current vehicle states. No unreleased requests / future \(\xi\).
+
+**Restricted-information:** own state, own commitments, public announcements, and peer snapshots only after message delivery. Cannot query peer true SOC/location/plans. Registry enforces claims without exposing fleet telemetry. Message delay \(\Delta^{\mathrm{msg}}\ge 0\).
 
 ## 12. Online decision process
 
-Event-driven MDP-like process: events are request release, vehicle arrival, service end, charge end, message delivery, shift end. At decision epochs, a policy maps observable information to accept/insert/reassign/return/charge/idle actions. **Policies must not read future requests, future \(\xi\), or Stage-1 offline witnesses.**
+Event-driven process with locked legs. Policies map observations to claim/insert/reassign/return/charge/idle via the action API. **No future requests, future \(\xi\), or Stage-1 witnesses.**
 
 ## 13. Centralized vs decentralized problems
 
-- \(P_{\mathrm{full}}\): online full-info control with deterministic TTI and conservative energy for feasibility.  
-- \(P_{\mathrm{rest}}\): same physics; decisions use restricted observations + delayed messages.
+- \(P_{\mathrm{full}}\): full-info online control with conservative energy gates.  
+- \(P_{\mathrm{rest}}\): restricted observations + delayed messages + central ownership registry.
 
-Clairvoyant offline solutions are **evaluation oracles only**, never online baselines.
+Clairvoyant offline solutions are evaluation oracles only, never online baselines.

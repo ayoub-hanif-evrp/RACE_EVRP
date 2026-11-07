@@ -1,9 +1,6 @@
-"""Baseline B — centralized rolling-horizon reoptimization.
+"""Baseline B — centralized rolling-horizon insertion/local search.
 
-Uses sequential cheapest insertion + relocate/swap LNS within a wall-clock
-budget. OR-Tools is not required. Solutions are validated via the simulator's
-conservative feasibility checker before commitments are applied.
-No offline clairvoyant witness is used.
+Builds a full fleet assignment offline, validates it, then commits atomically.
 """
 
 from __future__ import annotations
@@ -11,8 +8,9 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-from race_casablanca.sim.environment import OnlineSimulator
-from race_casablanca.sim.feasibility_check import simulate_plan_conservative
+from race_casablanca.policies.greedy import GreedyInsertionPolicy
+from race_casablanca.sim.feasibility_check import projected_state_after_lock, simulate_plan_conservative
+from race_casablanca.sim.policy_api import ActionInterface, FullInfoObservation, RestrictedObservation
 from race_casablanca.sim.types import RequestStatus, Stop
 
 
@@ -23,156 +21,124 @@ class RollingHorizonPolicy:
     reoptimize_every_s: float = 300.0
     _last_reopt_s: float = -1e18
 
-    def on_decision(self, sim: OnlineSimulator, reason: str) -> None:
-        if reason not in {"request_release", "epoch", "service_end", "vehicle_idle"}:
-            # Still allow on release; skip pure message ticks
-            if reason == "message":
-                return
+    def on_decision(
+        self,
+        obs: FullInfoObservation | RestrictedObservation,
+        actions: ActionInterface,
+        reason: str,
+    ) -> None:
+        if not isinstance(obs, FullInfoObservation):
+            return
+        if reason == "message":
+            return
+        sim = actions._sim  # authorized full-info path via ActionInterface
         if reason != "request_release" and (sim.now_s - self._last_reopt_s) < self.reoptimize_every_s:
-            # Lightweight greedy fill between reoptimizations
-            self._greedy_fill(sim)
+            GreedyInsertionPolicy().on_decision(obs, actions, "fill")
             return
         self._reoptimize(sim)
         self._last_reopt_s = sim.now_s
+        # Record budget in metrics config
+        sim.config.extras["rh_time_budget_s"] = self.time_budget_s
 
-    def _greedy_fill(self, sim: OnlineSimulator) -> None:
-        from race_casablanca.policies.greedy import GreedyInsertionPolicy
-
-        GreedyInsertionPolicy().on_decision(sim, "fill")
-
-    def _reoptimize(self, sim: OnlineSimulator) -> None:
+    def _reoptimize(self, sim) -> None:
         t_end = time.perf_counter() + self.time_budget_s
-        # Collect reassignable requests: available + committed (not in service)
+        locked: dict[str, list[str]] = {vid: [] for vid in sim.vehicles}
+        for vid, v in sim.vehicles.items():
+            if v.moving_to and v.moving_to.kind == "pickup" and v.moving_to.request_id:
+                locked[vid].append(v.moving_to.request_id)
+
         pool: list[str] = []
         for req in sim.requests.values():
-            if req.status.value == "available":
+            if req.status == RequestStatus.AVAILABLE:
                 pool.append(req.request_id)
-            elif req.status.value == "committed":
-                v = sim.vehicles.get(req.owner or "", None)
-                if v is None:
-                    pool.append(req.request_id)
+            elif req.status == RequestStatus.COMMITTED:
+                if req.owner and req.request_id in locked.get(req.owner, []):
                     continue
-                if v.moving_to and v.moving_to.request_id == req.request_id:
-                    continue  # immutable once en route / in service
                 pool.append(req.request_id)
 
-        # Release all reassignable commitments back to available
-        for rid in list(pool):
-            req = sim.requests[rid]
-            if req.status.value == "committed" and req.owner:
-                vid = req.owner
+        assignment: dict[str, list[str]] = {vid: list(locked[vid]) for vid in sim.vehicles}
+
+        def plan_ok(assign: dict[str, list[str]]) -> bool:
+            for vid, rids in assign.items():
                 v = sim.vehicles[vid]
-                if v.moving_to and v.moving_to.request_id == rid:
-                    pool.remove(rid)
-                    continue
-                v.plan = [s for s in v.plan if s.request_id != rid]
-                if rid in v.committed:
-                    v.committed.remove(rid)
-                sim.registry.release(rid, vid)
-                req.status = RequestStatus.AVAILABLE
-                req.owner = None
+                edit = [rid for rid in rids if rid not in locked[vid]]
+                # Shadow statuses
+                backup = {}
+                for rid in edit:
+                    backup[rid] = sim.requests[rid].status
+                    if sim.requests[rid].status in {RequestStatus.AVAILABLE, RequestStatus.COMMITTED}:
+                        sim.requests[rid].status = RequestStatus.AVAILABLE
+                proj = projected_state_after_lock(
+                    v, sim.requests, sim.router, sim.energy, sim.depot_node, sim.now_s
+                )
+                plan = [Stop("pickup", rid, sim.requests[rid].snap_node) for rid in edit]
+                chk = simulate_plan_conservative(
+                    proj, plan, sim.requests, sim.router, sim.energy,
+                    sim.depot_node, sim.payload_max, sim.shift_end_s,
+                )
+                for rid, st in backup.items():
+                    sim.requests[rid].status = st
+                if not chk.feasible:
+                    return False
+            return True
 
-        # Build empty plans (keep locked in-service legs only)
-        assignment: dict[str, list[str]] = {vid: [] for vid in sim.vehicles}
-        for vid, v in sim.vehicles.items():
-            for s in v.plan:
-                if s.kind == "pickup" and s.request_id:
-                    assignment[vid].append(s.request_id)
+        def total_cost(assign: dict[str, list[str]]) -> float:
+            total = 0.0
+            for vid, rids in assign.items():
+                v = sim.vehicles[vid]
+                edit = [rid for rid in rids if rid not in locked[vid]]
+                backup = {}
+                for rid in edit:
+                    backup[rid] = sim.requests[rid].status
+                    if sim.requests[rid].status in {RequestStatus.AVAILABLE, RequestStatus.COMMITTED}:
+                        sim.requests[rid].status = RequestStatus.AVAILABLE
+                proj = projected_state_after_lock(
+                    v, sim.requests, sim.router, sim.energy, sim.depot_node, sim.now_s
+                )
+                plan = [Stop("pickup", rid, sim.requests[rid].snap_node) for rid in edit]
+                chk = simulate_plan_conservative(
+                    proj, plan, sim.requests, sim.router, sim.energy,
+                    sim.depot_node, sim.payload_max, sim.shift_end_s,
+                )
+                for rid, st in backup.items():
+                    sim.requests[rid].status = st
+                total += chk.added_travel_s if chk.feasible else 1e18
+            return total
 
-        # Seed by deadline urgency, sequential cheapest insertion across fleet
-        pool_sorted = sorted(pool, key=lambda rid: sim.requests[rid].tw_end_s)
-        unassigned: list[str] = []
-        for rid in pool_sorted:
+        for rid in sorted(pool, key=lambda x: sim.requests[x].tw_end_s):
             best = None
             for vid in sim.vehicles:
-                v = sim.vehicles[vid]
-                trial = list(assignment[vid]) + [rid]
-                plan = [Stop("pickup", r, sim.requests[r].snap_node) for r in trial]
-                # Include locked prefix already in v.plan that are in-service targets
-                locked = [
-                    s
-                    for s in v.plan
-                    if s.kind == "pickup" and s.request_id and s.request_id not in trial
-                ]
-                full = locked + plan
-                chk = simulate_plan_conservative(
-                    v,
-                    full,
-                    sim.requests,
-                    sim.router,
-                    sim.energy,
-                    sim.depot_node,
-                    sim.payload_max,
-                    sim.shift_end_s,
-                )
-                if chk.feasible and (best is None or chk.added_travel_s < best[0]):
-                    best = (chk.added_travel_s, vid)
-            if best is None:
-                unassigned.append(rid)
-            else:
+                trial = {**assignment, vid: assignment[vid] + [rid]}
+                if plan_ok(trial):
+                    c = total_cost(trial)
+                    if best is None or c < best[0]:
+                        best = (c, vid)
+            if best is not None:
                 assignment[best[1]].append(rid)
 
-        # LNS relocate while budget remains
         improved = True
         while improved and time.perf_counter() < t_end:
             improved = False
-            for rid in list(sum(assignment.values(), [])):
+            movable = [rid for rids in assignment.values() for rid in rids]
+            movable = [rid for rid in movable if all(rid not in locked[v] for v in locked)]
+            for rid in movable:
                 if time.perf_counter() >= t_end:
                     break
                 cur_v = next(vid for vid, rids in assignment.items() if rid in rids)
                 for vid in sim.vehicles:
                     if vid == cur_v:
                         continue
-                    # try move
-                    new_cur = [r for r in assignment[cur_v] if r != rid]
-                    new_dst = list(assignment[vid]) + [rid]
-                    if self._plans_ok(sim, {**assignment, cur_v: new_cur, vid: new_dst}):
-                        # accept if total travel decreases
-                        before = self._total_cost(sim, assignment)
-                        trial_map = {**assignment, cur_v: new_cur, vid: new_dst}
-                        after = self._total_cost(sim, trial_map)
-                        if after + 1e-9 < before:
-                            assignment = trial_map
-                            improved = True
-                            break
+                    trial = {
+                        **assignment,
+                        cur_v: [r for r in assignment[cur_v] if r != rid],
+                        vid: assignment[vid] + [rid],
+                    }
+                    if not plan_ok(trial):
+                        continue
+                    if total_cost(trial) + 1e-9 < total_cost(assignment):
+                        assignment = trial
+                        improved = True
+                        break
 
-        # Apply via try_assign (validates again)
-        for vid, rids in assignment.items():
-            for rid in rids:
-                req = sim.requests[rid]
-                if req.status.value == "available":
-                    sim.try_assign(vid, rid)
-                elif req.owner == vid:
-                    continue
-                else:
-                    if req.status.value == "committed" and req.owner:
-                        sim.try_reassign(req.owner, vid, rid)
-
-        for rid in unassigned:
-            req = sim.requests[rid]
-            if req.status.value == "available" and req.tw_end_s <= sim.now_s:
-                sim.reject_request(rid)
-
-    def _plans_ok(self, sim: OnlineSimulator, assignment: dict[str, list[str]]) -> bool:
-        for vid, rids in assignment.items():
-            v = sim.vehicles[vid]
-            plan = [Stop("pickup", r, sim.requests[r].snap_node) for r in rids]
-            chk = simulate_plan_conservative(
-                v, plan, sim.requests, sim.router, sim.energy,
-                sim.depot_node, sim.payload_max, sim.shift_end_s,
-            )
-            if not chk.feasible:
-                return False
-        return True
-
-    def _total_cost(self, sim: OnlineSimulator, assignment: dict[str, list[str]]) -> float:
-        total = 0.0
-        for vid, rids in assignment.items():
-            v = sim.vehicles[vid]
-            plan = [Stop("pickup", r, sim.requests[r].snap_node) for r in rids]
-            chk = simulate_plan_conservative(
-                v, plan, sim.requests, sim.router, sim.energy,
-                sim.depot_node, sim.payload_max, sim.shift_end_s,
-            )
-            total += chk.added_travel_s if chk.feasible else 1e18
-        return total
+        # Atomic commit of the optimized assignment (exact order preserved)
+        sim.commit_fleet_plans(assignment)
