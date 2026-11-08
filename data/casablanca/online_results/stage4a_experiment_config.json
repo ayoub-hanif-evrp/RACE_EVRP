@@ -1,0 +1,27 @@
+{
+  "stage": "4A",
+  "scenarios": [
+    "baseline_seed1",
+    "peak_stress_seed2",
+    "tight_windows_seed3"
+  ],
+  "suites": [
+    "full_soc",
+    "soc35"
+  ],
+  "n_samples": 2,
+  "n_synthetic_requests": 3,
+  "lookahead_horizon_s": 2400.0,
+  "future_model": "SyntheticFutureModel.from_training",
+  "future_model_sources": [
+    "baseline_seed1",
+    "baseline_seed4",
+    "peak_stress_seed2",
+    "peak_stress_seed5",
+    "tight_windows_seed3",
+    "tight_windows_seed6"
+  ],
+  "seed": 1,
+  "dataset": "casablanca_release_v1",
+  "notes": "Pilot only; Stage 3C FAIL preserved. No test tuning."
+}
