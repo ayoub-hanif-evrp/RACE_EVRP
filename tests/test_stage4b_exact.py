@@ -46,3 +46,22 @@ def test_d_charge_enables_two():
     r = enumerate_charge_commit(instance_d_charge_enables_later())
     assert r.best_on_time == 2
     assert r.always_full_on_time < r.best_on_time
+
+
+def test_shift_end_blocks_late_service():
+    """Adversarial: shift_end before feasible finish → best on-time 0."""
+    from race_casablanca.exact.charge_commit_enum import ChargeCommitInstance, ToyRequest, _line_travel
+
+    ts, ek = _line_travel()
+    inst = ChargeCommitInstance(
+        name="shift_end_block",
+        description="shift_end before travel+service completes",
+        travel_s=ts,
+        travel_kwh=ek,
+        requests=[ToyRequest("R1", node=3, tw_start=0, tw_end=1e9, service_s=60)],
+        initial_soc=1.0,
+        reserve_kwh=1.0,
+        shift_end=100.0,  # travel 180 alone exceeds
+    )
+    r = enumerate_charge_commit(inst)
+    assert r.best_on_time == 0

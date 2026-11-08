@@ -10,6 +10,35 @@ from race_casablanca.sim.router import RouteCache
 from race_casablanca.sim.types import ProjectedState, Request, Stop, VehicleMode, VehicleState
 
 
+def apply_depot_charge(
+    battery_kwh: float,
+    ready_s: float,
+    energy: EnergyModel,
+    stop: Stop | None = None,
+    *,
+    target_kwh: float | None = None,
+) -> tuple[float, float, float]:
+    """Apply a depot charge respecting Stop.target_kwh (Stage 5).
+
+    Returns (battery_after, ready_after, energy_delivered_kwh).
+    If neither stop.target_kwh nor target_kwh is set, defaults to full Bmax
+    (legacy depot_charge without an explicit target).
+    """
+
+    bmax = float(energy.battery_kwh_max)
+    bat = float(battery_kwh)
+    if target_kwh is not None:
+        raw = float(target_kwh)
+    elif stop is not None and stop.target_kwh is not None:
+        raw = float(stop.target_kwh)
+    else:
+        raw = bmax
+    target = min(bmax, max(bat, raw))
+    need = max(0.0, target - bat)
+    dur = energy.charge_time_s(need)
+    return target, float(ready_s) + dur, need
+
+
 @dataclass
 class FeasibilityCheck:
     feasible: bool
@@ -121,9 +150,7 @@ def projected_state_after_lock(
         arr = rt.arrival_s
     ready = arr
     if stop.kind == "depot_charge":
-        need = max(0.0, energy.battery_kwh_max - bat)
-        ready += energy.charge_time_s(need)
-        bat = energy.battery_kwh_max
+        bat, ready, _ = apply_depot_charge(bat, ready, energy, stop)
     return ProjectedState(depot_node, ready, bat, 0.0, ())
 
 
@@ -163,7 +190,7 @@ def simulate_plan_conservative(
         if stop.kind == "pickup":
             assert stop.request_id is not None
             req = requests[stop.request_id]
-            if req.status.value in {"completed", "expired", "rejected", "in_service"}:
+            if req.status.value in {"completed", "expired", "rejected", "in_service", "missed"}:
                 return FeasibilityCheck(False, f"request_not_assignable:{req.status}")
             if load + req.weight_kg > payload_max + 1e-9:
                 return FeasibilityCheck(False, "payload")
@@ -207,9 +234,7 @@ def simulate_plan_conservative(
             node = depot_node
             load = 0.0
             if stop.kind == "depot_charge":
-                need = energy.battery_kwh_max - bat
-                t += energy.charge_time_s(need)
-                bat = energy.battery_kwh_max
+                bat, t, _ = apply_depot_charge(bat, t, energy, stop)
         else:
             return FeasibilityCheck(False, f"unknown_stop:{stop.kind}")
 

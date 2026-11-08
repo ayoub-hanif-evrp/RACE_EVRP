@@ -1,11 +1,17 @@
 """Exact enumeration for tiny depot-charge + commitment instances.
 
-Discrete-action model (exact for this alphabet):
-  - travel times/energies are deterministic between nodes
-  - charge targets in {0.50, 0.70, 1.00} clipped to [soc, 1]
-  - hard windows: service finish ≤ tw_end
-  - single vehicle, depot charging only
-  - actions: serve remaining request r | charge-to-target
+Discrete-action model — exact **only** for this restricted subproblem
+(not the unrestricted offline EVRP optimum):
+
+  - Deterministic travel time/energy on a tiny directed graph
+  - Charge targets in {0.50, 0.70, 1.00} clipped to [soc, 1]
+  - Hard windows: service finish ≤ min(tw_end, shift_end)
+  - Single vehicle, depot charging only
+  - Searched sequences: permutations of a serve-subset with an optional
+    charge-before-each-serve from the discrete alphabet
+  - No anticipatory empty repositioning / waiting-for-reposition
+  - Final depot return after serving may finish after shift_end
+  - Request release times: clock advances to release_s before a serve if needed
 
 State is finite because charge targets are discrete and request sets are tiny
 (≤4). Time advances by known route durations + charge durations.
@@ -115,10 +121,11 @@ def _simulate_plan(
         travel += ts
         loc = req.node
         start = max(t, req.tw_start)
-        if start + req.service_s > req.tw_end + 1e-9:
-            log.append({"op": "miss", "rid": rid, "t": t})
+        finish = start + req.service_s
+        if finish > req.tw_end + 1e-9 or finish > inst.shift_end + 1e-9:
+            log.append({"op": "miss", "rid": rid, "t": t, "finish": finish})
             continue
-        t = start + req.service_s
+        t = finish
         served.add(rid)
         log.append({"op": "serve", "rid": rid, "t": t, "bat": bat})
 
@@ -246,10 +253,11 @@ def _simple_online(inst: ChargeCommitInstance, *, mode: str) -> int:
                 continue
             arr = t + ts
             start = max(arr, req.tw_start)
-            if start + req.service_s > req.tw_end + 1e-9:
+            finish = start + req.service_s
+            if finish > req.tw_end + 1e-9 or finish > inst.shift_end + 1e-9:
                 continue
             bat -= ek
-            t = start + req.service_s
+            t = finish
             loc = req.node
             remaining.remove(req)
             served += 1

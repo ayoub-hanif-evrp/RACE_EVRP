@@ -15,6 +15,7 @@ Casablanca is the sole primary geographical research environment. This repositor
 | 3C — Fair mechanism validation | Complete; acceptance **FAIL** for inverse-slack RACE |
 | 4A — Post-decision service-capacity pilot | Complete; acceptance **FAIL** (see `reports/STAGE4A_RESEARCH_DECISION.md`) |
 | 4B — Charging-and-commitment reformulation | Complete; acceptance **PARTIAL** (see `reports/STAGE4B_HANDOFF.md`) |
+| 5 — RACE-RH charging-aware optimizer | Complete; acceptance **PARTIAL** (see `reports/STAGE5_HANDOFF.md`) |
 
 **Not implemented yet:** PPO, GNNs, transformers, MARL, or a final learned RACE architecture.
 
@@ -52,11 +53,13 @@ Full validation (local Morocco PBF): `scripts\verify_benchmark_release.py`.
 .\.venv\Scripts\python scripts\run_stage4a_pilot.py
 .\.venv\Scripts\python scripts\run_stage4b_exact_toys.py
 .\.venv\Scripts\python scripts\run_stage4b_charging_gap.py
+.\.venv\Scripts\python scripts\run_stage5_race_rh.py
 ```
 
 Stage 4A post-decision policy: `src/race_casablanca/policies/race_postdecision.py`.  
 Stage 4A decision: `reports/STAGE4A_HANDOFF.md`.  
-Stage 4B handoff: `reports/STAGE4B_HANDOFF.md`.
+Stage 4B handoff: `reports/STAGE4B_HANDOFF.md`.  
+Stage 5 RACE-RH: `src/race_casablanca/policies/race_rh.py`, `reports/STAGE5_HANDOFF.md`.
 
 ## Data layout
 
@@ -84,6 +87,7 @@ Large raw downloads and heavy GraphML/GeoPackage exports are gitignored; manifes
 - Stage 3C: `reports/STAGE3C_HANDOFF.md`, `STAGE3C_RESEARCH_DECISION.md`, `STAGE3C_MECHANISM_ABLATION.md`
 - Stage 4A: `reports/STAGE4A_HANDOFF.md`, `STAGE4A_RESEARCH_DECISION.md`, `STAGE4A_EXPERIMENT_RESULTS.md`
 - Stage 4B: `reports/STAGE4B_HANDOFF.md`, `STAGE4B_CHARGING_COMMITMENT_PROBLEM.md`, `STAGE4B_CHARGING_DECISION_GAP.md`
+- Stage 5: `reports/STAGE5_HANDOFF.md`, `STAGE5_BASELINE_COMPARISON.md`, `STAGE5_NOVELTY_AND_LIMITATIONS.md`
 
 ## Attribution and licenses
 

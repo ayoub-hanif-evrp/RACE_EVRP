@@ -379,13 +379,22 @@ class OnlineSimulator:
         self.n_failed_claims = snap["n_failed_claims"]
         self.planned_energy_rejections = snap["planned_energy_rejections"]
 
-    def commit_fleet_plans(self, assignment: dict[str, list[str]]) -> bool:
+    def commit_fleet_plans(
+        self,
+        assignment: dict[str, list[str]],
+        *,
+        stop_plans: dict[str, list[Stop]] | None = None,
+    ) -> bool:
         """Two-phase atomic plan commit preserving exact pickup order.
 
         Partial updates: only vehicles listed in ``assignment`` are released/rebuilt.
         Omitted vehicles keep their commitments, plans, and ownership unchanged.
 
         Full-fleet replacement: pass every vehicle id (possibly with empty editable lists).
+
+        Optional ``stop_plans[vid]``: editable stop sequence (pickups + depot_charge)
+        used for validation and commit (Stage 5 charge-augmented plans). Pickup order
+        in stop_plans must match editable request ids in ``assignment``.
 
         1) Validate without mutating. 2) Commit ownership+plans for touched vehicles.
         3) Activate legs for touched idle vehicles. On failure, restore full state.
@@ -431,7 +440,15 @@ class OnlineSimulator:
             status_backup = {rid: self.requests[rid].status for rid in editable}
             for rid in editable:
                 self.requests[rid].status = RequestStatus.AVAILABLE
-            plan = [Stop("pickup", rid, self.requests[rid].snap_node) for rid in editable]
+            if stop_plans is not None and vid in stop_plans:
+                plan = list(stop_plans[vid])
+                plan_pickups = [s.request_id for s in plan if s.kind == "pickup"]
+                if plan_pickups != editable:
+                    for rid, st in status_backup.items():
+                        self.requests[rid].status = st
+                    return False
+            else:
+                plan = [Stop("pickup", rid, self.requests[rid].snap_node) for rid in editable]
             proj = self.projected(vid)
             chk = simulate_plan_conservative(
                 proj, plan, self.requests, self.router, self.energy,
@@ -466,12 +483,17 @@ class OnlineSimulator:
                 v = self.vehicles[vid]
                 locked = locked_by_v.get(vid, [])
                 locked_stops = list(locked_prefix(v))
-                editable_stops = [
-                    Stop("pickup", rid, self.requests[rid].snap_node)
-                    for rid in rids
-                    if rid not in locked
-                ]
+                if stop_plans is not None and vid in stop_plans:
+                    editable_stops = list(stop_plans[vid])
+                else:
+                    editable_stops = [
+                        Stop("pickup", rid, self.requests[rid].snap_node)
+                        for rid in rids
+                        if rid not in locked
+                    ]
                 for stop in editable_stops:
+                    if stop.kind != "pickup" or stop.request_id is None:
+                        continue
                     rid = stop.request_id
                     assert rid is not None
                     if self.requests[rid].status == RequestStatus.COMMITTED and self.requests[rid].owner not in (None, vid):
