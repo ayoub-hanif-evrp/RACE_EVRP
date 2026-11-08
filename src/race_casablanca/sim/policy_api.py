@@ -137,11 +137,17 @@ class ActionInterface:
                 raise PermissionError("restricted policy may only broadcast self")
         self._sim.broadcast_state(vehicle_id)
 
-    def request_return_depot(self, vehicle_id: str, *, charge: bool | None = None) -> None:
+    def request_return_depot(
+        self,
+        vehicle_id: str,
+        *,
+        charge: bool | None = None,
+        target_soc: float | None = None,
+    ) -> None:
         if self._sim.config.info_mode == "restricted":
             if self.actor_vehicle_id is None or vehicle_id != self.actor_vehicle_id:
                 raise PermissionError("restricted policy may only return self")
-        self._sim.request_return_depot(vehicle_id, charge=charge)
+        self._sim.request_return_depot(vehicle_id, charge=charge, target_soc=target_soc)
 
 
 class Policy(Protocol):

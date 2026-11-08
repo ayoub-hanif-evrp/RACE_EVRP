@@ -56,8 +56,10 @@ Feasibility is evaluated from the **projected post-lock state** (location, time,
 **Pre-dispatch gate:** a physical departure is allowed only if the same conservative check passes for that leg. Otherwise the vehicle does not travel (planned rejection and/or `emergency_stranded`). Under \(\xi\le\delta\), a gated policy must not produce reserve breaches attributable to bound violations.
 
 Depot return unloads all payload. Optional depot charging: \(\Delta t = \Delta B / P^{\mathrm{ch}}\) hours. No en-route chargers.
+**Stage 4B:** charge stops may specify a discrete target SOC \(\in\{0.50,0.70,1.00\}\) (clipped to \([\mathrm{SOC},1]\)); metrics track energy delivered and charge duration.
 
-Customer **acceptance** requires finish-by \(\ell_i\) and shift end for planned service. If already `in_service` at shift end, service completes; on-time flag records whether \(\ell_i\) was met. Depot return may finish after \(\tau^{\mathrm{end}}\).
+Customer **acceptance** requires finish-by \(\ell_i\) and shift end for planned service.
+**Stage 4B hard deadlines:** on pickup arrival, service may start only if \(\max(t,e_i)+\mathrm{service}\le\ell_i\); otherwise the request is `MISSED` (not `COMPLETED`). Under this regime `COMPLETED` ≡ on-time; primary rate is on-time among all released requests. Depot return may finish after \(\tau^{\mathrm{end}}\).
 
 ## 9. Acceptance / reassignment
 
@@ -68,7 +70,7 @@ Customer **acceptance** requires finish-by \(\ell_i\) and shift end for planned 
 
 ## 10. Objectives
 
-Metrics: serve rate; on-time of served and of all requests; distance; energy; planned energy rejections; reserve violations; exhaustion; depot returns; charges; messages; claims; failed claims; reassignments; info age; decision runtime.
+Metrics: serve rate; on-time of served and of all requests (Stage 4B primary alias = on-time/all); distance; energy consumed/delivered; charge duration; planned energy rejections; reserve violations; exhaustion; depot returns; charges; misses; messages; claims; failed claims; reassignments; info age; decision runtime.
 
 Insertion heuristics minimize added travel time subject to feasibility.
 

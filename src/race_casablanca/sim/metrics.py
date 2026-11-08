@@ -16,15 +16,18 @@ class EpisodeMetrics:
     n_on_time: int = 0
     n_rejected: int = 0
     n_expired: int = 0
+    n_missed: int = 0
     serve_rate: float = 0.0
     on_time_rate_served: float = 0.0
     on_time_rate_all: float = 0.0
-    # backward-compatible alias filled in finalize
+    # Primary Stage-4B alias: on-time among all released (= n_requests at end)
     on_time_rate: float = 0.0
     total_distance_m: float = 0.0
     total_travel_s: float = 0.0
     total_wait_s: float = 0.0
     energy_consumed_kwh: float = 0.0
+    energy_delivered_kwh: float = 0.0
+    charge_duration_s: float = 0.0
     battery_reserve_violations: int = 0
     battery_exhaustion: int = 0
     planned_energy_rejections: int = 0
@@ -47,7 +50,8 @@ class EpisodeMetrics:
         self.serve_rate = self.n_served / self.n_requests if self.n_requests else 0.0
         self.on_time_rate_served = self.n_on_time / self.n_served if self.n_served else 0.0
         self.on_time_rate_all = self.n_on_time / self.n_requests if self.n_requests else 0.0
-        self.on_time_rate = self.on_time_rate_served
+        # Hard-deadline regime: primary figure is on-time among all requests
+        self.on_time_rate = self.on_time_rate_all
 
     def to_dict(self) -> dict:
         self.finalize()

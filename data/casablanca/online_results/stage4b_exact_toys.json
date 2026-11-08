@@ -1,0 +1,111 @@
+[
+  {
+    "instance": "A_early_charge",
+    "best_on_time": 1,
+    "best_travel_s": 360.0,
+    "n_enumerated": 8,
+    "greedy_on_time": 1,
+    "always_full_on_time": 1,
+    "gap_greedy": 0,
+    "gap_always_full": 0,
+    "notes": "Early charge optimal: soc=0.20 cannot round-trip 0\u21943 under reserve without charging.",
+    "best_plan": [
+      {
+        "op": "charge",
+        "target_soc": 0.5,
+        "t": 1963.6363636363637,
+        "bat": 20.0,
+        "dur": 1963.6363636363637
+      },
+      {
+        "op": "serve",
+        "rid": "R1",
+        "t": 2203.636363636364,
+        "bat": 17.0
+      }
+    ]
+  },
+  {
+    "instance": "B_serve_before_charge",
+    "best_on_time": 2,
+    "best_travel_s": 360.0,
+    "n_enumerated": 44,
+    "greedy_on_time": 2,
+    "always_full_on_time": 1,
+    "gap_greedy": 0,
+    "gap_always_full": 1,
+    "notes": "Serve-before-charge optimal; charging full first misses R1 window.",
+    "best_plan": [
+      {
+        "op": "serve",
+        "rid": "R1",
+        "t": 90.0,
+        "bat": 21.8
+      },
+      {
+        "op": "serve",
+        "rid": "R2",
+        "t": 270.0,
+        "bat": 21.400000000000002
+      }
+    ]
+  },
+  {
+    "instance": "C_partial_better",
+    "best_on_time": 1,
+    "best_travel_s": 360.0,
+    "n_enumerated": 8,
+    "greedy_on_time": 0,
+    "always_full_on_time": 0,
+    "gap_greedy": 1,
+    "gap_always_full": 1,
+    "notes": "Partial target 0.50 enables serve in window; full charge too slow.",
+    "best_plan": [
+      {
+        "op": "charge",
+        "target_soc": 0.5,
+        "t": 1309.090909090909,
+        "bat": 20.0,
+        "dur": 1309.090909090909
+      },
+      {
+        "op": "serve",
+        "rid": "R1",
+        "t": 1549.090909090909,
+        "bat": 15.5
+      }
+    ]
+  },
+  {
+    "instance": "D_charge_enables_later",
+    "best_on_time": 2,
+    "best_travel_s": 360.0,
+    "n_enumerated": 44,
+    "greedy_on_time": 2,
+    "always_full_on_time": 1,
+    "gap_greedy": 0,
+    "gap_always_full": 1,
+    "notes": "Mid-tour charge enables second commitment after first service.",
+    "best_plan": [
+      {
+        "op": "charge",
+        "target_soc": 0.5,
+        "t": 1439.9999999999998,
+        "bat": 20.0,
+        "dur": 1439.9999999999998
+      },
+      {
+        "op": "serve",
+        "rid": "R1",
+        "t": 1619.9999999999998,
+        "bat": 17.6
+      },
+      {
+        "op": "serve",
+        "rid": "R2",
+        "t": 1739.9999999999998,
+        "bat": 16.400000000000002
+      }
+    ]
+  }
+]

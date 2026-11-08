@@ -517,21 +517,42 @@ class OnlineSimulator:
         ok = self.commit_fleet_plans({vehicle_id: proposed})
         if ok and charge:
             # Explicit charge on this vehicle only — do not flip episode-wide config
-            self.request_return_depot(vehicle_id, charge=True)
+            self.request_return_depot(vehicle_id, charge=True, target_soc=1.0)
         return ok
 
-    def request_return_depot(self, vehicle_id: str, *, charge: bool | None = None) -> None:
+    def request_return_depot(
+        self,
+        vehicle_id: str,
+        *,
+        charge: bool | None = None,
+        target_soc: float | None = None,
+    ) -> None:
+        """Queue depot return; optional discrete-target charge (target_soc in [0,1])."""
         v = self.vehicles[vehicle_id]
         if v.mode == VehicleMode.EMERGENCY_STRANDED:
             return
         # Explicit charge arg wins; otherwise episode default. Never mutate config here.
         do_charge = self.config.charge_on_return if charge is None else bool(charge)
         kind = "depot_charge" if do_charge else "depot_unload"
+        tgt_kwh: float | None = None
+        if do_charge:
+            soc = 1.0 if target_soc is None else float(target_soc)
+            soc = max(0.0, min(1.0, soc))
+            tgt_kwh = soc * float(self.energy.battery_kwh_max)
+        stop = Stop(kind, None, self.depot_node, target_kwh=tgt_kwh)
         if v.busy:
             if not any(s.kind.startswith("depot") for s in editable_suffix(v)):
-                v.plan = list(locked_prefix(v)) + editable_suffix(v) + [Stop(kind, None, self.depot_node)]
+                v.plan = list(locked_prefix(v)) + editable_suffix(v) + [stop]
+            elif do_charge:
+                # Refresh charge target on existing depot stop in editable suffix
+                new_plan = list(locked_prefix(v)) + editable_suffix(v)
+                for i, s in enumerate(new_plan):
+                    if s.kind.startswith("depot"):
+                        new_plan[i] = Stop(kind, None, self.depot_node, target_kwh=tgt_kwh)
+                        break
+                v.plan = new_plan
             return
-        v.plan = [Stop(kind, None, self.depot_node)]
+        v.plan = [stop]
         self._start_next_leg(vehicle_id)
 
     def _enter_emergency(self, vehicle_id: str, reason: str, extra: dict | None = None) -> None:
@@ -683,7 +704,12 @@ class OnlineSimulator:
 
         if stop.kind == "pickup":
             req = self.requests[stop.request_id]
-            if req.status in {RequestStatus.COMPLETED, RequestStatus.EXPIRED, RequestStatus.REJECTED}:
+            if req.status in {
+                RequestStatus.COMPLETED,
+                RequestStatus.EXPIRED,
+                RequestStatus.REJECTED,
+                RequestStatus.MISSED,
+            }:
                 # Stale event — drop stop and continue
                 if v.plan and v.plan[0].request_id == stop.request_id:
                     v.plan.pop(0)
@@ -694,6 +720,14 @@ class OnlineSimulator:
                 self._start_next_leg(vehicle_id)
                 return
             start = max(self.now_s, req.tw_start_s)
+            # Hard deadline: service must finish by tw_end_s
+            if start + req.service_s > req.tw_end_s + 1e-9:
+                self._miss_pickup_on_arrival(
+                    vehicle_id,
+                    stop.request_id,
+                    reason="deadline_unreachable_on_arrival",
+                )
+                return
             req.status = RequestStatus.IN_SERVICE
             req.service_start_s = start
             v.mode = VehicleMode.SERVING
@@ -711,7 +745,13 @@ class OnlineSimulator:
         v.n_depot_returns += 1
         v.ready_s = self.now_s
         if stop.kind == "depot_charge":
-            need = max(0.0, self.energy.battery_kwh_max - v.battery_kwh)
+            bmax = float(self.energy.battery_kwh_max)
+            if stop.target_kwh is not None:
+                target = float(stop.target_kwh)
+            else:
+                target = bmax
+            target = min(bmax, max(float(v.battery_kwh), target))
+            need = max(0.0, target - float(v.battery_kwh))
             dur = self.energy.charge_time_s(need)
             if dur > 0:
                 v.n_charges += 1
@@ -719,7 +759,12 @@ class OnlineSimulator:
                 self._schedule(
                     self.now_s + dur,
                     EventType.CHARGE_END,
-                    {"vehicle_id": vehicle_id, "target_kwh": self.energy.battery_kwh_max},
+                    {
+                        "vehicle_id": vehicle_id,
+                        "target_kwh": target,
+                        "energy_to_deliver_kwh": need,
+                        "duration_s": dur,
+                    },
                 )
                 return
         if v.plan and (
@@ -732,6 +777,38 @@ class OnlineSimulator:
         v.mode = VehicleMode.IDLE
         v.path_nodes = []
         self._maybe_decide("vehicle_idle")
+        self._start_next_leg(vehicle_id)
+
+    def _miss_pickup_on_arrival(self, vehicle_id: str, request_id: str, *, reason: str) -> None:
+        """Hard-deadline miss: no COMPLETED; vehicle stays at customer node."""
+        v = self.vehicles[vehicle_id]
+        req = self.requests[request_id]
+        req.status = RequestStatus.MISSED
+        req.on_time = False
+        req.service_start_s = None
+        req.service_end_s = None
+        if request_id in v.committed:
+            v.committed.remove(request_id)
+        v.plan = [s for s in v.plan if not (s.kind == "pickup" and s.request_id == request_id)]
+        self.registry.release(request_id, vehicle_id)
+        req.owner = None
+        self.event_trace.append(
+            {
+                "event": "pickup_missed",
+                "reason": reason,
+                "request_id": request_id,
+                "vehicle_id": vehicle_id,
+                "time_s": self.now_s,
+                "tw_end_s": req.tw_end_s,
+                "service_s": req.service_s,
+            }
+        )
+        v.moving_to = None
+        v.busy = False
+        v.mode = VehicleMode.IDLE
+        v.ready_s = self.now_s
+        v.path_nodes = []
+        self._maybe_decide("pickup_missed")
         self._start_next_leg(vehicle_id)
 
     def _on_service_end(self, vehicle_id: str, request_id: str) -> None:
@@ -752,7 +829,8 @@ class OnlineSimulator:
         else:
             v.load_kg += req.weight_kg
         req.service_end_s = self.now_s
-        req.on_time = req.service_end_s <= req.tw_end_s + 1e-9
+        # Hard-deadline gate on arrival: COMPLETED ≡ on-time
+        req.on_time = True
         req.status = RequestStatus.COMPLETED
         if request_id in v.committed:
             v.committed.remove(request_id)
@@ -765,9 +843,17 @@ class OnlineSimulator:
         self._maybe_decide("service_end")
         self._start_next_leg(vehicle_id)
 
-    def _on_charge_end(self, vehicle_id: str, target_kwh: float) -> None:
+    def _on_charge_end(self, vehicle_id: str, target_kwh: float, *, energy_delivered: float = 0.0, duration_s: float = 0.0) -> None:
         v = self.vehicles[vehicle_id]
+        before = float(v.battery_kwh)
         v.battery_kwh = min(self.energy.battery_kwh_max, float(target_kwh))
+        delivered = energy_delivered if energy_delivered > 0 else max(0.0, float(v.battery_kwh) - before)
+        v.energy_delivered_kwh += delivered
+        if duration_s > 0:
+            v.charge_duration_s += duration_s
+        else:
+            # Reconstruct from charge model if payload omitted
+            v.charge_duration_s += self.energy.charge_time_s(delivered)
         v.ready_s = self.now_s
         if v.plan and v.plan[0].kind.startswith("depot"):
             v.plan.pop(0)
@@ -836,7 +922,12 @@ class OnlineSimulator:
             elif ev.type == EventType.SERVICE_END:
                 self._on_service_end(ev.payload["vehicle_id"], ev.payload["request_id"])
             elif ev.type == EventType.CHARGE_END:
-                self._on_charge_end(ev.payload["vehicle_id"], ev.payload["target_kwh"])
+                self._on_charge_end(
+                    ev.payload["vehicle_id"],
+                    ev.payload["target_kwh"],
+                    energy_delivered=float(ev.payload.get("energy_to_deliver_kwh", 0.0)),
+                    duration_s=float(ev.payload.get("duration_s", 0.0)),
+                )
             elif ev.type == EventType.MESSAGE_DELIVER:
                 msg = next(m for m in self.bus.history if m.msg_id == ev.payload["msg_id"])
                 self.bus.deliver(msg)
@@ -878,7 +969,11 @@ class OnlineSimulator:
                         v.committed.remove(req.request_id)
                     self.registry.release(req.request_id, req.owner)
                     req.owner = None
-                if req.status != RequestStatus.COMPLETED and req.status != RequestStatus.REJECTED:
+                if req.status not in {
+                    RequestStatus.COMPLETED,
+                    RequestStatus.REJECTED,
+                    RequestStatus.MISSED,
+                }:
                     req.status = RequestStatus.EXPIRED
 
     def reject_request(self, request_id: str) -> None:
@@ -891,6 +986,7 @@ class OnlineSimulator:
         on_time = [r for r in served if r.on_time]
         rejected = [r for r in self.requests.values() if r.status == RequestStatus.REJECTED]
         expired = [r for r in self.requests.values() if r.status == RequestStatus.EXPIRED]
+        missed = [r for r in self.requests.values() if r.status == RequestStatus.MISSED]
         m = EpisodeMetrics(
             scenario_id=self.scenario_id,
             policy=getattr(self.policy, "name", "none"),
@@ -901,10 +997,13 @@ class OnlineSimulator:
             n_on_time=len(on_time),
             n_rejected=len(rejected),
             n_expired=len(expired),
+            n_missed=len(missed),
             total_distance_m=sum(v.total_distance_m for v in self.vehicles.values()),
             total_travel_s=sum(v.total_travel_s for v in self.vehicles.values()),
             total_wait_s=sum(v.total_wait_s for v in self.vehicles.values()),
             energy_consumed_kwh=sum(v.energy_consumed_kwh for v in self.vehicles.values()),
+            energy_delivered_kwh=sum(v.energy_delivered_kwh for v in self.vehicles.values()),
+            charge_duration_s=sum(v.charge_duration_s for v in self.vehicles.values()),
             battery_reserve_violations=sum(v.reserve_violations for v in self.vehicles.values()),
             battery_exhaustion=sum(v.battery_exhaustion for v in self.vehicles.values()),
             planned_energy_rejections=self.planned_energy_rejections,

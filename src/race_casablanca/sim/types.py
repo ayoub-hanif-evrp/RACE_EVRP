@@ -13,6 +13,7 @@ class RequestStatus(str, Enum):
     COMMITTED = "committed"
     IN_SERVICE = "in_service"
     COMPLETED = "completed"
+    MISSED = "missed"  # hard-deadline unreachable (e.g. late arrival)
     EXPIRED = "expired"
     REJECTED = "rejected"
 
@@ -81,6 +82,7 @@ class Stop:
     kind: str  # pickup | depot_unload | depot_charge
     request_id: str | None = None
     node: int | None = None
+    target_kwh: float | None = None  # depot_charge target energy (partial/full)
 
 
 @dataclass
@@ -118,6 +120,8 @@ class VehicleState:
     energy_consumed_kwh: float = 0.0
     n_depot_returns: int = 0
     n_charges: int = 0
+    energy_delivered_kwh: float = 0.0
+    charge_duration_s: float = 0.0
     reserve_violations: int = 0
     battery_exhaustion: int = 0
     payload_violations: int = 0
