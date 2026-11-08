@@ -214,6 +214,7 @@ def _try_serve(
     if lab.load + req.weight_kg > payload_max + 1e-9:
         return None
     try:
+        # RouteCache already memoizes by (o,d,depart); keep call site thin
         rt = router.route(lab.node, req.snap_node, lab.t)
     except Exception:  # noqa: BLE001
         return None
@@ -245,4 +246,21 @@ def _try_serve(
         lab.charge_s,
         plan,
         lab.served + 1,
+    )
+
+
+def optimize_charge_schedule_for_order(
+    origin: ProjectedState,
+    pickup_ids: list[str],
+    requests: dict[str, Request],
+    router: RouteCache,
+    energy: EnergyModel,
+    depot_node: int,
+    payload_max: float,
+    shift_end_s: float,
+    **kwargs,
+) -> ChargeScheduleResult:
+    """Alias documenting claim A: exactness for a fixed pickup sequence only."""
+    return optimize_charge_schedule(
+        origin, pickup_ids, requests, router, energy, depot_node, payload_max, shift_end_s, **kwargs
     )

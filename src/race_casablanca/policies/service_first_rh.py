@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 
 from race_casablanca.policies.charging_controller import ChargingController
 from race_casablanca.policies.greedy import GreedyInsertionPolicy
+from race_casablanca.policies.readiness_charging import ReadinessChargingController
 from race_casablanca.sim.feasibility_check import projected_state_after_lock, simulate_plan_conservative
 from race_casablanca.sim.policy_api import ActionInterface, FullInfoObservation, RestrictedObservation
 from race_casablanca.sim.types import RequestStatus, Stop, VehicleMode
@@ -21,14 +22,21 @@ class ServiceFirstRollingHorizonPolicy:
     # Stage 5: after pickup RH, run discrete-target charge DP on each vehicle plan
     optimize_charges: bool = False
     fixed_target_soc: float | None = None
+    enable_readiness: bool = False
+    readiness_target_soc: float = 0.70
     charging: ChargingController = field(
         default_factory=lambda: ChargingController(mode="adaptive_headroom")
     )
+    readiness: ReadinessChargingController = field(default_factory=ReadinessChargingController)
 
     def __post_init__(self) -> None:
         # Charge-aware RH: controller fallback uses discrete 0.7 if not overridden
         if self.optimize_charges and self.charging.mode == "adaptive_headroom":
             self.charging = ChargingController(mode="charge_to_target", target_soc=0.70)
+        self.readiness = ReadinessChargingController(
+            target_soc=self.readiness_target_soc,
+            enabled=self.enable_readiness or self.optimize_charges,
+        )
 
     def on_decision(
         self,
@@ -48,6 +56,7 @@ class ServiceFirstRollingHorizonPolicy:
                 self._attach_charge_schedules(sim)
             else:
                 self.charging.apply(sim, actions)
+            self.readiness.apply(sim, actions)
             return
         self._reoptimize(sim)
         self._last_reopt_s = sim.now_s
@@ -57,6 +66,7 @@ class ServiceFirstRollingHorizonPolicy:
             self._attach_charge_schedules(sim)
         else:
             self.charging.apply(sim, actions)
+        self.readiness.apply(sim, actions)
 
     def _attach_charge_schedules(self, sim) -> None:
         """Post-hoc discrete-target charge DP for equalized charge-aware RH baseline."""

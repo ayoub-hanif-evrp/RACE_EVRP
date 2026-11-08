@@ -91,11 +91,15 @@ def projected_state_after_lock(
     depot_node: int,
     now_s: float,
 ) -> ProjectedState:
-    """Planning origin after finishing the currently locked leg/service.
+    """Planning origin after finishing the currently locked activity.
 
-    Hidden realized en-route energy must NOT enter planning. For an unfinished
-    leg, remaining consumption uses the conservative bound on the known path
-    length (or re-routed length). Arrival timing uses deterministic TTI routing.
+    Mode-specific (Stage 5.1):
+    - IDLE / not busy: current node/battery/ready.
+    - EN_ROUTE: unfinished leg only — deduct remaining conservative travel energy.
+    - SERVING: already at customer; travel energy already consumed — do NOT re-deduct
+      path_length_m; project remaining service; add payload once.
+    - CHARGING: already at depot; travel already consumed — project remaining charge
+      to Stop.target_kwh without replaying the depot journey.
     """
 
     if vehicle.mode == VehicleMode.EMERGENCY_STRANDED:
@@ -107,7 +111,7 @@ def projected_state_after_lock(
             locked_request_ids=(),
         )
 
-    if not vehicle.busy or vehicle.moving_to is None:
+    if vehicle.mode == VehicleMode.IDLE or not vehicle.busy or vehicle.moving_to is None:
         ready = max(float(vehicle.ready_s), float(now_s))
         return ProjectedState(
             node=vehicle.node,
@@ -118,12 +122,48 @@ def projected_state_after_lock(
         )
 
     stop = vehicle.moving_to
+
+    # ---- SERVING: arrived; energy already deducted ----
+    if vehicle.mode == VehicleMode.SERVING:
+        assert stop is not None and stop.request_id is not None
+        req = requests[stop.request_id]
+        start = float(req.service_start_s) if req.service_start_s is not None else float(vehicle.ready_s)
+        ready = max(float(now_s), start + req.service_s)
+        return ProjectedState(
+            node=int(vehicle.node),
+            ready_s=ready,
+            battery_kwh=float(vehicle.battery_kwh),
+            load_kg=float(vehicle.load_kg) + float(req.weight_kg),
+            locked_request_ids=(req.request_id,),
+        )
+
+    # ---- CHARGING: at depot; travel already deducted; battery rises at CHARGE_END ----
+    if vehicle.mode == VehicleMode.CHARGING:
+        bat0 = float(vehicle.battery_kwh)
+        charge_start = float(vehicle.ready_s)
+        if stop is not None and stop.target_kwh is not None:
+            target = float(stop.target_kwh)
+        else:
+            target = float(energy.battery_kwh_max)
+        target = min(float(energy.battery_kwh_max), max(bat0, target))
+        need = max(0.0, target - bat0)
+        full_dur = energy.charge_time_s(need)
+        ready = max(float(now_s), charge_start + full_dur)
+        return ProjectedState(
+            node=int(depot_node),
+            ready_s=ready,
+            battery_kwh=target,
+            load_kg=0.0,
+            locked_request_ids=(),
+        )
+
+    # ---- EN_ROUTE: unfinished travel ----
     if vehicle.path_length_m > 0:
         e_remain = energy.conservative_kwh(vehicle.path_length_m)
     else:
         e_remain = float(vehicle.en_route_conservative_kwh or 0.0)
-    bat = vehicle.battery_kwh - e_remain
-    load = vehicle.load_kg
+    bat = float(vehicle.battery_kwh) - e_remain
+    load = float(vehicle.load_kg)
     locked_ids: list[str] = []
 
     if stop.kind == "pickup":

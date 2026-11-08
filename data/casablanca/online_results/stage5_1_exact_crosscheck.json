@@ -1,0 +1,30 @@
+[
+  {
+    "instance": "A_early_charge",
+    "n_orders": 1,
+    "n_mismatches": 0,
+    "mismatches": [],
+    "ok": true
+  },
+  {
+    "instance": "B_serve_before_charge",
+    "n_orders": 4,
+    "n_mismatches": 0,
+    "mismatches": [],
+    "ok": true
+  },
+  {
+    "instance": "C_partial_better",
+    "n_orders": 1,
+    "n_mismatches": 0,
+    "mismatches": [],
+    "ok": true
+  },
+  {
+    "instance": "D_charge_enables_later",
+    "n_orders": 4,
+    "n_mismatches": 0,
+    "mismatches": [],
+    "ok": true
+  }
+]
