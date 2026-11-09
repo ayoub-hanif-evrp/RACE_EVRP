@@ -30,6 +30,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+marl = ["torch>=2.1"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

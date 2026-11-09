@@ -18,10 +18,14 @@ Casablanca is the sole primary geographical research environment. This repositor
 | 5 — RACE-RH charging-aware optimizer | Complete; acceptance **PARTIAL** (see `reports/STAGE5_HANDOFF.md`) |
 | 5.1 — Optimizer repair + decision gate | Complete; decision **B** — no methodological advantage (see `reports/STAGE5_1_HANDOFF.md`) |
 | 6 — Scientific credibility + final evidence | Complete; honest negative for RACE-RH (`reports/STAGE6_HANDOFF.md`) |
-| 7 — RACE-COMM (energy-certified selective bidding) | Non-learning milestone complete; provisional go for scale-up (`reports/RACE_METHOD_DECISION.md`) |
+| 7 — RACE-COMM (energy-certified selective bidding) | Non-learning protocol repaired; larger delayed pilot (`reports/RACE_METHOD_DECISION.md`) |
+| 8 — RACE-MARL (MAPPO CTDE) | Smoke training **PASS**; Casablanca-scale learning pending (`reports/RACE_MARL_RESEARCH_DECISION.md`) |
 
-**Current method focus:** RACE-COMM task-specific energy-feasible bids + selective messaging (not RACE-RH).  
-**RACE-RH:** retained negative control. **MARL/GNN:** deferred until Phase 5 confirms communication value at scale.
+**Distinguish carefully:**
+- **Rule-based multi-agent coordination** = `RaceCooperativePolicy` (hand-coded bids / selective trigger).
+- **Genuine MARL** = `src/race_casablanca/marl/` MAPPO with neural actor/critic, PPO updates, checkpoints.
+
+**RACE-RH:** retained negative control. Optional install: `pip install -e ".[marl]"`.
 
 ## Install
 

@@ -1,0 +1,35 @@
+{
+  "params_changed": true,
+  "n_updates": 3,
+  "logs": [
+    {
+      "loss": -0.041106194257736206,
+      "policy_loss": -0.02760249376296997,
+      "value_loss": 0.006683480925858021,
+      "entropy": 1.6845438480377197,
+      "iter": 0
+    },
+    {
+      "loss": -0.021780990064144135,
+      "policy_loss": -0.018952257931232452,
+      "value_loss": 0.027165839448571205,
+      "entropy": 1.6411653757095337,
+      "iter": 1
+    },
+    {
+      "loss": -0.03385577350854874,
+      "policy_loss": -0.022018440067768097,
+      "value_loss": 0.008717822842299938,
+      "entropy": 1.6196246147155762,
+      "iter": 2
+    }
+  ],
+  "eval": {
+    "mean_return": 1.0,
+    "mean_ot": 1.0,
+    "n": 2
+  },
+  "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/smoke.pt",
+  "torch": "2.15.0+cpu",
+  "note": "Genuine MAPPO smoke training on toy synthetic scenario."
+}

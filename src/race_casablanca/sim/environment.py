@@ -57,6 +57,11 @@ class SimConfig:
     realization_mode: str = "crn"  # crn | adversarial_worst | stochastic
     # Genuine periodic broadcast clock (seconds); 0 disables independent timer
     periodic_broadcast_s: float = 0.0
+    # If False, PERIODIC_BROADCAST only triggers decisions (no generic state floods).
+    periodic_state_broadcast: bool = True
+    # Independent packet-loss stream for peer messages (0 disables).
+    packet_loss_p: float = 0.0
+    packet_loss_seed: int = 0
     extras: dict[str, Any] = field(default_factory=dict)
 
 
@@ -143,6 +148,12 @@ class OnlineSimulator:
         self.local_bids: dict[str, dict[str, dict[str, Any]]] = {vid: {} for vid in self.vehicles}
         self.n_bid_messages = 0
         self.n_bid_bytes = 0
+        self.n_state_broadcast_messages = 0
+        self.n_packets_dropped = 0
+        self._pending_assign_requests: set[str] = set()
+        import random as _random
+
+        self._packet_rng = _random.Random(int(config.packet_loss_seed) ^ (int(config.seed) * 10007))
 
         for req in self.requests.values():
             self._schedule(req.release_s, EventType.REQUEST_RELEASE, {"request_id": req.request_id})
@@ -889,27 +900,38 @@ class OnlineSimulator:
         self._maybe_decide("charge_end")
         self._start_next_leg(vehicle_id)
 
-    def _maybe_decide(self, reason: str) -> None:
+    def _maybe_decide(self, reason: str, *, request_id: str | None = None) -> None:
         if self.policy is None:
             return
         t0 = time.perf_counter()
         if self.config.info_mode == "restricted":
             two_phase = bool(getattr(self.policy, "two_phase_bidding", False))
-            if two_phase and reason == "request_release":
-                # Phase A: exchange bids only (no claims).
+            if two_phase and reason == "request_release" and request_id is not None:
+                # Phase A: exchange bids only.
                 for vid in self.vehicles:
                     obs = build_restricted_observation(self, vid)
                     actions = ActionInterface(self, actor_vehicle_id=vid)
                     self.policy.on_decision(obs, actions, "bid_exchange")
-                # Flush zero-delay task bids into local tables before assign.
                 self._flush_zero_delay_task_bids()
-                # Phase B: claim using received bids.
-                for vid in self.vehicles:
-                    obs = build_restricted_observation(self, vid)
-                    for peer in obs.peers.values():
-                        self.info_ages.append(max(0.0, obs.now_s - peer.as_of_s))
-                    actions = ActionInterface(self, actor_vehicle_id=vid)
-                    self.policy.on_decision(obs, actions, "bid_assign")
+                # Deadline-aware assign window (0 → immediate bid_assign).
+                wait = 0.0
+                wait_fn = getattr(self.policy, "assignment_wait_for_request", None)
+                if callable(wait_fn):
+                    wait = float(wait_fn(self, request_id))
+                if wait <= 1e-12:
+                    for vid in self.vehicles:
+                        obs = build_restricted_observation(self, vid)
+                        for peer in obs.peers.values():
+                            self.info_ages.append(max(0.0, obs.now_s - peer.as_of_s))
+                        actions = ActionInterface(self, actor_vehicle_id=vid)
+                        self.policy.on_decision(obs, actions, "bid_assign")
+                else:
+                    self._pending_assign_requests.add(request_id)
+                    self._schedule(
+                        self.now_s + wait,
+                        EventType.BID_ASSIGN_WINDOW,
+                        {"request_id": request_id},
+                    )
             else:
                 for vid in self.vehicles:
                     obs = build_restricted_observation(self, vid)
@@ -955,6 +977,8 @@ class OnlineSimulator:
         for peer in self.vehicles:
             if peer == vehicle_id:
                 continue
+            if self._drop_packet():
+                continue
             self.bus.send(
                 vehicle_id,
                 peer,
@@ -963,6 +987,31 @@ class OnlineSimulator:
                 self.now_s,
                 schedule_delivery=self._schedule_message,
             )
+            self.n_state_broadcast_messages += 1
+
+    def _drop_packet(self) -> bool:
+        p = float(self.config.packet_loss_p)
+        if p <= 0.0:
+            return False
+        if self._packet_rng.random() < p:
+            self.n_packets_dropped += 1
+            return True
+        return False
+
+    def _ingest_task_bid(self, recipient: str, payload: dict[str, Any], *, sender: str | None = None) -> None:
+        rid = str(payload.get("request_id", ""))
+        sid = str(payload.get("sender_id", sender or ""))
+        if not rid or not sid:
+            return
+        table = self.local_bids.setdefault(recipient, {}).setdefault(rid, {})
+        prev = table.get(sid)
+        if prev is not None:
+            # Reject stale / superseded certificates
+            if int(payload.get("seq", 0)) < int(prev.get("seq", 0)):
+                return
+            if int(payload.get("commitment_version", 0)) < int(prev.get("commitment_version", 0)):
+                return
+        table[sid] = dict(payload)
 
     def broadcast_task_bid(self, vehicle_id: str, payload: dict[str, Any]) -> int:
         """Broadcast a compact task bid to all peers. Returns serialized payload bytes."""
@@ -976,6 +1025,8 @@ class OnlineSimulator:
         for peer in self.vehicles:
             if peer == vehicle_id:
                 continue
+            if self._drop_packet():
+                continue
             msg = self.bus.send(
                 vehicle_id,
                 peer,
@@ -987,12 +1038,8 @@ class OnlineSimulator:
             self.n_bid_messages += 1
             self.n_bid_bytes += nbytes
             if zero_delay:
-                # Immediate local delivery for same-tick bid rounds.
                 self.bus.deliver(msg)
-                rid = str(body.get("request_id", ""))
-                sender = str(body.get("sender_id", vehicle_id))
-                if rid:
-                    self.local_bids.setdefault(peer, {}).setdefault(rid, {})[sender] = dict(body)
+                self._ingest_task_bid(peer, body, sender=vehicle_id)
         return nbytes
 
     def run(self) -> EpisodeMetrics:
@@ -1008,7 +1055,13 @@ class OnlineSimulator:
                 if req.status == RequestStatus.UNRELEASED:
                     req.status = RequestStatus.AVAILABLE
                     if self.config.decision_on_release:
-                        self._maybe_decide("request_release")
+                        self._maybe_decide("request_release", request_id=rid)
+            elif ev.type == EventType.BID_ASSIGN_WINDOW:
+                rid = str(ev.payload.get("request_id", ""))
+                if rid in self._pending_assign_requests:
+                    self._pending_assign_requests.discard(rid)
+                # Assign using whatever bids have arrived; never rewrite locked legs.
+                self._maybe_decide("bid_assign", request_id=rid or None)
             elif ev.type == EventType.VEHICLE_ARRIVAL:
                 self._on_arrival(ev.payload["vehicle_id"])
             elif ev.type == EventType.SERVICE_END:
@@ -1027,17 +1080,13 @@ class OnlineSimulator:
                     peer = msg.payload["vehicle_id"]
                     self.local_views.setdefault(msg.recipient, {})[peer] = dict(msg.payload)
                 elif msg.kind == "task_bid":
-                    rid = str(msg.payload.get("request_id", ""))
-                    sender = str(msg.payload.get("sender_id", msg.sender))
-                    if rid:
-                        self.local_bids.setdefault(msg.recipient, {}).setdefault(rid, {})[sender] = dict(
-                            msg.payload
-                        )
+                    self._ingest_task_bid(msg.recipient, dict(msg.payload), sender=msg.sender)
                 self._maybe_decide("message")
             elif ev.type == EventType.PERIODIC_BROADCAST:
-                # Independent clock: broadcast only, then allow decision with delivered info later
-                for vid in self.vehicles:
-                    self.broadcast_state(vid)
+                # Optional generic state floods (disabled for task-bid-only fairness).
+                if bool(self.config.periodic_state_broadcast):
+                    for vid in self.vehicles:
+                        self.broadcast_state(vid)
                 self._maybe_decide("periodic_broadcast")
             elif ev.type == EventType.SHIFT_END:
                 self._expire_open_requests()
