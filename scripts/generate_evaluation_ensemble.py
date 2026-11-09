@@ -128,8 +128,20 @@ def main() -> int:
         weights = zone_sampling_weights_from_table(weight_table)
     else:
         df = weight_table.copy()
-        pop = df.get("population_weight", df.get("w_pop", pd.Series(1.0, index=df.index))).astype(float)
-        com = df.get("commercial_weight", df.get("w_com", pd.Series(1.0, index=df.index))).astype(float)
+        # CSV columns from build_demand_zone_weights.py are pop_w / com_w
+        # (not population_weight / w_pop — those fallbacks silently yielded uniform weights).
+        if "pop_w" in df.columns:
+            pop = df["pop_w"].astype(float)
+        elif "population_weight" in df.columns:
+            pop = df["population_weight"].astype(float)
+        else:
+            raise KeyError("demand_zone_weights.csv missing pop_w (or population_weight)")
+        if "com_w" in df.columns:
+            com = df["com_w"].astype(float)
+        elif "commercial_weight" in df.columns:
+            com = df["commercial_weight"].astype(float)
+        else:
+            raise KeyError("demand_zone_weights.csv missing com_w (or commercial_weight)")
         pop = pop / pop.sum() if pop.sum() > 0 else pop
         com = com / com.sum() if com.sum() > 0 else com
         a = float(args.spatial_alpha)

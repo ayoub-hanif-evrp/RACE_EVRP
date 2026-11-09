@@ -93,19 +93,35 @@ class RestrictedObservation:
     announced: list[TaskAnnouncement]
     peers: dict[str, PeerSnapshot]
     inbox: list[Any] = field(default_factory=list)
+    # request_id -> sender_id -> bid payload dict (delivered task_bid messages only)
+    peer_bids: dict[str, dict[str, dict[str, Any]]] = field(default_factory=dict)
     info_mode: str = "restricted"
 
 
 class ActionInterface:
-    """Controlled actions; does not expose peer true states."""
+    """Controlled actions; does not expose peer true states to restricted policies."""
 
     def __init__(self, sim: "OnlineSimulator", actor_vehicle_id: str | None = None):
-        self._sim = sim
+        self.__sim = sim
         self.actor_vehicle_id = actor_vehicle_id
+
+    def get_simulator(self) -> "OnlineSimulator":
+        """Full-info escape hatch. Restricted actors must not call this."""
+
+        if self.__sim.config.info_mode == "restricted" and self.actor_vehicle_id is not None:
+            raise PermissionError(
+                "restricted policies cannot access the live simulator (peer-truth escape hatch closed)"
+            )
+        return self.__sim
+
+    # Backward-compatible attribute for full-info policies; blocked when restricted actor.
+    @property
+    def _sim(self) -> "OnlineSimulator":
+        return self.get_simulator()
 
     def list_announced_tasks(self) -> list[TaskAnnouncement]:
         out = []
-        for r in self._sim.available_requests():
+        for r in self.__sim.available_requests():
             out.append(
                 TaskAnnouncement(
                     r.request_id, r.snap_node, r.tw_start_s, r.tw_end_s, r.service_s, r.weight_kg
@@ -114,28 +130,35 @@ class ActionInterface:
         return out
 
     def check_insertion(self, vehicle_id: str, request_id: str) -> FeasibilityCheck:
-        if self._sim.config.info_mode == "restricted":
+        if self.__sim.config.info_mode == "restricted":
             if self.actor_vehicle_id is None or vehicle_id != self.actor_vehicle_id:
                 raise PermissionError("restricted policy may only check insertion for self")
-        return self._sim.check_insertion(vehicle_id, request_id)
+        return self.__sim.check_insertion(vehicle_id, request_id)
 
     def claim_task(
         self, vehicle_id: str, request_id: str, *, force_position: int | None = None
     ) -> bool:
-        if self._sim.config.info_mode == "restricted":
+        if self.__sim.config.info_mode == "restricted":
             if self.actor_vehicle_id is None or vehicle_id != self.actor_vehicle_id:
                 raise PermissionError("restricted policy may only claim for self")
-        # Single source of truth: simulator counters only
-        return self._sim.try_assign(vehicle_id, request_id, force_position=force_position)
+        return self.__sim.try_assign(vehicle_id, request_id, force_position=force_position)
 
     def reject_request(self, request_id: str) -> None:
-        self._sim.reject_request(request_id)
+        self.__sim.reject_request(request_id)
 
     def broadcast_own_state(self, vehicle_id: str) -> None:
-        if self._sim.config.info_mode == "restricted":
+        if self.__sim.config.info_mode == "restricted":
             if self.actor_vehicle_id is None or vehicle_id != self.actor_vehicle_id:
                 raise PermissionError("restricted policy may only broadcast self")
-        self._sim.broadcast_state(vehicle_id)
+        self.__sim.broadcast_state(vehicle_id)
+
+    def broadcast_task_bid(self, vehicle_id: str, payload: dict[str, Any]) -> int:
+        """Send a task-specific bid to all peer vehicles. Returns payload bytes."""
+
+        if self.__sim.config.info_mode == "restricted":
+            if self.actor_vehicle_id is None or vehicle_id != self.actor_vehicle_id:
+                raise PermissionError("restricted policy may only bid as self")
+        return self.__sim.broadcast_task_bid(vehicle_id, payload)
 
     def request_return_depot(
         self,
@@ -144,10 +167,10 @@ class ActionInterface:
         charge: bool | None = None,
         target_soc: float | None = None,
     ) -> None:
-        if self._sim.config.info_mode == "restricted":
+        if self.__sim.config.info_mode == "restricted":
             if self.actor_vehicle_id is None or vehicle_id != self.actor_vehicle_id:
                 raise PermissionError("restricted policy may only return self")
-        self._sim.request_return_depot(vehicle_id, charge=charge, target_soc=target_soc)
+        self.__sim.request_return_depot(vehicle_id, charge=charge, target_soc=target_soc)
 
 
 class Policy(Protocol):
@@ -190,6 +213,9 @@ def build_restricted_observation(sim: "OnlineSimulator", vehicle_id: str) -> Res
             committed=tuple(snap.get("committed") or ()),
             as_of_s=float(snap.get("as_of_s", sim.now_s)),
         )
+    # Deep-ish copy of delivered bid table (request -> sender -> payload)
+    raw_bids = sim.local_bids.get(vehicle_id, {})
+    peer_bids = {rid: dict(senders) for rid, senders in raw_bids.items()}
     announced = [
         TaskAnnouncement(r.request_id, r.snap_node, r.tw_start_s, r.tw_end_s, r.service_s, r.weight_kg)
         for r in sim.available_requests()
@@ -202,4 +228,5 @@ def build_restricted_observation(sim: "OnlineSimulator", vehicle_id: str) -> Res
         announced=announced,
         peers=peers,
         inbox=inbox,
+        peer_bids=peer_bids,
     )

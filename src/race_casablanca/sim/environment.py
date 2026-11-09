@@ -139,6 +139,10 @@ class OnlineSimulator:
         self.first_reserve_violation_trace: dict[str, Any] | None = None
 
         self.local_views: dict[str, dict[str, Any]] = {vid: {} for vid in self.vehicles}
+        # recipient -> request_id -> sender_id -> bid payload
+        self.local_bids: dict[str, dict[str, dict[str, Any]]] = {vid: {} for vid in self.vehicles}
+        self.n_bid_messages = 0
+        self.n_bid_bytes = 0
 
         for req in self.requests.values():
             self._schedule(req.release_s, EventType.REQUEST_RELEASE, {"request_id": req.request_id})
@@ -890,17 +894,52 @@ class OnlineSimulator:
             return
         t0 = time.perf_counter()
         if self.config.info_mode == "restricted":
-            for vid in self.vehicles:
-                obs = build_restricted_observation(self, vid)
-                for peer in obs.peers.values():
-                    self.info_ages.append(max(0.0, obs.now_s - peer.as_of_s))
-                actions = ActionInterface(self, actor_vehicle_id=vid)
-                self.policy.on_decision(obs, actions, reason)
+            two_phase = bool(getattr(self.policy, "two_phase_bidding", False))
+            if two_phase and reason == "request_release":
+                # Phase A: exchange bids only (no claims).
+                for vid in self.vehicles:
+                    obs = build_restricted_observation(self, vid)
+                    actions = ActionInterface(self, actor_vehicle_id=vid)
+                    self.policy.on_decision(obs, actions, "bid_exchange")
+                # Flush zero-delay task bids into local tables before assign.
+                self._flush_zero_delay_task_bids()
+                # Phase B: claim using received bids.
+                for vid in self.vehicles:
+                    obs = build_restricted_observation(self, vid)
+                    for peer in obs.peers.values():
+                        self.info_ages.append(max(0.0, obs.now_s - peer.as_of_s))
+                    actions = ActionInterface(self, actor_vehicle_id=vid)
+                    self.policy.on_decision(obs, actions, "bid_assign")
+            else:
+                for vid in self.vehicles:
+                    obs = build_restricted_observation(self, vid)
+                    for peer in obs.peers.values():
+                        self.info_ages.append(max(0.0, obs.now_s - peer.as_of_s))
+                    actions = ActionInterface(self, actor_vehicle_id=vid)
+                    self.policy.on_decision(obs, actions, reason)
         else:
             obs = build_full_observation(self)
             actions = ActionInterface(self, actor_vehicle_id=None)
             self.policy.on_decision(obs, actions, reason)
         self._decision_runtimes.append(time.perf_counter() - t0)
+
+    def _flush_zero_delay_task_bids(self) -> None:
+        """Deliver pending same-time task_bid messages into local_bids without waiting."""
+
+        if float(self.bus.delay_s) > 1e-12:
+            return
+        for msg in self.bus.history:
+            if msg.delivered or msg.kind != "task_bid":
+                continue
+            if abs(msg.deliver_s - self.now_s) > 1e-9:
+                continue
+            self.bus.deliver(msg)
+            rid = str(msg.payload.get("request_id", ""))
+            sender = str(msg.payload.get("sender_id", msg.sender))
+            if rid:
+                self.local_bids.setdefault(msg.recipient, {}).setdefault(rid, {})[sender] = dict(
+                    msg.payload
+                )
 
     def broadcast_state(self, vehicle_id: str) -> None:
         v = self.vehicles[vehicle_id]
@@ -924,6 +963,37 @@ class OnlineSimulator:
                 self.now_s,
                 schedule_delivery=self._schedule_message,
             )
+
+    def broadcast_task_bid(self, vehicle_id: str, payload: dict[str, Any]) -> int:
+        """Broadcast a compact task bid to all peers. Returns serialized payload bytes."""
+
+        import json
+
+        body = dict(payload)
+        body.setdefault("sender_id", vehicle_id)
+        nbytes = len(json.dumps(body, separators=(",", ":")).encode("utf-8"))
+        zero_delay = float(self.bus.delay_s) <= 1e-12
+        for peer in self.vehicles:
+            if peer == vehicle_id:
+                continue
+            msg = self.bus.send(
+                vehicle_id,
+                peer,
+                "task_bid",
+                body,
+                self.now_s,
+                schedule_delivery=None if zero_delay else self._schedule_message,
+            )
+            self.n_bid_messages += 1
+            self.n_bid_bytes += nbytes
+            if zero_delay:
+                # Immediate local delivery for same-tick bid rounds.
+                self.bus.deliver(msg)
+                rid = str(body.get("request_id", ""))
+                sender = str(body.get("sender_id", vehicle_id))
+                if rid:
+                    self.local_bids.setdefault(peer, {}).setdefault(rid, {})[sender] = dict(body)
+        return nbytes
 
     def run(self) -> EpisodeMetrics:
         while self._eq:
@@ -956,6 +1026,13 @@ class OnlineSimulator:
                 if msg.kind == "state_update":
                     peer = msg.payload["vehicle_id"]
                     self.local_views.setdefault(msg.recipient, {})[peer] = dict(msg.payload)
+                elif msg.kind == "task_bid":
+                    rid = str(msg.payload.get("request_id", ""))
+                    sender = str(msg.payload.get("sender_id", msg.sender))
+                    if rid:
+                        self.local_bids.setdefault(msg.recipient, {}).setdefault(rid, {})[sender] = dict(
+                            msg.payload
+                        )
                 self._maybe_decide("message")
             elif ev.type == EventType.PERIODIC_BROADCAST:
                 # Independent clock: broadcast only, then allow decision with delivered info later

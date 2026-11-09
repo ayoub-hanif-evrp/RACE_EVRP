@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-11-08T23:45:07+00:00",
+  "generated_at_utc": "2026-11-09T21:24:49+00:00",
   "regime": "tight_windows",
   "seed": 1303,
   "split": "evaluation_v1",
@@ -39,12 +39,16 @@
   "feasibility": {
     "certified_feasible": false,
     "label": "uncertified_statistical_ensemble",
-    "note": "Witness construction skipped; for policy statistical comparison only."
+    "note": "Witness construction skipped; statistical / locked evaluation only."
   },
   "inputs": {
     "demand_zone_weights_sha256": "45d3ad2894d736de6d71e253a8720de1496cdc7ed6201c375be973c0b1cf6798",
-    "pickup_candidates_sha256": "da75e66abb6b0b924de35cdd2dd8e763e5db320c5e1d9679797196e05a88854e"
+    "pickup_candidates_sha256": "da75e66abb6b0b924de35cdd2dd8e763e5db320c5e1d9679797196e05a88854e",
+    "candidate_filter": "all_accessible",
+    "n_candidates_used": 47193
   },
   "claim": "Synthetic geographically grounded requests. Not observed Casablanca customer orders.",
-  "spatial_alpha_override": 0.2
+  "spatial_alpha_override": 0.2,
+  "intensity_profile_override": null,
+  "policy_tuning_forbidden": false
 }

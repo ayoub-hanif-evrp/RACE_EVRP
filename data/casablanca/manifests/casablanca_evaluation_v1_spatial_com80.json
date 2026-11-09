@@ -179,87 +179,75 @@
       "regime": "baseline",
       "seed": 1101,
       "path": "data/casablanca/evaluation_v1/spatial_com80/baseline_seed1101",
-      "n_requests": 12,
-      "skipped_existing": true
+      "n_requests": 12
     },
     {
       "regime": "baseline",
       "seed": 1102,
       "path": "data/casablanca/evaluation_v1/spatial_com80/baseline_seed1102",
-      "n_requests": 12,
-      "skipped_existing": true
+      "n_requests": 12
     },
     {
       "regime": "baseline",
       "seed": 1103,
       "path": "data/casablanca/evaluation_v1/spatial_com80/baseline_seed1103",
-      "n_requests": 12,
-      "skipped_existing": true
+      "n_requests": 12
     },
     {
       "regime": "baseline",
       "seed": 1104,
       "path": "data/casablanca/evaluation_v1/spatial_com80/baseline_seed1104",
-      "n_requests": 12,
-      "skipped_existing": true
+      "n_requests": 12
     },
     {
       "regime": "peak_stress",
       "seed": 1201,
       "path": "data/casablanca/evaluation_v1/spatial_com80/peak_stress_seed1201",
-      "n_requests": 40,
-      "skipped_existing": true
+      "n_requests": 40
     },
     {
       "regime": "peak_stress",
       "seed": 1202,
       "path": "data/casablanca/evaluation_v1/spatial_com80/peak_stress_seed1202",
-      "n_requests": 40,
-      "skipped_existing": true
+      "n_requests": 40
     },
     {
       "regime": "peak_stress",
       "seed": 1203,
       "path": "data/casablanca/evaluation_v1/spatial_com80/peak_stress_seed1203",
-      "n_requests": 40,
-      "skipped_existing": true
+      "n_requests": 40
     },
     {
       "regime": "peak_stress",
       "seed": 1204,
       "path": "data/casablanca/evaluation_v1/spatial_com80/peak_stress_seed1204",
-      "n_requests": 40,
-      "skipped_existing": true
+      "n_requests": 40
     },
     {
       "regime": "tight_windows",
       "seed": 1301,
       "path": "data/casablanca/evaluation_v1/spatial_com80/tight_windows_seed1301",
-      "n_requests": 30,
-      "skipped_existing": true
+      "n_requests": 30
     },
     {
       "regime": "tight_windows",
       "seed": 1302,
       "path": "data/casablanca/evaluation_v1/spatial_com80/tight_windows_seed1302",
-      "n_requests": 30,
-      "skipped_existing": true
+      "n_requests": 30
     },
     {
       "regime": "tight_windows",
       "seed": 1303,
       "path": "data/casablanca/evaluation_v1/spatial_com80/tight_windows_seed1303",
-      "n_requests": 30,
-      "skipped_existing": true
+      "n_requests": 30
     },
     {
       "regime": "tight_windows",
       "seed": 1304,
       "path": "data/casablanca/evaluation_v1/spatial_com80/tight_windows_seed1304",
-      "n_requests": 30,
-      "skipped_existing": true
+      "n_requests": 30
     }
   ],
-  "generated_at_utc": "2026-11-09T16:41:54+00:00",
+  "generated_at_utc": "2026-11-09T21:24:48+00:00",
   "policy_tuning_forbidden": false
 }

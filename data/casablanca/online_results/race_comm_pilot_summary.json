@@ -1,0 +1,74 @@
+{
+  "soc35_by_mode": [
+    {
+      "comm_mode": "full",
+      "mean_ot": 0.8104166666666668,
+      "mean_policy_msgs": 336.0,
+      "mean_bid_messages": 672.0,
+      "mean_cf_changes": 11.25,
+      "n": 4
+    },
+    {
+      "comm_mode": "none",
+      "mean_ot": 0.7833333333333332,
+      "mean_policy_msgs": 0.0,
+      "mean_bid_messages": 0.0,
+      "mean_cf_changes": 0.0,
+      "n": 4
+    },
+    {
+      "comm_mode": "periodic",
+      "mean_ot": 0.8083333333333333,
+      "mean_policy_msgs": 240.25,
+      "mean_bid_messages": 480.5,
+      "mean_cf_changes": 0.0,
+      "n": 4
+    },
+    {
+      "comm_mode": "random",
+      "mean_ot": 0.7895833333333333,
+      "mean_policy_msgs": 99.5,
+      "mean_bid_messages": 199.0,
+      "mean_cf_changes": 1.75,
+      "n": 4
+    },
+    {
+      "comm_mode": "selective",
+      "mean_ot": 0.8104166666666668,
+      "mean_policy_msgs": 72.0,
+      "mean_bid_messages": 144.0,
+      "mean_cf_changes": 11.25,
+      "n": 4
+    }
+  ],
+  "paired_vs_none": [
+    {
+      "mode": "periodic",
+      "n": 4,
+      "mean_delta_ot": 0.024999999999999994,
+      "mean_msgs": 240.25,
+      "mean_cf_changes": 0.0
+    },
+    {
+      "mode": "full",
+      "n": 4,
+      "mean_delta_ot": 0.02708333333333332,
+      "mean_msgs": 336.0,
+      "mean_cf_changes": 11.25
+    },
+    {
+      "mode": "random",
+      "n": 4,
+      "mean_delta_ot": 0.006249999999999978,
+      "mean_msgs": 99.5,
+      "mean_cf_changes": 1.75
+    },
+    {
+      "mode": "selective",
+      "n": 4,
+      "mean_delta_ot": 0.02708333333333332,
+      "mean_msgs": 72.0,
+      "mean_cf_changes": 11.25
+    }
+  ]
+}

@@ -17,11 +17,11 @@ Casablanca is the sole primary geographical research environment. This repositor
 | 4B — Charging-and-commitment reformulation | Complete; acceptance **PARTIAL** (see `reports/STAGE4B_HANDOFF.md`) |
 | 5 — RACE-RH charging-aware optimizer | Complete; acceptance **PARTIAL** (see `reports/STAGE5_HANDOFF.md`) |
 | 5.1 — Optimizer repair + decision gate | Complete; decision **B** — no methodological advantage (see `reports/STAGE5_1_HANDOFF.md`) |
-| 6 — Scientific credibility + final evidence | Complete; paper scope **B** (see `reports/STAGE6_HANDOFF.md`) |
+| 6 — Scientific credibility + final evidence | Complete; honest negative for RACE-RH (`reports/STAGE6_HANDOFF.md`) |
+| 7 — RACE-COMM (energy-certified selective bidding) | Non-learning milestone complete; provisional go for scale-up (`reports/RACE_METHOD_DECISION.md`) |
 
-**Established novelty:** not claimed. Strongest validated conventional reference: **greedy charge-to-70%**. RACE-RH is a documented **negative control**.  
-**Not implemented:** PPO, GNNs, transformers, MARL, or a final learned RACE architecture.  
-**Paper scope:** applied Casablanca EV-logistics simulation / benchmarking (`reports/STAGE6_PAPER_SCOPE_DECISION.md`) — not a superior-optimizer claim.
+**Current method focus:** RACE-COMM task-specific energy-feasible bids + selective messaging (not RACE-RH).  
+**RACE-RH:** retained negative control. **MARL/GNN:** deferred until Phase 5 confirms communication value at scale.
 
 ## Install
 
