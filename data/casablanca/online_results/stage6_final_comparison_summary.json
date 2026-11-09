@@ -1,0 +1,125 @@
+{
+  "soc35_policy_means": [
+    {
+      "policy_kind": "greedy_adaptive",
+      "n": 24,
+      "mean_ot": 0.7986111111111112,
+      "std_ot": 0.1401057801435388,
+      "mean_served": 18.416666666666668,
+      "mean_runtime": 0.0,
+      "mean_timeouts": 0.0
+    },
+    {
+      "policy_kind": "greedy_always_full",
+      "n": 24,
+      "mean_ot": 0.8125,
+      "std_ot": 0.14295028019803127,
+      "mean_served": 19.041666666666668,
+      "mean_runtime": 0.0,
+      "mean_timeouts": 0.0
+    },
+    {
+      "policy_kind": "greedy_charge_07",
+      "n": 24,
+      "mean_ot": 0.8486111111111111,
+      "std_ot": 0.11292302823586577,
+      "mean_served": 20.291666666666668,
+      "mean_runtime": 0.0,
+      "mean_timeouts": 0.0
+    },
+    {
+      "policy_kind": "race_rh",
+      "n": 12,
+      "mean_ot": 0.7916666666666666,
+      "std_ot": 0.0737693648604839,
+      "mean_served": 23.416666666666668,
+      "mean_runtime": 23.062116291577695,
+      "mean_timeouts": 22.583333333333332
+    },
+    {
+      "policy_kind": "sf_rh_07",
+      "n": 24,
+      "mean_ot": 0.8517361111111111,
+      "std_ot": 0.10691601196797833,
+      "mean_served": 20.291666666666668,
+      "mean_runtime": 0.0,
+      "mean_timeouts": 0.0
+    },
+    {
+      "policy_kind": "sf_rh_charge_aware",
+      "n": 24,
+      "mean_ot": 0.8517361111111111,
+      "std_ot": 0.10691601196797833,
+      "mean_served": 20.291666666666668,
+      "mean_runtime": 0.0,
+      "mean_timeouts": 0.0
+    }
+  ],
+  "paired_vs_greedy_07": [
+    {
+      "base": "greedy_charge_07",
+      "other": "race_rh",
+      "n_paired": 12,
+      "mean_diff_ot": -0.013888888888888895,
+      "se_diff_ot": 0.013387411377463906,
+      "ci95_low": -0.04012821518871815,
+      "ci95_high": 0.01235043741094036,
+      "other_wins": 1,
+      "ties": 6,
+      "base_wins": 5
+    },
+    {
+      "base": "greedy_charge_07",
+      "other": "sf_rh_07",
+      "n_paired": 24,
+      "mean_diff_ot": 0.003124999999999998,
+      "se_diff_ot": 0.006763571449464617,
+      "ci95_low": -0.010131600040950652,
+      "ci95_high": 0.01638160004095065,
+      "other_wins": 6,
+      "ties": 13,
+      "base_wins": 5
+    },
+    {
+      "base": "greedy_charge_07",
+      "other": "sf_rh_charge_aware",
+      "n_paired": 24,
+      "mean_diff_ot": 0.003124999999999998,
+      "se_diff_ot": 0.006763571449464617,
+      "ci95_low": -0.010131600040950652,
+      "ci95_high": 0.01638160004095065,
+      "other_wins": 6,
+      "ties": 13,
+      "base_wins": 5
+    },
+    {
+      "base": "greedy_charge_07",
+      "other": "greedy_adaptive",
+      "n_paired": 24,
+      "mean_diff_ot": -0.05000000000000001,
+      "se_diff_ot": 0.015774745405000765,
+      "ci95_low": -0.08091850099380152,
+      "ci95_high": -0.01908149900619851,
+      "other_wins": 3,
+      "ties": 10,
+      "base_wins": 11
+    },
+    {
+      "base": "greedy_charge_07",
+      "other": "greedy_always_full",
+      "n_paired": 24,
+      "mean_diff_ot": -0.0361111111111111,
+      "se_diff_ot": 0.009379751435052007,
+      "ci95_low": -0.054495423923813034,
+      "ci95_high": -0.017726798298409167,
+      "other_wins": 0,
+      "ties": 12,
+      "base_wins": 12
+    }
+  ],
+  "n_rows": 236,
+  "n_scenario_keys": 24,
+  "base_commit_stage5_1": "96b1be0fd9989844878fec96560205a0d3a0c1a3",
+  "stage6_note": "results generated in Stage 6; commit recorded at close",
+  "working_tree_commit_at_run": "96b1be0fd9989844878fec96560205a0d3a0c1a3"
+}

@@ -17,9 +17,11 @@ Casablanca is the sole primary geographical research environment. This repositor
 | 4B — Charging-and-commitment reformulation | Complete; acceptance **PARTIAL** (see `reports/STAGE4B_HANDOFF.md`) |
 | 5 — RACE-RH charging-aware optimizer | Complete; acceptance **PARTIAL** (see `reports/STAGE5_HANDOFF.md`) |
 | 5.1 — Optimizer repair + decision gate | Complete; decision **B** — no methodological advantage (see `reports/STAGE5_1_HANDOFF.md`) |
+| 6 — Scientific credibility + final evidence | Complete; paper scope **B** (see `reports/STAGE6_HANDOFF.md`) |
 
-**Established novelty:** not claimed. Strongest validated conventional reference on train stress: **greedy charge-to-70%**.  
-**Not implemented:** PPO, GNNs, transformers, MARL, or a final learned RACE architecture.
+**Established novelty:** not claimed. Strongest validated conventional reference: **greedy charge-to-70%**. RACE-RH is a documented **negative control**.  
+**Not implemented:** PPO, GNNs, transformers, MARL, or a final learned RACE architecture.  
+**Paper scope:** applied Casablanca EV-logistics simulation / benchmarking (`reports/STAGE6_PAPER_SCOPE_DECISION.md`) — not a superior-optimizer claim.
 
 ## Install
 
@@ -57,13 +59,17 @@ Full validation (local Morocco PBF): `scripts\verify_benchmark_release.py`.
 .\.venv\Scripts\python scripts\run_stage4b_charging_gap.py
 .\.venv\Scripts\python scripts\run_stage5_race_rh.py
 .\.venv\Scripts\python scripts\run_stage5_1_decision.py
+.\.venv\Scripts\python scripts\run_stage6_credibility_checks.py
+.\.venv\Scripts\python scripts\run_stage6_final_comparison.py
+.\.venv\Scripts\python scripts\run_stage6_sensitivity.py
 ```
 
 Stage 4A post-decision policy: `src/race_casablanca/policies/race_postdecision.py`.  
 Stage 4A decision: `reports/STAGE4A_HANDOFF.md`.  
 Stage 4B handoff: `reports/STAGE4B_HANDOFF.md`.  
 Stage 5 RACE-RH: `src/race_casablanca/policies/race_rh.py`, `reports/STAGE5_HANDOFF.md`.  
-Stage 5.1 decision: `reports/STAGE5_1_FINAL_METHOD_DECISION.md` (**B**).
+Stage 5.1 decision: `reports/STAGE5_1_FINAL_METHOD_DECISION.md` (**B**).  
+Stage 6: `reports/STAGE6_HANDOFF.md`, evaluation ensemble `data/casablanca/evaluation_v1/`.
 
 ## Data layout
 
@@ -74,10 +80,11 @@ data/casablanca/
   traffic/             # processed TTI profiles
   zones/               # study boundary and crosswalk
   pickup_candidates/   # OSM-derived candidates
-  scenarios/           # generated requests and witnesses
+  scenarios/           # generated requests and witnesses (release v1)
+  evaluation_v1/       # Stage 6 synthetic eval ensemble (not new real orders)
   fleet/               # vehicle and depot configs
   manifests/           # checksums and provenance
-  online_results/      # Stage 2–3B experiment CSVs/JSON
+  online_results/      # Stage 2–6 experiment CSVs/JSON
 ```
 
 Large raw downloads and heavy GraphML/GeoPackage exports are gitignored; manifests record provenance.
@@ -93,6 +100,7 @@ Large raw downloads and heavy GraphML/GeoPackage exports are gitignored; manifes
 - Stage 4B: `reports/STAGE4B_HANDOFF.md`, `STAGE4B_CHARGING_COMMITMENT_PROBLEM.md`, `STAGE4B_CHARGING_DECISION_GAP.md`
 - Stage 5: `reports/STAGE5_HANDOFF.md`, `STAGE5_BASELINE_COMPARISON.md`, `STAGE5_NOVELTY_AND_LIMITATIONS.md`
 - Stage 5.1: `reports/STAGE5_1_HANDOFF.md`, `STAGE5_1_FINAL_METHOD_DECISION.md`
+- Stage 6: `reports/STAGE6_HANDOFF.md`, `STAGE6_DATASET_SCIENTIFIC_VALIDITY.md`, `STAGE6_PAPER_SCOPE_DECISION.md`
 
 ## Attribution and licenses
 

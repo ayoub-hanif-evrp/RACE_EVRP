@@ -1,0 +1,36 @@
+{
+  "release_scenarios": {
+    "n_requests": 368,
+    "missing_snap_node": 0,
+    "missing_zone_field": 0,
+    "claimed_observed_orders": 0
+  },
+  "evaluation_v1_default": {
+    "n_requests": 656,
+    "missing_snap_node": 0,
+    "missing_zone_field": 0,
+    "claimed_observed_orders": 0
+  },
+  "historical_artifacts": {
+    "constraint_binding_diagnosis.json": "HISTORICAL \u2014 do not use as active release authority",
+    "CONSTRAINT_BINDING_DIAGNOSIS.md": "HISTORICAL report"
+  },
+  "notes": [
+    "Traffic workbook rows are congestion OD observations, not courier orders.",
+    "OSM candidates are sampling-frame locations, not observed customers.",
+    "Eval_v1 expands synthetic episodes only; locked seeds 2100\u20132399 unused."
+  ],
+  "release_manifest_keys": [
+    "benchmark_version",
+    "claim_discipline",
+    "component_manifests",
+    "dataset",
+    "generated_at_utc",
+    "generator_version",
+    "geography",
+    "licenses",
+    "skipped_non_release_scenarios",
+    "splits"
+  ],
+  "n_scenarios_in_manifest": 0
+}

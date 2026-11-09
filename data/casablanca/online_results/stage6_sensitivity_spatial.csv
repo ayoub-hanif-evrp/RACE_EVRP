@@ -1,0 +1,17 @@
+tag,scenario,policy_kind,on_time_rate_all,n_served,n_requests,note
+default,peak_stress_seed1201,greedy_charge_07,0.85,34,40,hypothetical spatial mixture; not calibrated
+default,peak_stress_seed1201,race_rh,0.775,31,40,hypothetical spatial mixture; not calibrated
+default,peak_stress_seed1202,greedy_charge_07,0.8,32,40,hypothetical spatial mixture; not calibrated
+default,peak_stress_seed1202,race_rh,0.9,36,40,hypothetical spatial mixture; not calibrated
+spatial_pop80,peak_stress_seed1201,greedy_charge_07,0.75,30,40,hypothetical spatial mixture; not calibrated
+spatial_pop80,peak_stress_seed1201,race_rh,0.725,29,40,hypothetical spatial mixture; not calibrated
+spatial_pop80,peak_stress_seed1202,greedy_charge_07,0.85,34,40,hypothetical spatial mixture; not calibrated
+spatial_pop80,peak_stress_seed1202,race_rh,0.8,32,40,hypothetical spatial mixture; not calibrated
+spatial_com80,peak_stress_seed1201,greedy_charge_07,0.75,30,40,hypothetical spatial mixture; not calibrated
+spatial_com80,peak_stress_seed1201,race_rh,0.725,29,40,hypothetical spatial mixture; not calibrated
+spatial_com80,peak_stress_seed1202,greedy_charge_07,0.85,34,40,hypothetical spatial mixture; not calibrated
+spatial_com80,peak_stress_seed1202,race_rh,0.8,32,40,hypothetical spatial mixture; not calibrated
+spatial_neutral,peak_stress_seed1201,greedy_charge_07,0.75,30,40,hypothetical spatial mixture; not calibrated
+spatial_neutral,peak_stress_seed1201,race_rh,0.725,29,40,hypothetical spatial mixture; not calibrated
+spatial_neutral,peak_stress_seed1202,greedy_charge_07,0.85,34,40,hypothetical spatial mixture; not calibrated
+spatial_neutral,peak_stress_seed1202,race_rh,0.8,32,40,hypothetical spatial mixture; not calibrated

@@ -1,0 +1,50 @@
+{
+  "generated_at_utc": "2026-11-08T23:44:56+00:00",
+  "regime": "baseline",
+  "seed": 1106,
+  "split": "evaluation_v1",
+  "tag": "default",
+  "generator_version": "0.3.1",
+  "benchmark_version": "casablanca_evaluation_v1",
+  "parent_release": "casablanca_release_v1",
+  "n_requests": 12,
+  "fleet": {
+    "label": "hypothetical_light_ev_van",
+    "usable_battery_kwh": 40.0,
+    "payload_kg": 600.0,
+    "initial_soc": 1.0,
+    "min_reserve_soc": 0.15,
+    "consumption_wh_per_km": 200.0,
+    "consumption_note": "Assumed constant Wh/km for a small electric van under urban conditions. Not calibrated to HELECAR-D passenger cars without qualification. Usable range before reserve under this model is about 170 km per vehicle; whether energy binds depends on realized route distances, not this sheet alone.\n",
+    "depot_charging": "depot_only",
+    "charge_power_kw": 22.0,
+    "drive_speed_cap_kmh": 50,
+    "service_duration_override_min": null,
+    "n_vehicles": 3,
+    "problem_class_note": "Depot-only charging makes this closer to a dynamic energy-constrained pickup VRP than classical EVRP with en-route charging-station routing.\n"
+  },
+  "depot": {
+    "label": "scenario_depot_not_observed_facility",
+    "lat": 33.57455139385016,
+    "lon": -7.6231243306337495,
+    "snap_node": 1849562461,
+    "note": "Accessible OSM-derived location used as a scenario depot. Not a validated facility."
+  },
+  "shift_policy": {
+    "start_hour": 8,
+    "horizon_hours": 8,
+    "customer_service_must_finish_by_shift_end": true,
+    "depot_return_may_finish_after_shift_end": true
+  },
+  "feasibility": {
+    "certified_feasible": false,
+    "label": "uncertified_statistical_ensemble",
+    "note": "Witness construction skipped; for policy statistical comparison only."
+  },
+  "inputs": {
+    "demand_zone_weights_sha256": "45d3ad2894d736de6d71e253a8720de1496cdc7ed6201c375be973c0b1cf6798",
+    "pickup_candidates_sha256": "da75e66abb6b0b924de35cdd2dd8e763e5db320c5e1d9679797196e05a88854e"
+  },
+  "claim": "Synthetic geographically grounded requests. Not observed Casablanca customer orders.",
+  "spatial_alpha_override": null
+}
