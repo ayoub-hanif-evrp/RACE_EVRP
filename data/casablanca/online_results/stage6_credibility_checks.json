@@ -3,34 +3,99 @@
     "n_requests": 368,
     "missing_snap_node": 0,
     "missing_zone_field": 0,
+    "snap_node_not_in_graph": 0,
     "claimed_observed_orders": 0
   },
   "evaluation_v1_default": {
-    "n_requests": 656,
+    "n_requests": 1640,
     "missing_snap_node": 0,
     "missing_zone_field": 0,
+    "snap_node_not_in_graph": 0,
     "claimed_observed_orders": 0
   },
+  "evaluation_v1_locked_final": {
+    "n_requests": 820,
+    "missing_snap_node": 0,
+    "missing_zone_field": 0,
+    "snap_node_not_in_graph": 0,
+    "claimed_observed_orders": 0
+  },
+  "source_hashes": {
+    "demand_zone_weights": "45d3ad2894d736de6d71e253a8720de1496cdc7ed6201c375be973c0b1cf6798",
+    "pickup_candidates": "da75e66abb6b0b924de35cdd2dd8e763e5db320c5e1d9679797196e05a88854e"
+  },
+  "certified_witness_revalidation": [
+    {
+      "scenario": "data/casablanca/scenarios/test/baseline_seed202",
+      "certified_flag": true,
+      "witness_exists": true,
+      "revalidation": {
+        "valid": true,
+        "n_violations": 0,
+        "coverage": {
+          "required": 12,
+          "served": 12,
+          "duplicates": 0
+        }
+      }
+    },
+    {
+      "scenario": "data/casablanca/scenarios/train/baseline_seed1",
+      "certified_flag": true,
+      "witness_exists": true,
+      "revalidation": {
+        "valid": true,
+        "n_violations": 0,
+        "coverage": {
+          "required": 12,
+          "served": 12,
+          "duplicates": 0
+        }
+      }
+    },
+    {
+      "scenario": "data/casablanca/scenarios/train/baseline_seed7",
+      "certified_flag": true,
+      "witness_exists": true,
+      "revalidation": {
+        "valid": true,
+        "n_violations": 0,
+        "coverage": {
+          "required": 12,
+          "served": 12,
+          "duplicates": 0
+        }
+      }
+    }
+  ],
   "historical_artifacts": {
-    "constraint_binding_diagnosis.json": "HISTORICAL \u2014 do not use as active release authority",
+    "constraint_binding_diagnosis.json": "HISTORICAL \u2014 not active release authority",
     "CONSTRAINT_BINDING_DIAGNOSIS.md": "HISTORICAL report"
+  },
+  "model_validation_matrix": {
+    "independently_checked": [
+      "Release request snap_node presence and graph membership",
+      "Declared zone fields on all release/eval requests",
+      "is_observed_order=False on synthetic requests",
+      "Certified witness files revalidated via validate_schedule",
+      "Source file checksums for weights/candidates"
+    ],
+    "assumed": [
+      "60/40 population/commercial spatial mixture",
+      "Hourly intensity profiles",
+      "EV energy/charge parameters",
+      "Three-vehicle depot configuration"
+    ],
+    "unverified": [
+      "Empirical parcel arrival-rate calibration",
+      "Observed customer-location match to OSM sampling frame",
+      "Measured van energy curves"
+    ]
   },
   "notes": [
     "Traffic workbook rows are congestion OD observations, not courier orders.",
     "OSM candidates are sampling-frame locations, not observed customers.",
-    "Eval_v1 expands synthetic episodes only; locked seeds 2100\u20132399 unused."
-  ],
-  "release_manifest_keys": [
-    "benchmark_version",
-    "claim_discipline",
-    "component_manifests",
-    "dataset",
-    "generated_at_utc",
-    "generator_version",
-    "geography",
-    "licenses",
-    "skipped_non_release_scenarios",
-    "splits"
-  ],
-  "n_scenarios_in_manifest": 0
+    "Eval_v1 expands synthetic episodes; locked_final is reserved untuned.",
+    "Published traffic covers a limited observation period only."
+  ]
 }

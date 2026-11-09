@@ -1,0 +1,7 @@
+{
+  "label": "scenario_depot_not_observed_facility",
+  "lat": 33.5736447521557,
+  "lon": -7.632163735016874,
+  "snap_node": 424089283,
+  "note": "Accessible OSM-derived location used as a scenario depot. Not a validated facility."
+}

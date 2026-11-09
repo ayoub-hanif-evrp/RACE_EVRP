@@ -1,7 +1,7 @@
 # Stage 6 — Dataset scientific validity
 
 **Release:** `casablanca_release_v1` (generator `0.3.1`)  
-**Commit context:** Stage 6 evidence-building (post Decision B).
+**Eval ensemble:** `casablanca_evaluation_v1` (synthetic expansion only)
 
 ## Four data categories (do not conflate)
 
@@ -24,46 +24,51 @@
 | Test | 3 | 82 |
 | **Total** | **13** | **368** |
 
-Regimes: baseline (12 req), peak_stress (40), tight_windows (30). Fleet: 3 hypothetical EVs.
+## Stage 6 synthetic expansion (not new real observations)
 
-Certified-feasible flags vary by scenario (see `casablanca_dataset_manifest.json`). Online policies must not read witness schedules.
+| Ensemble | Scenarios | Requests | Role |
+| --- | ---: | ---: | --- |
+| `evaluation_v1/default` | 60 (20×3 regimes) | 1640 | Statistical policy comparison |
+| `evaluation_v1/locked_final` | 30 (10×3) | 820 | Locked final set — **no policy tuning** |
+| Sensitivity tags | spatial_*, hourly_flat, candidates_informative | — | Hypothetical assumption shifts |
+
+The **73,920** traffic rows are not delivery requests. The **47,193** OSM features are candidate locations, not observed customers.
 
 ## Documented assumptions (not empirical calibrations)
 
-- Spatial mixture **α=0.6 population / β=0.4 commercial** (assumed; not fit to courier counts).
-- Demand table: 22 zones; only zones with positive sampling weight are eligible (`n_eligible_sampling=17` in weights manifest; approximate zones commercial-only).
-- Pickup candidates dominated by generic OSM building features — sampling frame, not confirmed customers.
-- Largest-SCC road filtering excludes nodes outside the retained strongly connected component (~18% noted in Stage 1 reports).
-- Sunday OD holdout travel-time check (`od_travel_time_validation.json`): n_compared=118, MAE≈3.02 min, signed bias≈+1.85 min, mean relative error≈49.9%. Useful for time-dependent routing conditions; **not** precise road-level twin accuracy.
-- EV energy/charging/depot: configured hypothetical parameters.
+- Spatial mixture **α=0.6 / β=0.4** (assumed).
+- Demand table: 22 zones; only positive-probability zones eligible.
+- Generic OSM `building=yes` dominate the sampling frame.
+- Seven approximate geographical zones; largest-SCC road filtering.
+- Sunday OD holdout: MAE≈3.02 min, bias≈+1.85 min, mean relative error≈49.9% — not a digital twin.
+- Hypothetical 3-van fleet, depot, SOC, parcel attributes.
 
-## Stale / historical artifacts (do not treat as current)
+## Credibility checks (complete)
 
-| Artifact | Issue | Handling |
-| --- | --- | --- |
-| `constraint_binding_diagnosis.json` | Legacy seed-42 / seed-4 certification narrative may disagree with active `casablanca_release_v1` split rules | **Historical diagnostic only** — not the active release authority |
-| Absolute Windows paths in some manifests | Portability noise | Prefer relative `data/casablanca/...` paths in new Stage 6 manifests |
+Machine: `data/casablanca/online_results/stage6_credibility_checks.json`.
 
-Active authority: `casablanca_dataset_manifest.json` + per-scenario `scenario_metadata.json` under `scenarios/{train,validation,test}/`.
+| Check | Result |
+| --- | --- |
+| Release snap_node in graph | 368/368; 0 missing |
+| Eval default snap/zone | 1640/1640; 0 not-in-graph |
+| Locked final snap/zone | 820/820 |
+| `is_observed_order` | 0 claimed observed |
+| Certified witnesses revalidated | **3/3 valid** (train seeds 1 & 7; test seed 202) |
+| Source hashes | recorded for weights + candidates |
+
+## Stale / historical artifacts
+
+| Artifact | Handling |
+| --- | --- |
+| `constraint_binding_diagnosis.json` | **HISTORICAL** — see `manifests/HISTORICAL_README.md` |
+| Absolute Windows paths in older manifests | Prefer relative paths in Stage 6 manifests |
 
 ## Model-validation matrix
 
-| Check | Status |
-| --- | --- |
-| Source checksums / generator version freeze | Done (release manifests) |
-| Synthetic labeling / claim discipline | Done |
-| Train/val/test seed splits | Done |
-| Accessibility filter on candidates | Done |
-| Hard-deadline + conservative energy in online sim | Done (Stages 4B–5.1) |
-| Empirical parcel arrival-rate calibration | **Missing** |
-| Observed customer-location validation | **Missing** |
-| Measured van energy / charge curves | **Missing** |
-| Broad independent scenario ensemble | Added as `casablanca_evaluation_v1` (Stage 6; synthetic expansion, not new real observations) |
-| Release request field completeness | Stage 6 check: 368/368 have `snap_node` + `declared_zone_id`; `is_observed_order=False` |
-| Eval_v1 default request completeness | Stage 6 check: 656/656 have snap + zone; all synthetic labels |
-
-Machine check: `data/casablanca/online_results/stage6_credibility_checks.json`.
+| Independently checked | Assumed | Unverified |
+| --- | --- | --- |
+| Checksums, synthetic labels, splits, graph accessibility, certified witnesses | 60/40 mixture, hourly profiles, EV physics, 3-van fleet | Empirical arrival rates, true customer locations, measured van energy |
 
 ## Bottom line
 
-The geography/traffic/demographics foundations are genuine external data. Parcel orders are synthetic. Scale (13 release scenarios) is small for strong generalization; Stage 6 expands **evaluation episodes** from the frozen generator without claiming new real courier data.
+Geography/traffic/demographics are genuine external data. Parcel orders are synthetic. Stage 6 increases **evaluation power** under frozen assumptions without claiming new real courier observations.

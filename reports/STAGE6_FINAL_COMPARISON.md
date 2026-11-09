@@ -1,54 +1,44 @@
-# Stage 6 — Final frozen-policy comparison
+# Stage 6 — Final frozen-policy comparison (complete)
 
 **Canonical simulator:** Stage 5.1 (Decision B).  
-**Base commit:** `96b1be0` (Stage 5.1 close).  
 **Machine results:** `data/casablanca/online_results/stage6_final_comparison.csv` (+ `.json`, `_summary.json`).  
-**Runner:** `scripts/run_stage6_final_comparison.py`.
+**Runner:** `scripts/run_stage6_final_comparison.py` (checkpoint/resume).  
+**Fairness:** all 6 frozen policies × `{full_soc, soc35}` × **68** scenarios (8 release train + **60** `evaluation_v1/default`).  
+**Locked final set:** not used.
 
-## Design reminder
+Total runs: **816**.
 
-- Sampling unit = independent scenario.
-- Suites: `full_soc` (initial SOC 1.0) and `soc35` (0.35).
-- Scenario set: 8 release train + 16 `evaluation_v1/default` (8 baseline + 4 peak + 4 tight in the executed subset as listed in the CSV) → **24 scenario keys**.
-- RACE-RH bounded to `soc35` on release + first two peak/tight eval seeds (computational pre-bound, not post-hoc cherry-picking).
+## SOC35 policy means (n=68 scenarios)
 
-## SOC35 mean on-time (all released requests)
+| Policy | Mean OT | Mean dist (m) | Drive energy (kWh) | Charge energy (kWh) | Mean expired | Mean rejected | Runtime (s) | Timeouts | Opt. chosen |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| greedy→70% | **0.839** | 173425 | 34.69 | 76.69 | 1.35 | 3.57 | ~0 | 0 | n/a |
+| SF-RH→70% | 0.844 | 175636 | 35.13 | 77.13 | 1.32 | 3.51 | ~0 | 0 | — |
+| SF-RH charge-aware | 0.843 | 174430 | 34.89 | 77.49 | 1.32 | 3.54 | ~0 | 0 | — |
+| RACE-RH | 0.829 | 171944 | 34.39 | 83.04 | 1.37 | 3.94 | **22.9** | **21.6** | **0.0** |
+| greedy always-full | 0.795 | 159487 | 31.90 | 109.90 | 1.31 | 5.15 | ~0 | 0 | — |
+| greedy adaptive | 0.772 | 157704 | 31.54 | 86.26 | 1.29 | 6.10 | ~0 | 0 | — |
 
-| Policy | n scenarios | Mean on-time | Mean runtime (s) | Mean timeouts |
-| --- | ---: | ---: | ---: | ---: |
-| greedy charge-to-70% | 24 | **0.849** | ~0 | 0 |
-| SF-RH charge-to-70% | 24 | 0.852 | ~0 | 0 |
-| SF-RH charge-aware | 24 | 0.852 | ~0 | 0 |
-| greedy always-full | 24 | 0.812 | ~0 | 0 |
-| greedy adaptive | 24 | 0.799 | ~0 | 0 |
-| RACE-RH | 12 | 0.792 | **23.1** | **22.6** |
+Reserve violations and battery exhaustion means are **0** for all policies on this suite. Source: `stage6_final_comparison_summary.json` → `slices.all_soc35`.
 
-RACE-RH mean served is higher only because its 12-scenario subset is enriched in peak/tight (larger `n_requests`); do not compare absolute served counts across unequal subsets. Use paired differences.
+## Paired Δ on-time vs greedy→70% (SOC35, n=68)
 
-## Paired differences vs greedy charge-to-70% (on-time rate)
+| Other | Mean Δ | Approx. 95% CI | Wins / ties / greedy wins |
+| --- | ---: | --- | --- |
+| RACE-RH | **−0.010** | **[−0.019, −0.002]** | 7 / 41 / 20 |
+| SF-RH→70% | +0.005 | [−0.006, +0.015] | 17 / 36 / 15 |
+| SF-RH charge-aware | +0.004 | [−0.007, +0.014] | 17 / 36 / 15 |
+| greedy adaptive | −0.067 | [−0.085, −0.048] | 5 / 23 / 40 |
+| greedy always-full | −0.044 | [−0.056, −0.032] | 1 / 29 / 38 |
 
-| Other policy | n paired | Mean Δ (other − greedy07) | Approx. 95% CI | Wins / ties / greedy wins |
-| --- | ---: | ---: | --- | --- |
-| RACE-RH | 12 | **−0.014** | [−0.040, +0.012] | 1 / 6 / 5 |
-| SF-RH→70% | 24 | +0.003 | [−0.010, +0.016] | 6 / 13 / 5 |
-| SF-RH charge-aware | 24 | +0.003 | [−0.010, +0.016] | 6 / 13 / 5 |
-| greedy adaptive | 24 | **−0.050** | [−0.081, −0.019] | 3 / 10 / 11 |
-| greedy always-full | 24 | **−0.036** | [−0.054, −0.018] | 0 / 12 / 12 |
+Eval-only SOC35 (n=60) shows the same ranking: RACE-RH mean Δ ≈ −0.008 (CI upper bound ≈ 0).
 
-## Peak SOC35 highlights (release + eval)
+## Full-SOC paired (n=68)
 
-Mean on-time among peak scenarios in the CSV:
-
-| Policy | Mean OT (peak soc35) |
-| --- | ---: |
-| greedy→70% | 0.843 |
-| SF-RH→70% / charge-aware | 0.832 |
-| RACE-RH | 0.820 |
-| greedy always-full | 0.786 |
-| greedy adaptive | 0.714 |
-
-Release peak examples remain consistent with Stage 5.1: e.g. seed2 SOC35 greedy 36/40 vs RACE-RH 33/40 (~34 s, 43 timeouts, **0** optimized plans chosen).
+RACE-RH mean Δ ≈ **−0.008** (CI entirely negative). Greedy→70% remains competitive; always-full is slightly worse.
 
 ## Claim
 
-**No demonstrated methodological advantage for RACE-RH** over greedy charge-to-70% on the Stage 6 paired ensemble. Charge-to-70% remains the strongest simple reference; adaptive / always-full are worse under SOC stress. SF-RH is statistically tied with greedy→70% within CI noise and far cheaper than RACE-RH.
+On the complete Stage 6 paired ensemble, **RACE-RH is statistically not better than greedy charge-to-70%** and is slightly worse on mean on-time under SOC35, at ~23 s mean decision cost with ~22 timeouts and **essentially zero optimized-plan selections**.
+
+Paper-scope decision **B** stands.

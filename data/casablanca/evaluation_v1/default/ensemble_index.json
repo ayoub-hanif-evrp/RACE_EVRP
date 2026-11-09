@@ -5,6 +5,8 @@
   "claim": "Synthetic expansion from frozen generator/geography. Not new real courier observations.",
   "tag": "default",
   "spatial_alpha": null,
+  "intensity_profile_override": null,
+  "candidate_filter": "all_accessible",
   "registered_eval_seeds": {
     "baseline": [
       1101,
@@ -73,7 +75,7 @@
       1320
     ]
   },
-  "registered_locked_final_seeds_not_generated_here": {
+  "registered_locked_final_seeds": {
     "baseline": [
       2101,
       2102,
@@ -171,151 +173,393 @@
       2330
     ]
   },
+  "materialized_locked_seeds_this_run": null,
   "scenarios": [
     {
       "regime": "baseline",
       "seed": 1101,
       "path": "data/casablanca/evaluation_v1/default/baseline_seed1101",
-      "n_requests": 12
+      "n_requests": 12,
+      "skipped_existing": true
     },
     {
       "regime": "baseline",
       "seed": 1102,
       "path": "data/casablanca/evaluation_v1/default/baseline_seed1102",
-      "n_requests": 12
+      "n_requests": 12,
+      "skipped_existing": true
     },
     {
       "regime": "baseline",
       "seed": 1103,
       "path": "data/casablanca/evaluation_v1/default/baseline_seed1103",
-      "n_requests": 12
+      "n_requests": 12,
+      "skipped_existing": true
     },
     {
       "regime": "baseline",
       "seed": 1104,
       "path": "data/casablanca/evaluation_v1/default/baseline_seed1104",
-      "n_requests": 12
+      "n_requests": 12,
+      "skipped_existing": true
     },
     {
       "regime": "baseline",
       "seed": 1105,
       "path": "data/casablanca/evaluation_v1/default/baseline_seed1105",
-      "n_requests": 12
+      "n_requests": 12,
+      "skipped_existing": true
     },
     {
       "regime": "baseline",
       "seed": 1106,
       "path": "data/casablanca/evaluation_v1/default/baseline_seed1106",
-      "n_requests": 12
+      "n_requests": 12,
+      "skipped_existing": true
     },
     {
       "regime": "baseline",
       "seed": 1107,
       "path": "data/casablanca/evaluation_v1/default/baseline_seed1107",
-      "n_requests": 12
+      "n_requests": 12,
+      "skipped_existing": true
     },
     {
       "regime": "baseline",
       "seed": 1108,
       "path": "data/casablanca/evaluation_v1/default/baseline_seed1108",
+      "n_requests": 12,
+      "skipped_existing": true
+    },
+    {
+      "regime": "baseline",
+      "seed": 1109,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1109",
+      "n_requests": 12
+    },
+    {
+      "regime": "baseline",
+      "seed": 1110,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1110",
+      "n_requests": 12
+    },
+    {
+      "regime": "baseline",
+      "seed": 1111,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1111",
+      "n_requests": 12
+    },
+    {
+      "regime": "baseline",
+      "seed": 1112,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1112",
+      "n_requests": 12
+    },
+    {
+      "regime": "baseline",
+      "seed": 1113,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1113",
+      "n_requests": 12
+    },
+    {
+      "regime": "baseline",
+      "seed": 1114,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1114",
+      "n_requests": 12
+    },
+    {
+      "regime": "baseline",
+      "seed": 1115,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1115",
+      "n_requests": 12
+    },
+    {
+      "regime": "baseline",
+      "seed": 1116,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1116",
+      "n_requests": 12
+    },
+    {
+      "regime": "baseline",
+      "seed": 1117,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1117",
+      "n_requests": 12
+    },
+    {
+      "regime": "baseline",
+      "seed": 1118,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1118",
+      "n_requests": 12
+    },
+    {
+      "regime": "baseline",
+      "seed": 1119,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1119",
+      "n_requests": 12
+    },
+    {
+      "regime": "baseline",
+      "seed": 1120,
+      "path": "data/casablanca/evaluation_v1/default/baseline_seed1120",
       "n_requests": 12
     },
     {
       "regime": "peak_stress",
       "seed": 1201,
       "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1201",
-      "n_requests": 40
+      "n_requests": 40,
+      "skipped_existing": true
     },
     {
       "regime": "peak_stress",
       "seed": 1202,
       "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1202",
-      "n_requests": 40
+      "n_requests": 40,
+      "skipped_existing": true
     },
     {
       "regime": "peak_stress",
       "seed": 1203,
       "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1203",
-      "n_requests": 40
+      "n_requests": 40,
+      "skipped_existing": true
     },
     {
       "regime": "peak_stress",
       "seed": 1204,
       "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1204",
-      "n_requests": 40
+      "n_requests": 40,
+      "skipped_existing": true
     },
     {
       "regime": "peak_stress",
       "seed": 1205,
       "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1205",
-      "n_requests": 40
+      "n_requests": 40,
+      "skipped_existing": true
     },
     {
       "regime": "peak_stress",
       "seed": 1206,
       "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1206",
-      "n_requests": 40
+      "n_requests": 40,
+      "skipped_existing": true
     },
     {
       "regime": "peak_stress",
       "seed": 1207,
       "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1207",
-      "n_requests": 40
+      "n_requests": 40,
+      "skipped_existing": true
     },
     {
       "regime": "peak_stress",
       "seed": 1208,
       "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1208",
+      "n_requests": 40,
+      "skipped_existing": true
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1209,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1209",
+      "n_requests": 40
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1210,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1210",
+      "n_requests": 40
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1211,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1211",
+      "n_requests": 40
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1212,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1212",
+      "n_requests": 40
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1213,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1213",
+      "n_requests": 40
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1214,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1214",
+      "n_requests": 40
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1215,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1215",
+      "n_requests": 40
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1216,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1216",
+      "n_requests": 40
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1217,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1217",
+      "n_requests": 40
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1218,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1218",
+      "n_requests": 40
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1219,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1219",
+      "n_requests": 40
+    },
+    {
+      "regime": "peak_stress",
+      "seed": 1220,
+      "path": "data/casablanca/evaluation_v1/default/peak_stress_seed1220",
       "n_requests": 40
     },
     {
       "regime": "tight_windows",
       "seed": 1301,
       "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1301",
-      "n_requests": 30
+      "n_requests": 30,
+      "skipped_existing": true
     },
     {
       "regime": "tight_windows",
       "seed": 1302,
       "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1302",
-      "n_requests": 30
+      "n_requests": 30,
+      "skipped_existing": true
     },
     {
       "regime": "tight_windows",
       "seed": 1303,
       "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1303",
-      "n_requests": 30
+      "n_requests": 30,
+      "skipped_existing": true
     },
     {
       "regime": "tight_windows",
       "seed": 1304,
       "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1304",
-      "n_requests": 30
+      "n_requests": 30,
+      "skipped_existing": true
     },
     {
       "regime": "tight_windows",
       "seed": 1305,
       "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1305",
-      "n_requests": 30
+      "n_requests": 30,
+      "skipped_existing": true
     },
     {
       "regime": "tight_windows",
       "seed": 1306,
       "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1306",
-      "n_requests": 30
+      "n_requests": 30,
+      "skipped_existing": true
     },
     {
       "regime": "tight_windows",
       "seed": 1307,
       "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1307",
-      "n_requests": 30
+      "n_requests": 30,
+      "skipped_existing": true
     },
     {
       "regime": "tight_windows",
       "seed": 1308,
       "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1308",
+      "n_requests": 30,
+      "skipped_existing": true
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1309,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1309",
+      "n_requests": 30
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1310,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1310",
+      "n_requests": 30
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1311,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1311",
+      "n_requests": 30
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1312,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1312",
+      "n_requests": 30
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1313,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1313",
+      "n_requests": 30
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1314,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1314",
+      "n_requests": 30
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1315,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1315",
+      "n_requests": 30
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1316,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1316",
+      "n_requests": 30
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1317,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1317",
+      "n_requests": 30
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1318,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1318",
+      "n_requests": 30
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1319,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1319",
+      "n_requests": 30
+    },
+    {
+      "regime": "tight_windows",
+      "seed": 1320,
+      "path": "data/casablanca/evaluation_v1/default/tight_windows_seed1320",
       "n_requests": 30
     }
   ],
-  "generated_at_utc": "2026-11-08T23:44:56+00:00"
+  "generated_at_utc": "2026-11-09T16:41:49+00:00",
+  "policy_tuning_forbidden": false
 }

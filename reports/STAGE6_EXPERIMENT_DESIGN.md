@@ -11,9 +11,9 @@
 | Sampling unit | Independent scenario / episode |
 | Not independent | Individual requests inside one episode |
 | Release train seeds | Existing 1–8 (baseline/peak/tight as released) |
-| Eval_v1 seed ranges | baseline 1101–1108; peak 1201–1208; tight 1301–1308 (`default` tag) |
-| Locked final-eval reserve | 2100–2399 (not used for Stage 6 policy comparison) |
-| Spatial sensitivity tags | `spatial_pop80`, `spatial_com80`, `spatial_neutral` (hypothetical α/β) |
+| Eval_v1 seed ranges | baseline 1101–1120; peak 1201–1220; tight 1301–1320 (`default` tag; **20/regime**) |
+| Locked final-eval set | Materialized under `evaluation_v1/locked_final` (10/regime: 2101–2110, 2201–2210, 2301–2310); **no policy tuning** |
+| Sensitivity tags | `spatial_*`, `hourly_flat`, `candidates_informative` (all hypothetical) |
 | SOC suites | `full_soc` (1.0) and `soc35` (0.35) |
 | Frozen policies | greedy→70%, greedy adaptive, greedy always-full, SF-RH→70%, SF-RH charge-aware, RACE-RH (negative control) |
 
@@ -21,26 +21,27 @@
 
 | Script | Role |
 | --- | --- |
-| `scripts/generate_evaluation_ensemble.py` | Build `evaluation_v1/{tag}/` + manifests |
-| `scripts/run_stage6_final_comparison.py` | Frozen-policy comparison + paired CIs |
-| `scripts/run_stage6_sensitivity.py` | Spatial-mixture sensitivity (greedy→70% vs RACE-RH, peak SOC35) |
+| `scripts/generate_evaluation_ensemble.py` | Build `evaluation_v1/{tag}/` + locked_final + manifests |
+| `scripts/run_stage6_final_comparison.py` | Fair frozen-policy comparison + paired CIs (checkpoint/resume) |
+| `scripts/run_stage6_sensitivity.py` | Spatial/hourly/fleet/SOC/candidate sensitivity |
+| `scripts/run_stage6_credibility_checks.py` | Accessibility + certified witness revalidation |
+| `scripts/run_stage6_failure_diagnosis.py` | Matched request-level greedy vs RACE traces |
 
-## Compute bounds (honest, pre-declared)
+## Fairness (complete Stage 6)
 
-RACE-RH is expensive and rarely improves the incumbent (Stage 5.1). Stage 6 therefore:
-
-- Runs all frozen greedy/SF-RH policies on release train + eval_v1 `default`.
-- Runs RACE-RH only on `soc35` for release train and the first two peak/tight eval seeds (1201–1202, 1301–1302).
-- Skips RACE-RH on baseline eval and on `full_soc` (except via release baseline where it is still skipped for speed except release `soc35`).
-
-These bounds are computational, not cherry-picking after inspecting outcomes for superiority claims.
+- **All** frozen policies on **all** release-train + `evaluation_v1/default` scenarios (60 eval + 8 release).
+- Both `full_soc` and `soc35` suites.
+- `locked_final` is never used for policy comparison or selection.
+- Checkpoint resume allowed for compute reliability; no post-hoc scenario dropping.
 
 ## Outputs
 
-- `data/casablanca/online_results/stage6_final_comparison.csv`
+- `data/casablanca/online_results/stage6_final_comparison.csv` (816 runs)
 - `data/casablanca/online_results/stage6_final_comparison_summary.json`
-- `data/casablanca/online_results/stage6_sensitivity_spatial.csv`
-- Reports: `STAGE6_FINAL_COMPARISON.md`, `STAGE6_SENSITIVITY_ANALYSIS.md`, `STAGE6_FAILURE_EXPLANATION.md`
+- `data/casablanca/online_results/stage6_sensitivity_full.csv`
+- `data/casablanca/online_results/stage6_failure_diagnosis.json`
+- `data/casablanca/online_results/stage6_credibility_checks.json`
+- Reports: all `STAGE6_*.md`
 
 ## Claim discipline
 

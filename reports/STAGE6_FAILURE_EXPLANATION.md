@@ -1,50 +1,37 @@
-# Stage 6 — Why RACE-RH underperforms (failure explanation)
+# Stage 6 — Why RACE-RH underperforms (matched-trace diagnosis)
 
-This is a diagnosis task. **No new policy was implemented.**
+**Artifacts:** `data/casablanca/online_results/stage6_failure_diagnosis.json`, `stage6_failure_diagnosis_requests.csv`  
+**Runner:** `scripts/run_stage6_failure_diagnosis.py`  
+**No new policy implemented.**
 
-## 1. Search almost never improves the incumbent
+## Aggregate search behaviour (full comparison, n=68 SOC35)
 
-Across all **12** Stage 6 RACE-RH runs (`stage6_final_comparison.csv`):
+| Counter | RACE-RH mean |
+| --- | ---: |
+| Optimized plans selected | **≈ 0** |
+| Incumbent plans selected | high (tens per episode) |
+| Timeouts | ≈ 22 |
+| Decision runtime | ≈ 23 s |
 
-| Counter | Observed |
-| --- | --- |
-| `n_chose_optimized` | **0** on every scenario |
-| `n_chose_incumbent` | typically 23–63 per episode |
-| `policy_timeouts` | mean **22.6**; peak release runs ~41–43 |
-| `policy_runtime_s` | mean **23.1** s; peak up to ~45 s |
+## Matched request-level traces (greedy→70% vs RACE-RH, SOC35)
 
-The optimizer spends its budget evaluating charge/route variants and then keeps the incumbent (or safety fallback). We pay computational cost without selecting improved plans.
+| Scenario | Greedy OT | RACE OT | Greedy-only successes | RACE-only successes | Both OK | Both fail | Optimized chosen |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| release peak seed2 | 0.900 (36/40) | 0.825 (33/40) | 5 | 2 | 31 | 2 | 0 |
+| release peak seed5 | 0.800 | 0.800 | 2 | 2 | 30 | 6 | 0 |
+| release tight seed3 | 0.700 | 0.667 | 2 | 1 | 19 | 8 | 0 |
+| eval peak 1201 | 0.850 | 0.775 | 4 | 1 | 30 | 5 | 0 |
+| eval peak 1202 | 0.800 | **0.900** | 1 | 5 | 31 | 3 | 0 |
 
-## 2. Charging readiness already explains much of the recoverable gap
+Request IDs and status pairs for every mismatch are in the CSV.
 
-Stage 5.1 showed that enabling readiness charging recovered pickups for RACE-RH versus a no-readiness control. Stage 6 keeps readiness on. Even so, greedy charge-to-70% remains equal or better on most paired SOC35 scenarios (5 greedy wins, 6 ties, 1 RACE win).
+## Causal reading
 
-Interpretation: the valuable operational idea is **keep vehicles charge-ready**, not the expensive joint search.
+1. **Search rarely (almost never) improves the incumbent** — differences come from the incumbent/readiness path, not from accepted optimized plans.
+2. **Where greedy wins**, RACE typically leaves requests `EXPIRED`/`MISSED`/`REJECTED` after different charge/assignment timing under the same release stream (fixed sim seed).
+3. **Where RACE wins** (e.g. peak 1202), it is still with `n_chose_optimized=0` — i.e. readiness + incumbent insertion luck, not optimizer success.
+4. **Not a Stage 5.1 simulator defect** — repaired projection/readiness remain in force; the limitation is algorithmic / objective / compute-budget under online unknown futures.
 
-## 3. Matched peak example (release `peak_stress_seed2`, SOC35)
+## Classification
 
-| Policy | On-time | Runtime | Timeouts | Optimized chosen |
-| --- | ---: | ---: | ---: | ---: |
-| greedy→70% | **36/40** | ~0 | 0 | n/a |
-| SF-RH→70% | 34/40 | ~0 | 0 | — |
-| RACE-RH | 33/40 | 34.0 s | 43 | **0** |
-
-Where greedy serves and RACE misses, the difference is consistent with depot readiness / charge timing under a myopic commitment model, not with RACE discovering a superior committed route that greedy cannot. Because optimized plans are never selected, route-order “improvements” from search do not enter the executed policy.
-
-## 4. Objective mismatch
-
-RACE-RH’s search scores feasible commitments on **currently known** requests under hard deadlines and energy bounds. That is not identical to maximizing expected end-of-day on-time pickups under unknown future arrivals. Idle charging, location preservation, and avoiding premature commitment can matter before the next request exists—behaviors greedy→70% approximates cheaply via a fixed target SOC.
-
-## 5. Simulator defect vs algorithmic limitation
-
-Stage 5.1 repaired SERVING/CHARGING projection and readiness bugs (Decision B: correct implementation, no advantage). Stage 6, on the repaired simulator, still shows:
-
-- timeouts and incumbent lock-in;
-- no optimized-plan selections;
-- paired OT not better than greedy→70%.
-
-**Classification:** algorithmic / problem-formulation limitation under the current online objective and search budget — **not** an unresolved simulator defect.
-
-## 6. Dataset size is secondary
-
-Expanding to `evaluation_v1` (more synthetic episodes) did not reverse the ranking. Small release size makes CIs wide, but the failure mode (0 optimized selections + high timeout cost) is structural.
+**Algorithmic limitation** under the current online commitment objective and search budget. Dataset scale uncertainty is secondary: the full 68-scenario paired CI for RACE − greedy is entirely negative on SOC35.

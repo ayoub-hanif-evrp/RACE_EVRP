@@ -1,17 +1,33 @@
-tag,scenario,policy_kind,on_time_rate_all,n_served,n_requests,note
-default,peak_stress_seed1201,greedy_charge_07,0.85,34,40,hypothetical spatial mixture; not calibrated
-default,peak_stress_seed1201,race_rh,0.775,31,40,hypothetical spatial mixture; not calibrated
-default,peak_stress_seed1202,greedy_charge_07,0.8,32,40,hypothetical spatial mixture; not calibrated
-default,peak_stress_seed1202,race_rh,0.9,36,40,hypothetical spatial mixture; not calibrated
-spatial_pop80,peak_stress_seed1201,greedy_charge_07,0.75,30,40,hypothetical spatial mixture; not calibrated
-spatial_pop80,peak_stress_seed1201,race_rh,0.725,29,40,hypothetical spatial mixture; not calibrated
-spatial_pop80,peak_stress_seed1202,greedy_charge_07,0.85,34,40,hypothetical spatial mixture; not calibrated
-spatial_pop80,peak_stress_seed1202,race_rh,0.8,32,40,hypothetical spatial mixture; not calibrated
-spatial_com80,peak_stress_seed1201,greedy_charge_07,0.75,30,40,hypothetical spatial mixture; not calibrated
-spatial_com80,peak_stress_seed1201,race_rh,0.725,29,40,hypothetical spatial mixture; not calibrated
-spatial_com80,peak_stress_seed1202,greedy_charge_07,0.85,34,40,hypothetical spatial mixture; not calibrated
-spatial_com80,peak_stress_seed1202,race_rh,0.8,32,40,hypothetical spatial mixture; not calibrated
-spatial_neutral,peak_stress_seed1201,greedy_charge_07,0.75,30,40,hypothetical spatial mixture; not calibrated
-spatial_neutral,peak_stress_seed1201,race_rh,0.725,29,40,hypothetical spatial mixture; not calibrated
-spatial_neutral,peak_stress_seed1202,greedy_charge_07,0.85,34,40,hypothetical spatial mixture; not calibrated
-spatial_neutral,peak_stress_seed1202,race_rh,0.8,32,40,hypothetical spatial mixture; not calibrated
+factor,tag,scenario,policy_kind,initial_soc,energy_uncertainty_delta,n_vehicles,on_time_rate_all,n_served,n_requests,total_distance_m,energy_consumed_kwh,energy_delivered_kwh,battery_reserve_violations,note
+spatial_mixture,default,peak_stress_seed1201,greedy_charge_07,0.35,0.0,3,0.85,34,40,227659.5018660518,45.53190037321036,87.53190037321036,0,hypothetical sensitivity; not calibrated
+spatial_mixture,default,peak_stress_seed1201,race_rh,0.35,0.0,3,0.775,31,40,214148.34155576676,42.829668311153355,103.41955211102386,0,hypothetical sensitivity; not calibrated
+spatial_mixture,default,peak_stress_seed1202,greedy_charge_07,0.35,0.0,3,0.8,32,40,211884.21782800762,42.376843565601526,84.37684356560153,0,hypothetical sensitivity; not calibrated
+spatial_mixture,default,peak_stress_seed1202,race_rh,0.35,0.0,3,0.9,36,40,226828.82418897795,45.365764837795595,93.23510421160204,0,hypothetical sensitivity; not calibrated
+spatial_mixture,default,peak_stress_seed1203,greedy_charge_07,0.35,0.0,3,0.85,34,40,210987.27357343142,42.19745471468628,84.19745471468627,0,hypothetical sensitivity; not calibrated
+spatial_mixture,default,peak_stress_seed1203,race_rh,0.35,0.0,3,0.85,34,40,210954.93855588924,42.190987711177854,89.66735529558667,0,hypothetical sensitivity; not calibrated
+spatial_mixture,default,peak_stress_seed1204,greedy_charge_07,0.35,0.0,3,0.85,34,40,264589.7469719374,52.91794939438748,94.91794939438749,0,hypothetical sensitivity; not calibrated
+spatial_mixture,default,peak_stress_seed1204,race_rh,0.35,0.0,3,0.8,32,40,263774.1581443812,52.75483162887623,100.72624428041286,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_pop80,peak_stress_seed1201,greedy_charge_07,0.35,0.0,3,0.75,30,40,237297.68619264872,47.45953723852975,89.45953723852975,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_pop80,peak_stress_seed1201,race_rh,0.35,0.0,3,0.725,29,40,224736.86236101465,44.947372472202936,86.94737247220293,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_pop80,peak_stress_seed1202,greedy_charge_07,0.35,0.0,3,0.85,34,40,254630.26058707404,50.9260521174148,92.92605211741481,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_pop80,peak_stress_seed1202,race_rh,0.35,0.0,3,0.8,32,40,263852.79444557574,52.77055888911515,94.77055888911515,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_pop80,peak_stress_seed1203,greedy_charge_07,0.35,0.0,3,0.675,27,40,275405.112408482,55.0810224816964,97.08102248169641,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_pop80,peak_stress_seed1203,race_rh,0.35,0.0,3,0.65,26,40,285543.83340681915,57.10876668136383,123.13073206105753,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_pop80,peak_stress_seed1204,greedy_charge_07,0.35,0.0,3,0.75,30,40,309521.07290420716,61.90421458084144,103.90421458084143,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_pop80,peak_stress_seed1204,race_rh,0.35,0.0,3,0.725,29,40,294294.805967405,58.858961193481,112.29129576263554,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_com80,peak_stress_seed1201,greedy_charge_07,0.35,0.0,3,0.75,30,40,237297.68619264872,47.45953723852975,89.45953723852975,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_com80,peak_stress_seed1201,race_rh,0.35,0.0,3,0.725,29,40,224736.86236101465,44.947372472202936,86.94737247220293,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_com80,peak_stress_seed1202,greedy_charge_07,0.35,0.0,3,0.85,34,40,254630.26058707404,50.9260521174148,92.92605211741481,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_com80,peak_stress_seed1202,race_rh,0.35,0.0,3,0.8,32,40,263852.79444557574,52.77055888911515,94.77055888911515,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_com80,peak_stress_seed1203,greedy_charge_07,0.35,0.0,3,0.675,27,40,275405.112408482,55.0810224816964,97.08102248169641,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_com80,peak_stress_seed1203,race_rh,0.35,0.0,3,0.65,26,40,285543.83340681915,57.10876668136383,123.13073206105753,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_com80,peak_stress_seed1204,greedy_charge_07,0.35,0.0,3,0.75,30,40,309521.07290420716,61.90421458084144,103.90421458084143,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_com80,peak_stress_seed1204,race_rh,0.35,0.0,3,0.725,29,40,294294.805967405,58.858961193481,112.29129576263554,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_neutral,peak_stress_seed1201,greedy_charge_07,0.35,0.0,3,0.75,30,40,237297.68619264872,47.45953723852975,89.45953723852975,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_neutral,peak_stress_seed1201,race_rh,0.35,0.0,3,0.725,29,40,224736.86236101465,44.947372472202936,86.94737247220293,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_neutral,peak_stress_seed1202,greedy_charge_07,0.35,0.0,3,0.85,34,40,254630.26058707404,50.9260521174148,92.92605211741481,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_neutral,peak_stress_seed1202,race_rh,0.35,0.0,3,0.8,32,40,263852.79444557574,52.77055888911515,94.77055888911515,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_neutral,peak_stress_seed1203,greedy_charge_07,0.35,0.0,3,0.675,27,40,275405.112408482,55.0810224816964,97.08102248169641,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_neutral,peak_stress_seed1203,race_rh,0.35,0.0,3,0.65,26,40,285543.83340681915,57.10876668136383,123.13073206105753,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_neutral,peak_stress_seed1204,greedy_charge_07,0.35,0.0,3,0.75,30,40,309521.07290420716,61.90421458084144,103.90421458084143,0,hypothetical sensitivity; not calibrated
+spatial_mixture,spatial_neutral,peak_stress_seed1204,race_rh,0.35,0.0,3,0.725,29,40,294294.805967405,58.858961193481,112.29129576263554,0,hypothetical sensitivity; not calibrated

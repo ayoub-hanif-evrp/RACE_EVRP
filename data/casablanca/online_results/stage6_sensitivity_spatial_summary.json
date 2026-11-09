@@ -2,49 +2,49 @@
   {
     "tag":"default",
     "policy_kind":"greedy_charge_07",
-    "mean":0.825,
-    "count":2
+    "mean":0.8375,
+    "count":4
   },
   {
     "tag":"default",
     "policy_kind":"race_rh",
-    "mean":0.8375,
-    "count":2
+    "mean":0.83125,
+    "count":4
   },
   {
     "tag":"spatial_com80",
     "policy_kind":"greedy_charge_07",
-    "mean":0.8,
-    "count":2
+    "mean":0.75625,
+    "count":4
   },
   {
     "tag":"spatial_com80",
     "policy_kind":"race_rh",
-    "mean":0.7625,
-    "count":2
+    "mean":0.725,
+    "count":4
   },
   {
     "tag":"spatial_neutral",
     "policy_kind":"greedy_charge_07",
-    "mean":0.8,
-    "count":2
+    "mean":0.75625,
+    "count":4
   },
   {
     "tag":"spatial_neutral",
     "policy_kind":"race_rh",
-    "mean":0.7625,
-    "count":2
+    "mean":0.725,
+    "count":4
   },
   {
     "tag":"spatial_pop80",
     "policy_kind":"greedy_charge_07",
-    "mean":0.8,
-    "count":2
+    "mean":0.75625,
+    "count":4
   },
   {
     "tag":"spatial_pop80",
     "policy_kind":"race_rh",
-    "mean":0.7625,
-    "count":2
+    "mean":0.725,
+    "count":4
   }
 ]

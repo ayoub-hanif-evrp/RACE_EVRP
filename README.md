@@ -59,8 +59,11 @@ Full validation (local Morocco PBF): `scripts\verify_benchmark_release.py`.
 .\.venv\Scripts\python scripts\run_stage4b_charging_gap.py
 .\.venv\Scripts\python scripts\run_stage5_race_rh.py
 .\.venv\Scripts\python scripts\run_stage5_1_decision.py
+.\.venv\Scripts\python scripts\generate_evaluation_ensemble.py --per-regime 20
+.\.venv\Scripts\python scripts\generate_evaluation_ensemble.py --locked --locked-per-regime 10
 .\.venv\Scripts\python scripts\run_stage6_credibility_checks.py
 .\.venv\Scripts\python scripts\run_stage6_final_comparison.py
+.\.venv\Scripts\python scripts\run_stage6_failure_diagnosis.py
 .\.venv\Scripts\python scripts\run_stage6_sensitivity.py
 ```
 

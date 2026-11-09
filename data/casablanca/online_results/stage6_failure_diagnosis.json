@@ -1,0 +1,480 @@
+[
+  {
+    "source": "release",
+    "scenario": "peak_stress_seed2",
+    "greedy_ot": 0.9,
+    "race_ot": 0.825,
+    "greedy_served": "36/40",
+    "race_served": "33/40",
+    "delta_ot": -0.07500000000000007,
+    "race_search": {
+      "n_chose_optimized": 0,
+      "n_chose_incumbent": 57,
+      "n_timeouts": 43,
+      "policy_runtime_s": 41.14815880020615,
+      "n_proactive_charges": 6
+    },
+    "n_greedy_only_success": 5,
+    "n_race_only_success": 2,
+    "n_both_ok": 31,
+    "n_both_fail": 2,
+    "greedy_only_success_requests": [
+      {
+        "request_id": "peak_stress-2-0019",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V1",
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-2-0021",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V3",
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-2-0022",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V3",
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-2-0027",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V1",
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-2-0030",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V1",
+        "race_owner": null
+      }
+    ],
+    "race_only_success_requests": [
+      {
+        "request_id": "peak_stress-2-0028",
+        "greedy_status": "rejected",
+        "race_status": "completed",
+        "greedy_owner": null,
+        "race_owner": "V2"
+      },
+      {
+        "request_id": "peak_stress-2-0032",
+        "greedy_status": "rejected",
+        "race_status": "completed",
+        "greedy_owner": null,
+        "race_owner": "V2"
+      }
+    ],
+    "both_fail_requests": [
+      {
+        "request_id": "peak_stress-2-0038",
+        "greedy_status": "expired",
+        "race_status": "expired",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-2-0039",
+        "greedy_status": "expired",
+        "race_status": "expired",
+        "greedy_owner": null,
+        "race_owner": null
+      }
+    ],
+    "interpretation": "RACE search selected optimized plans 0 times vs incumbent 57; timeouts=43. Differences are assignment/charging/timing outcomes under identical request streams, not simulator nondeterminism (seed fixed)."
+  },
+  {
+    "source": "release",
+    "scenario": "peak_stress_seed5",
+    "greedy_ot": 0.8,
+    "race_ot": 0.8,
+    "greedy_served": "32/40",
+    "race_served": "32/40",
+    "delta_ot": 0.0,
+    "race_search": {
+      "n_chose_optimized": 0,
+      "n_chose_incumbent": 62,
+      "n_timeouts": 42,
+      "policy_runtime_s": 45.05401609966066,
+      "n_proactive_charges": 5
+    },
+    "n_greedy_only_success": 2,
+    "n_race_only_success": 2,
+    "n_both_ok": 30,
+    "n_both_fail": 6,
+    "greedy_only_success_requests": [
+      {
+        "request_id": "peak_stress-5-0016",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V3",
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-5-0037",
+        "greedy_status": "completed",
+        "race_status": "expired",
+        "greedy_owner": "V2",
+        "race_owner": null
+      }
+    ],
+    "race_only_success_requests": [
+      {
+        "request_id": "peak_stress-5-0013",
+        "greedy_status": "rejected",
+        "race_status": "completed",
+        "greedy_owner": null,
+        "race_owner": "V2"
+      },
+      {
+        "request_id": "peak_stress-5-0025",
+        "greedy_status": "rejected",
+        "race_status": "completed",
+        "greedy_owner": null,
+        "race_owner": "V1"
+      }
+    ],
+    "both_fail_requests": [
+      {
+        "request_id": "peak_stress-5-0012",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-5-0014",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-5-0019",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-5-0020",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-5-0038",
+        "greedy_status": "expired",
+        "race_status": "expired",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-5-0039",
+        "greedy_status": "expired",
+        "race_status": "expired",
+        "greedy_owner": null,
+        "race_owner": null
+      }
+    ],
+    "interpretation": "RACE search selected optimized plans 0 times vs incumbent 62; timeouts=42. Differences are assignment/charging/timing outcomes under identical request streams, not simulator nondeterminism (seed fixed)."
+  },
+  {
+    "source": "release",
+    "scenario": "tight_windows_seed3",
+    "greedy_ot": 0.7,
+    "race_ot": 0.6666666666666666,
+    "greedy_served": "21/30",
+    "race_served": "20/30",
+    "delta_ot": -0.033333333333333326,
+    "race_search": {
+      "n_chose_optimized": 0,
+      "n_chose_incumbent": 46,
+      "n_timeouts": 22,
+      "policy_runtime_s": 20.52066210017074,
+      "n_proactive_charges": 7
+    },
+    "n_greedy_only_success": 2,
+    "n_race_only_success": 1,
+    "n_both_ok": 19,
+    "n_both_fail": 8,
+    "greedy_only_success_requests": [
+      {
+        "request_id": "tight_windows-3-0012",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V3",
+        "race_owner": null
+      },
+      {
+        "request_id": "tight_windows-3-0013",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V3",
+        "race_owner": null
+      }
+    ],
+    "race_only_success_requests": [
+      {
+        "request_id": "tight_windows-3-0010",
+        "greedy_status": "rejected",
+        "race_status": "completed",
+        "greedy_owner": null,
+        "race_owner": "V3"
+      }
+    ],
+    "both_fail_requests": [
+      {
+        "request_id": "tight_windows-3-0005",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "tight_windows-3-0014",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "tight_windows-3-0015",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "tight_windows-3-0016",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "tight_windows-3-0018",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "tight_windows-3-0022",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "tight_windows-3-0024",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "tight_windows-3-0029",
+        "greedy_status": "expired",
+        "race_status": "expired",
+        "greedy_owner": null,
+        "race_owner": null
+      }
+    ],
+    "interpretation": "RACE search selected optimized plans 0 times vs incumbent 46; timeouts=22. Differences are assignment/charging/timing outcomes under identical request streams, not simulator nondeterminism (seed fixed)."
+  },
+  {
+    "source": "eval",
+    "scenario": "peak_stress_seed1201",
+    "greedy_ot": 0.85,
+    "race_ot": 0.775,
+    "greedy_served": "34/40",
+    "race_served": "31/40",
+    "delta_ot": -0.07499999999999996,
+    "race_search": {
+      "n_chose_optimized": 0,
+      "n_chose_incumbent": 53,
+      "n_timeouts": 42,
+      "policy_runtime_s": 43.2138234997401,
+      "n_proactive_charges": 5
+    },
+    "n_greedy_only_success": 4,
+    "n_race_only_success": 1,
+    "n_both_ok": 30,
+    "n_both_fail": 5,
+    "greedy_only_success_requests": [
+      {
+        "request_id": "peak_stress-1201-0007",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V3",
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-1201-0015",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V2",
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-1201-0021",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V3",
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-1201-0023",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V3",
+        "race_owner": null
+      }
+    ],
+    "race_only_success_requests": [
+      {
+        "request_id": "peak_stress-1201-0022",
+        "greedy_status": "rejected",
+        "race_status": "completed",
+        "greedy_owner": null,
+        "race_owner": "V2"
+      }
+    ],
+    "both_fail_requests": [
+      {
+        "request_id": "peak_stress-1201-0024",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-1201-0025",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-1201-0027",
+        "greedy_status": "rejected",
+        "race_status": "rejected",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-1201-0038",
+        "greedy_status": "expired",
+        "race_status": "expired",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-1201-0039",
+        "greedy_status": "expired",
+        "race_status": "expired",
+        "greedy_owner": null,
+        "race_owner": null
+      }
+    ],
+    "interpretation": "RACE search selected optimized plans 0 times vs incumbent 53; timeouts=42. Differences are assignment/charging/timing outcomes under identical request streams, not simulator nondeterminism (seed fixed)."
+  },
+  {
+    "source": "eval",
+    "scenario": "peak_stress_seed1202",
+    "greedy_ot": 0.8,
+    "race_ot": 0.9,
+    "greedy_served": "32/40",
+    "race_served": "36/40",
+    "delta_ot": 0.09999999999999998,
+    "race_search": {
+      "n_chose_optimized": 0,
+      "n_chose_incumbent": 63,
+      "n_timeouts": 40,
+      "policy_runtime_s": 43.64544920006301,
+      "n_proactive_charges": 7
+    },
+    "n_greedy_only_success": 1,
+    "n_race_only_success": 5,
+    "n_both_ok": 31,
+    "n_both_fail": 3,
+    "greedy_only_success_requests": [
+      {
+        "request_id": "peak_stress-1202-0006",
+        "greedy_status": "completed",
+        "race_status": "rejected",
+        "greedy_owner": "V3",
+        "race_owner": null
+      }
+    ],
+    "race_only_success_requests": [
+      {
+        "request_id": "peak_stress-1202-0007",
+        "greedy_status": "rejected",
+        "race_status": "completed",
+        "greedy_owner": null,
+        "race_owner": "V3"
+      },
+      {
+        "request_id": "peak_stress-1202-0008",
+        "greedy_status": "rejected",
+        "race_status": "completed",
+        "greedy_owner": null,
+        "race_owner": "V3"
+      },
+      {
+        "request_id": "peak_stress-1202-0010",
+        "greedy_status": "rejected",
+        "race_status": "completed",
+        "greedy_owner": null,
+        "race_owner": "V3"
+      },
+      {
+        "request_id": "peak_stress-1202-0017",
+        "greedy_status": "rejected",
+        "race_status": "completed",
+        "greedy_owner": null,
+        "race_owner": "V1"
+      },
+      {
+        "request_id": "peak_stress-1202-0022",
+        "greedy_status": "rejected",
+        "race_status": "completed",
+        "greedy_owner": null,
+        "race_owner": "V2"
+      }
+    ],
+    "both_fail_requests": [
+      {
+        "request_id": "peak_stress-1202-0037",
+        "greedy_status": "expired",
+        "race_status": "expired",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-1202-0038",
+        "greedy_status": "expired",
+        "race_status": "expired",
+        "greedy_owner": null,
+        "race_owner": null
+      },
+      {
+        "request_id": "peak_stress-1202-0039",
+        "greedy_status": "expired",
+        "race_status": "expired",
+        "greedy_owner": null,
+        "race_owner": null
+      }
+    ],
+    "interpretation": "RACE search selected optimized plans 0 times vs incumbent 63; timeouts=40. Differences are assignment/charging/timing outcomes under identical request streams, not simulator nondeterminism (seed fixed)."
+  }
+]
