@@ -59,6 +59,7 @@ class MAPPOTrainer:
         buf = RolloutBuffer()
         steps = self.env.reset(seed=self.env.seed)
         agent_ids = list(steps.keys())
+        ep_seed = int(self.env.seed)
         for _ in range(n_steps):
             actions = {}
             logps = {}
@@ -74,12 +75,10 @@ class MAPPOTrainer:
                         torch.as_tensor(gobs, dtype=torch.float32, device=self.device).unsqueeze(0)
                     ).item()
                 )
-            # Store one joint transition (parameter-shared: store each agent row)
-            team_reward = 0.0
             next_steps = self.env.step(actions)
             done = any(s.done for s in next_steps.values())
+            team_reward = list(next_steps.values())[0].reward
             for vid in agent_ids:
-                team_reward = next_steps[vid].reward
                 buf.add(
                     steps[vid].obs,
                     gobs,
@@ -92,8 +91,10 @@ class MAPPOTrainer:
                 )
             steps = next_steps
             if done:
-                steps = self.env.reset(seed=self.env.seed + 1)
+                ep_seed += 1
+                steps = self.env.reset(seed=ep_seed)
                 agent_ids = list(steps.keys())
+        self.env.seed = ep_seed
         return buf
 
     def update(self, buf: RolloutBuffer) -> dict:
@@ -132,12 +133,29 @@ class MAPPOTrainer:
         self.loss_history.append(metrics)
         return metrics
 
-    def train(self, iterations: int, steps_per_iter: int = 64) -> list[dict]:
+    def train(
+        self,
+        iterations: int,
+        steps_per_iter: int = 64,
+        *,
+        eval_every: int = 0,
+        eval_episodes: int = 2,
+        on_eval=None,
+    ) -> list[dict]:
         logs = []
+        best_ot = -1.0
         for i in range(iterations):
             buf = self.collect(steps_per_iter)
             m = self.update(buf)
             m["iter"] = i
+            if eval_every and (i + 1) % eval_every == 0:
+                ev = self.evaluate_deterministic(n_episodes=eval_episodes)
+                m["eval"] = ev
+                if ev["mean_ot"] >= best_ot:
+                    best_ot = float(ev["mean_ot"])
+                    m["is_best"] = True
+                if on_eval is not None:
+                    on_eval(i, ev, m)
             logs.append(m)
         return logs
 
@@ -154,10 +172,16 @@ class MAPPOTrainer:
             path,
         )
 
-    def load(self, path: Path) -> None:
-        ckpt = torch.load(path, map_location=self.device)
+    def load(self, path: Path, *, require_critic: bool = False) -> None:
+        ckpt = torch.load(path, map_location=self.device, weights_only=False)
         self.actor.load_state_dict(ckpt["actor"])
-        self.critic.load_state_dict(ckpt["critic"])
+        try:
+            self.critic.load_state_dict(ckpt["critic"])
+        except RuntimeError as exc:
+            # Critic input dim = n_vehicles * obs_dim; fleet-transfer eval only needs actor.
+            if require_critic:
+                raise
+            print(f"WARN: critic not loaded ({exc}); actor-only transfer eval", flush=True)
         self.n_updates = int(ckpt.get("n_updates", 0))
         self.loss_history = list(ckpt.get("loss_history", []))
 

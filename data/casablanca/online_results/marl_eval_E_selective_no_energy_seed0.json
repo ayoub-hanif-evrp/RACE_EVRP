@@ -1,0 +1,7 @@
+{
+  "n": 6,
+  "mean_ot": 0.42638888888888893,
+  "mean_served": 12.0,
+  "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/casablanca_E_selective_no_energy_seed0_best.pt",
+  "ablation": "E_selective_no_energy"
+}

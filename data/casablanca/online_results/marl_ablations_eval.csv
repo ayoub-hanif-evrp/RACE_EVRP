@@ -1,0 +1,7 @@
+ablation,seed,mean_ot,mean_served,mean_sends,n_scenarios,checkpoint
+A_no_comm,0,0.38888888888888884,10.166666666666666,0.0,6,C:\Users\AYOUB\OneDrive - EMSI\Bureau\PHD_WORK\RACE\data\casablanca\online_results\marl_checkpoints\casablanca_A_no_comm_seed0_best.pt
+B_full_comm,0,0.4541666666666666,12.5,18.666666666666668,6,C:\Users\AYOUB\OneDrive - EMSI\Bureau\PHD_WORK\RACE\data\casablanca\online_results\marl_checkpoints\casablanca_B_full_comm_seed0_best.pt
+C_random_matched,0,0.41250000000000003,11.5,1.0,6,C:\Users\AYOUB\OneDrive - EMSI\Bureau\PHD_WORK\RACE\data\casablanca\online_results\marl_checkpoints\casablanca_C_random_matched_seed0_best.pt
+D_selective,0,0.2652777777777778,9.0,0.0,6,C:\Users\AYOUB\OneDrive - EMSI\Bureau\PHD_WORK\RACE\data\casablanca\online_results\marl_checkpoints\casablanca_D_selective_seed0_best.pt
+E_selective_no_energy,0,0.42638888888888893,12.0,0.0,6,C:\Users\AYOUB\OneDrive - EMSI\Bureau\PHD_WORK\RACE\data\casablanca\online_results\marl_checkpoints\casablanca_E_selective_no_energy_seed0_best.pt
+F_race_marl,1,0.24722222222222223,5.666666666666667,10.5,6,C:\Users\AYOUB\OneDrive - EMSI\Bureau\PHD_WORK\RACE\data\casablanca\online_results\marl_checkpoints\casablanca_F_race_marl_seed1_best.pt

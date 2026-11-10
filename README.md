@@ -19,7 +19,7 @@ Casablanca is the sole primary geographical research environment. This repositor
 | 5.1 — Optimizer repair + decision gate | Complete; decision **B** — no methodological advantage (see `reports/STAGE5_1_HANDOFF.md`) |
 | 6 — Scientific credibility + final evidence | Complete; honest negative for RACE-RH (`reports/STAGE6_HANDOFF.md`) |
 | 7 — RACE-COMM (energy-certified selective bidding) | Non-learning protocol repaired; larger delayed pilot (`reports/RACE_METHOD_DECISION.md`) |
-| 8 — RACE-MARL (MAPPO CTDE) | Smoke training **PASS**; Casablanca-scale learning pending (`reports/RACE_MARL_RESEARCH_DECISION.md`) |
+| 8 — RACE-MARL (MAPPO CTDE) | Casablanca train + A–F ablations **PARTIAL** (`reports/RACE_MARL_RESEARCH_DECISION.md`) |
 
 **Distinguish carefully:**
 - **Rule-based multi-agent coordination** = `RaceCooperativePolicy` (hand-coded bids / selective trigger).
@@ -69,6 +69,10 @@ Full validation (local Morocco PBF): `scripts\verify_benchmark_release.py`.
 .\.venv\Scripts\python scripts\run_stage6_final_comparison.py
 .\.venv\Scripts\python scripts\run_stage6_failure_diagnosis.py
 .\.venv\Scripts\python scripts\run_stage6_sensitivity.py
+.\.venv\Scripts\python scripts\train_race_marl.py --mode smoke
+.\.venv\Scripts\python scripts\run_race_marl_milestone34.py
+.\.venv\Scripts\python scripts\evaluate_race_marl.py --checkpoint data/casablanca/online_results/marl_checkpoints/casablanca_F_race_marl_seed1_best.pt
+.\.venv\Scripts\python scripts\run_race_marl_ablations.py --skip-train
 ```
 
 Stage 4A post-decision policy: `src/race_casablanca/policies/race_postdecision.py`.  
@@ -108,6 +112,7 @@ Large raw downloads and heavy GraphML/GeoPackage exports are gitignored; manifes
 - Stage 5: `reports/STAGE5_HANDOFF.md`, `STAGE5_BASELINE_COMPARISON.md`, `STAGE5_NOVELTY_AND_LIMITATIONS.md`
 - Stage 5.1: `reports/STAGE5_1_HANDOFF.md`, `STAGE5_1_FINAL_METHOD_DECISION.md`
 - Stage 6: `reports/STAGE6_HANDOFF.md`, `STAGE6_DATASET_SCIENTIFIC_VALIDITY.md`, `STAGE6_PAPER_SCOPE_DECISION.md`
+- Stage 7–8 RACE-COMM / RACE-MARL: `reports/RACE_METHOD_DECISION.md`, `RACE_MARL_RESEARCH_DECISION.md`, `RACE_MARL_COMMUNICATION_ABLATION.md`
 
 ## Attribution and licenses
 

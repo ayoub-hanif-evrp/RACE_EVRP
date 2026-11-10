@@ -2,32 +2,40 @@
 
 ## Non-learning protocol repairs (Milestone 1)
 
-Completed in code:
-
-- Async bid assign windows (`BID_ASSIGN_WINDOW`) with deadline-aware waits.
-- Selective expiry uses **last transmitted** bid expiry.
-- Commitment-version / seq supersession; withdrawals after new claims.
-- Periodic mode can disable generic state floods (`periodic_state_broadcast=False`).
-- Matched-budget random control (`random_matched`).
-- Packet-loss stream.
-- Honest documentation: ranking is travel-primary; `charge_burden_s` not used in ranking.
-
-Pilot runners: `scripts/run_race_comm_pilot_v2_compact.py` (and full `run_race_comm_pilot_v2.py`).  
-Results: `data/casablanca/online_results/race_comm_pilot_v2.csv`.
-
-### Compact pilot means (6 scenarios, SOC35)
-
-| Delay | Mode | Mean OT | Mean msgs | Mean CF changes |
-| --- | --- | ---: | ---: | ---: |
-| 0 s | none | ~0.77 | 0 | 0 |
-| 0 s | selective | ~0.80 | ~70 | >0 |
-| 0 s | full | ~0.80 | much higher | matches selective CF |
-| 0 s | random_matched | lower / mixed | ≈ selective budget | weak CF |
-| 30 s | none | lower | 0 | 0 |
-| 30 s | selective | often ≥ none | moderate | CF often 0 (bids late) |
-
-**Interpretation:** zero-delay selective still helps; under 30 s delay, benefit shrinks and CF claim-changes often vanish — async robustness remains open for MARL.
+Completed earlier (async windows, selective expiry, matched random, packet loss, travel-primary ranking).
+Compact pilot: `data/casablanca/online_results/race_comm_pilot_v2.csv`.
+`full` @ delay>0 skipped in compact pilot due to event-queue blow-up (documented limitation).
 
 ## Learned communication ablations (Milestone 4)
 
-**Not yet executed** at Casablanca scale. Smoke MAPPO proves training mechanics only.
+Matched MAPPO budget; architecture / reward / action space held fixed except the ablation factor.
+
+### Train diagnostics
+
+| ablation | seed | mean_ot | mean_return | wall_time_s | params_changed |
+| --- | --- | --- | --- | --- | --- |
+| A_no_comm | 0 | 0.000 | 0.000 | 884.1 | True |
+| B_full_comm | 0 | 0.325 | 13.325 | 950.8 | True |
+| C_random_matched | 0 | 0.750 | 9.708 | 892.3 | True |
+| D_selective | 0 | 0.038 | 1.537 | 924.5 | True |
+| E_selective_no_energy | 0 | 0.508 | 9.008 | 993.0 | True |
+
+### Shared diagnostic evaluation
+
+| ablation | seed | mean_ot | mean_served | mean_sends | n_scenarios |
+| --- | --- | --- | --- | --- | --- |
+| A_no_comm | 0 | 0.389 | 10.167 | 0.000 | 6 |
+| B_full_comm | 0 | 0.454 | 12.500 | 18.667 | 6 |
+| C_random_matched | 0 | 0.413 | 11.500 | 1.000 | 6 |
+| D_selective | 0 | 0.265 | 9.000 | 0.000 | 6 |
+| E_selective_no_energy | 0 | 0.426 | 12.000 | 0.000 | 6 |
+| F_race_marl | 1 | 0.247 | 5.667 | 10.500 | 6 |
+
+### Honest interpretation (compact n=6 diagnostic)
+
+- **Best learned method here is B (full communication)**, not selective F.
+- A (no comm) already beats F on this set; F seed1 is better than F seed0 but still weak on peak_stress.
+- D/E often learn near-zero send rates under the current reward (tiny message cost + sparse OT signal).
+- Non-learning `full` @ delay>0 remains **skipped** in the compact pilot (event-queue blow-up). Learned transfer under 30 s delay also collapses (OT→0, send spam to max decisions) — async robustness **not** demonstrated.
+
+Raw: `marl_ablations_eval.csv`, `marl_ablations_summary.json`.

@@ -1,0 +1,267 @@
+{
+  "mode": "casablanca",
+  "ablation": "E_selective_no_energy",
+  "seed": 0,
+  "n_vehicles": 3,
+  "initial_soc": 0.35,
+  "message_delay_s": 0.0,
+  "packet_loss_p": 0.0,
+  "params_changed": true,
+  "n_updates": 30,
+  "logs": [
+    {
+      "loss": 3.408586263656616,
+      "policy_loss": -0.029070191085338593,
+      "value_loss": 6.906722068786621,
+      "entropy": 1.5704656839370728,
+      "iter": 0
+    },
+    {
+      "loss": 3.376985549926758,
+      "policy_loss": -0.008483558893203735,
+      "value_loss": 6.802038192749023,
+      "entropy": 1.5549911260604858,
+      "iter": 1
+    },
+    {
+      "loss": 1.085444688796997,
+      "policy_loss": -0.013496994972229004,
+      "value_loss": 2.227602243423462,
+      "entropy": 1.4859472513198853,
+      "iter": 2
+    },
+    {
+      "loss": 0.6995859742164612,
+      "policy_loss": -0.007439399603754282,
+      "value_loss": 1.4438689947128296,
+      "entropy": 1.4909155368804932,
+      "iter": 3
+    },
+    {
+      "loss": 1.17277991771698,
+      "policy_loss": -0.00479598855599761,
+      "value_loss": 2.385378360748291,
+      "entropy": 1.5113234519958496,
+      "iter": 4,
+      "eval": {
+        "mean_return": 11.267666666666663,
+        "mean_ot": 0.3666666666666667,
+        "n": 2
+      },
+      "is_best": true
+    },
+    {
+      "loss": 2.6317646503448486,
+      "policy_loss": 7.491144788218662e-05,
+      "value_loss": 5.293206214904785,
+      "entropy": 1.4913246631622314,
+      "iter": 5
+    },
+    {
+      "loss": 1.3081456422805786,
+      "policy_loss": -0.01053178682923317,
+      "value_loss": 2.669006824493408,
+      "entropy": 1.582597255706787,
+      "iter": 6
+    },
+    {
+      "loss": 1.7276866436004639,
+      "policy_loss": -0.0009087514481507242,
+      "value_loss": 3.4870312213897705,
+      "entropy": 1.4920212030410767,
+      "iter": 7
+    },
+    {
+      "loss": 0.9254851937294006,
+      "policy_loss": -0.004780138377100229,
+      "value_loss": 1.8889833688735962,
+      "entropy": 1.4226351976394653,
+      "iter": 8
+    },
+    {
+      "loss": 1.1103410720825195,
+      "policy_loss": -0.003545160172507167,
+      "value_loss": 2.256680727005005,
+      "entropy": 1.4454076290130615,
+      "iter": 9,
+      "eval": {
+        "mean_return": 13.95,
+        "mean_ot": 0.45,
+        "n": 2
+      },
+      "is_best": true
+    },
+    {
+      "loss": 1.9184660911560059,
+      "policy_loss": -0.00798996165394783,
+      "value_loss": 3.8813204765319824,
+      "entropy": 1.4204113483428955,
+      "iter": 10
+    },
+    {
+      "loss": 1.5346821546554565,
+      "policy_loss": -0.0038332492113113403,
+      "value_loss": 3.1063106060028076,
+      "entropy": 1.463989496231079,
+      "iter": 11
+    },
+    {
+      "loss": 1.9424515962600708,
+      "policy_loss": -0.007431936915963888,
+      "value_loss": 3.9282383918762207,
+      "entropy": 1.4235635995864868,
+      "iter": 12
+    },
+    {
+      "loss": 1.3518017530441284,
+      "policy_loss": -0.003405681811273098,
+      "value_loss": 2.7376885414123535,
+      "entropy": 1.3636847734451294,
+      "iter": 13
+    },
+    {
+      "loss": 1.8126912117004395,
+      "policy_loss": -0.009814818389713764,
+      "value_loss": 3.6726222038269043,
+      "entropy": 1.380499005317688,
+      "iter": 14,
+      "eval": {
+        "mean_return": 13.95,
+        "mean_ot": 0.45,
+        "n": 2
+      },
+      "is_best": true
+    },
+    {
+      "loss": 1.0265166759490967,
+      "policy_loss": -0.00443820096552372,
+      "value_loss": 2.08935284614563,
+      "entropy": 1.372156023979187,
+      "iter": 15
+    },
+    {
+      "loss": 2.0956454277038574,
+      "policy_loss": -0.004094596020877361,
+      "value_loss": 4.226990222930908,
+      "entropy": 1.3755078315734863,
+      "iter": 16
+    },
+    {
+      "loss": 3.1240615844726562,
+      "policy_loss": 0.00022575508046429604,
+      "value_loss": 6.274964332580566,
+      "entropy": 1.3646280765533447,
+      "iter": 17
+    },
+    {
+      "loss": 1.4823006391525269,
+      "policy_loss": -0.0007806022767908871,
+      "value_loss": 2.9929723739624023,
+      "entropy": 1.3405003547668457,
+      "iter": 18
+    },
+    {
+      "loss": 1.6646281480789185,
+      "policy_loss": -0.006478758994489908,
+      "value_loss": 3.3696916103363037,
+      "entropy": 1.3738833665847778,
+      "iter": 19,
+      "eval": {
+        "mean_return": 10.135333333333328,
+        "mean_ot": 0.33333333333333337,
+        "n": 2
+      }
+    },
+    {
+      "loss": 1.3671129941940308,
+      "policy_loss": -0.00016914970183279365,
+      "value_loss": 2.7622735500335693,
+      "entropy": 1.3854656219482422,
+      "iter": 20
+    },
+    {
+      "loss": 3.055687665939331,
+      "policy_loss": -0.002119564451277256,
+      "value_loss": 6.14306116104126,
+      "entropy": 1.37233304977417,
+      "iter": 21
+    },
+    {
+      "loss": 1.9568467140197754,
+      "policy_loss": -0.0048608314245939255,
+      "value_loss": 3.9507882595062256,
+      "entropy": 1.3686507940292358,
+      "iter": 22
+    },
+    {
+      "loss": 1.1684314012527466,
+      "policy_loss": -0.005699667613953352,
+      "value_loss": 2.375613212585449,
+      "entropy": 1.3675528764724731,
+      "iter": 23
+    },
+    {
+      "loss": 1.6379283666610718,
+      "policy_loss": -0.001626047771424055,
+      "value_loss": 3.3063862323760986,
+      "entropy": 1.3638708591461182,
+      "iter": 24,
+      "eval": {
+        "mean_return": 9.618666666666662,
+        "mean_ot": 0.31666666666666665,
+        "n": 2
+      }
+    },
+    {
+      "loss": 1.2572516202926636,
+      "policy_loss": -0.002482715528458357,
+      "value_loss": 2.547102928161621,
+      "entropy": 1.3817040920257568,
+      "iter": 25
+    },
+    {
+      "loss": 2.587707996368408,
+      "policy_loss": -0.0028537744656205177,
+      "value_loss": 5.208187103271484,
+      "entropy": 1.3531692028045654,
+      "iter": 26
+    },
+    {
+      "loss": 1.5392063856124878,
+      "policy_loss": -0.0037011445965617895,
+      "value_loss": 3.113248586654663,
+      "entropy": 1.3716833591461182,
+      "iter": 27
+    },
+    {
+      "loss": 0.9511117935180664,
+      "policy_loss": -0.0022414459381252527,
+      "value_loss": 1.9338101148605347,
+      "entropy": 1.355181336402893,
+      "iter": 28
+    },
+    {
+      "loss": 1.428896427154541,
+      "policy_loss": -0.0002465479774400592,
+      "value_loss": 2.886627197265625,
+      "entropy": 1.4170702695846558,
+      "iter": 29,
+      "eval": {
+        "mean_return": 9.816666666666666,
+        "mean_ot": 0.31666666666666665,
+        "n": 2
+      }
+    }
+  ],
+  "eval": {
+    "mean_return": 9.008333333333333,
+    "mean_ot": 0.5083333333333333,
+    "n": 2
+  },
+  "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/casablanca_E_selective_no_energy_seed0.pt",
+  "best_checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/casablanca_E_selective_no_energy_seed0_best.pt",
+  "torch": "2.15.0+cpu",
+  "device": "cpu",
+  "wall_time_s": 993.01,
+  "note": "Genuine MAPPO on Casablanca train scenarios (frozen geo inputs)."
+}

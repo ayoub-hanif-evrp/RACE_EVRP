@@ -1,0 +1,5 @@
+{
+  "milestone3": "F seeds 0/1 trained; best=seed1_best mean_ot~0.25 on diagnostic",
+  "milestone4": "A-F ablations executed; B strongest on compact diagnostic",
+  "decision": "PARTIAL"
+}

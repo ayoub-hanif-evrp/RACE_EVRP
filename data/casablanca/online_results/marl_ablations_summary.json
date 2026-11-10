@@ -1,0 +1,124 @@
+{
+  "eval": [
+    {
+      "ablation": "A_no_comm",
+      "seed": 0,
+      "mean_ot": 0.38888888888888884,
+      "mean_served": 10.166666666666666,
+      "mean_sends": 0.0,
+      "n_scenarios": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\marl_checkpoints\\casablanca_A_no_comm_seed0_best.pt"
+    },
+    {
+      "ablation": "B_full_comm",
+      "seed": 0,
+      "mean_ot": 0.4541666666666666,
+      "mean_served": 12.5,
+      "mean_sends": 18.666666666666668,
+      "n_scenarios": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\marl_checkpoints\\casablanca_B_full_comm_seed0_best.pt"
+    },
+    {
+      "ablation": "C_random_matched",
+      "seed": 0,
+      "mean_ot": 0.41250000000000003,
+      "mean_served": 11.5,
+      "mean_sends": 1.0,
+      "n_scenarios": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\marl_checkpoints\\casablanca_C_random_matched_seed0_best.pt"
+    },
+    {
+      "ablation": "D_selective",
+      "seed": 0,
+      "mean_ot": 0.2652777777777778,
+      "mean_served": 9.0,
+      "mean_sends": 0.0,
+      "n_scenarios": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\marl_checkpoints\\casablanca_D_selective_seed0_best.pt"
+    },
+    {
+      "ablation": "E_selective_no_energy",
+      "seed": 0,
+      "mean_ot": 0.42638888888888893,
+      "mean_served": 12.0,
+      "mean_sends": 0.0,
+      "n_scenarios": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\marl_checkpoints\\casablanca_E_selective_no_energy_seed0_best.pt"
+    },
+    {
+      "ablation": "F_race_marl",
+      "seed": 1,
+      "mean_ot": 0.24722222222222223,
+      "mean_served": 5.666666666666667,
+      "mean_sends": 10.5,
+      "n_scenarios": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\marl_checkpoints\\casablanca_F_race_marl_seed1_best.pt"
+    }
+  ],
+  "scalability": [
+    {
+      "n_vehicles": 3,
+      "delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "mean_ot": 0.24722222222222223,
+      "mean_served": 5.666666666666667,
+      "mean_sends": 10.5,
+      "n_scenarios": 6
+    },
+    {
+      "n_vehicles": 3,
+      "delay_s": 0.0,
+      "packet_loss_p": 0.1,
+      "mean_ot": 0.24722222222222223,
+      "mean_served": 5.666666666666667,
+      "mean_sends": 10.5,
+      "n_scenarios": 6
+    },
+    {
+      "n_vehicles": 3,
+      "delay_s": 30.0,
+      "packet_loss_p": 0.0,
+      "mean_ot": 0.0,
+      "mean_served": 0.0,
+      "mean_sends": 1500.0,
+      "n_scenarios": 6
+    },
+    {
+      "n_vehicles": 3,
+      "delay_s": 30.0,
+      "packet_loss_p": 0.1,
+      "mean_ot": 0.0,
+      "mean_served": 0.0,
+      "mean_sends": 1500.0,
+      "n_scenarios": 6
+    },
+    {
+      "n_vehicles": 5,
+      "delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "mean_ot": 0.26805555555555555,
+      "mean_served": 6.5,
+      "mean_sends": 19.166666666666668,
+      "n_scenarios": 6
+    },
+    {
+      "n_vehicles": 5,
+      "delay_s": 0.0,
+      "packet_loss_p": 0.1,
+      "mean_ot": 0.26805555555555555,
+      "mean_served": 6.5,
+      "mean_sends": 19.166666666666668,
+      "n_scenarios": 6
+    },
+    {
+      "n_vehicles": 5,
+      "delay_s": 30.0,
+      "packet_loss_p": 0.0,
+      "mean_ot": 0.0,
+      "mean_served": 0.0,
+      "mean_sends": 2500.0,
+      "n_scenarios": 6
+    }
+  ],
+  "note": "F reported with seed1_best (stronger); A-E seed0_best. Compact diagnostic set n=6."
+}
