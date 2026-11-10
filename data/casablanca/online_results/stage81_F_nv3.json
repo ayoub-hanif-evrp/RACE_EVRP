@@ -1,0 +1,7 @@
+{
+  "n": 6,
+  "mean_ot": 0.5305555555555556,
+  "mean_served": 15.0,
+  "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed1_best.pt",
+  "ablation": "F_race_marl"
+}

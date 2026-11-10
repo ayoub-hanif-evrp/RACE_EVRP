@@ -1,0 +1,45 @@
+{
+  "stage": "8.1",
+  "wall_time_s": 1386.87,
+  "toy": {
+    "bc_loss_first": 1.061250925064087,
+    "bc_loss_last": 0.002908277790993452,
+    "random_ot": 1.0,
+    "bc_ot": 1.0,
+    "finetune_ot": 1.0,
+    "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_toy_A_seed0.pt"
+  },
+  "casablanca": {
+    "A_no_comm": {
+      "bc_loss_last": 0.1684047132730484,
+      "best_val_ot": 0.4166666666666667,
+      "final_train_side_ot": 0.7136363636363636,
+      "delay30_ot": null,
+      "delay30_sends": null,
+      "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0.pt",
+      "best_checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt",
+      "n_updates": 25
+    },
+    "B_full_comm": {
+      "bc_loss_last": 0.1761825829744339,
+      "best_val_ot": 0.4666666666666667,
+      "final_train_side_ot": 0.7181818181818183,
+      "delay30_ot": null,
+      "delay30_sends": null,
+      "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0.pt",
+      "best_checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt",
+      "n_updates": 25
+    },
+    "F_race_marl": {
+      "bc_loss_last": 0.5421298146247864,
+      "best_val_ot": 0.35416666666666663,
+      "final_train_side_ot": 0.8136363636363637,
+      "delay30_ot": 0.35416666666666663,
+      "delay30_sends": 15,
+      "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0.pt",
+      "best_checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt",
+      "n_updates": 25
+    }
+  },
+  "note": "Stage 8.1 corrected factorized MAPPO + BC warm-start. Prior Stage 8 ablation CSVs are historical/invalid for final method claims."
+}

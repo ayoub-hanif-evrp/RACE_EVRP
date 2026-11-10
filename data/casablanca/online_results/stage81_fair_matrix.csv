@@ -1,0 +1,115 @@
+method,scenario,delay_s,on_time_rate_all,n_served,n_requests,policy_msgs,n_charges,family,note,n_op_claims,n_decisions,checkpoint
+nl_none,peak_stress_seed101,0.0,0.825,33.0,40,0.0,5.0,nonlearning,,,,
+nl_full,peak_stress_seed101,0.0,0.875,35.0,40,319.0,5.0,nonlearning,,,,
+nl_selective,peak_stress_seed101,0.0,0.875,35.0,40,93.0,5.0,nonlearning,,,,
+nl_random_matched,peak_stress_seed101,0.0,0.85,34.0,40,107.0,4.0,nonlearning,,,,
+greedy_charge70,peak_stress_seed101,0.0,0.9,36.0,40,0.0,8.0,greedy,,,,
+nl_none,tight_windows_seed102,0.0,0.7666666666666667,23.0,30,0.0,8.0,nonlearning,,,,
+nl_full,tight_windows_seed102,0.0,0.7666666666666667,23.0,30,330.0,4.0,nonlearning,,,,
+nl_selective,tight_windows_seed102,0.0,0.7666666666666667,23.0,30,53.0,4.0,nonlearning,,,,
+nl_random_matched,tight_windows_seed102,0.0,0.7333333333333333,22.0,30,61.0,8.0,nonlearning,,,,
+greedy_charge70,tight_windows_seed102,0.0,0.6666666666666666,20.0,30,0.0,8.0,greedy,,,,
+nl_none,peak_stress_seed1201,0.0,0.8,32.0,40,0.0,5.0,nonlearning,,,,
+nl_full,peak_stress_seed1201,0.0,0.85,34.0,40,343.0,5.0,nonlearning,,,,
+nl_selective,peak_stress_seed1201,0.0,0.85,34.0,40,80.0,5.0,nonlearning,,,,
+nl_random_matched,peak_stress_seed1201,0.0,0.825,33.0,40,89.0,5.0,nonlearning,,,,
+greedy_charge70,peak_stress_seed1201,0.0,0.85,34.0,40,0.0,8.0,greedy,,,,
+nl_none,peak_stress_seed1202,0.0,0.8,32.0,40,0.0,7.0,nonlearning,,,,
+nl_full,peak_stress_seed1202,0.0,0.8,32.0,40,496.0,7.0,nonlearning,,,,
+nl_selective,peak_stress_seed1202,0.0,0.8,32.0,40,79.0,7.0,nonlearning,,,,
+nl_random_matched,peak_stress_seed1202,0.0,0.8,32.0,40,111.0,7.0,nonlearning,,,,
+greedy_charge70,peak_stress_seed1202,0.0,0.8,32.0,40,0.0,8.0,greedy,,,,
+nl_none,tight_windows_seed1301,0.0,0.7333333333333333,22.0,30,0.0,8.0,nonlearning,,,,
+nl_full,tight_windows_seed1301,0.0,0.7,21.0,30,405.0,6.0,nonlearning,,,,
+nl_selective,tight_windows_seed1301,0.0,0.7,21.0,30,48.0,6.0,nonlearning,,,,
+nl_random_matched,tight_windows_seed1301,0.0,0.7333333333333333,22.0,30,64.0,8.0,nonlearning,,,,
+greedy_charge70,tight_windows_seed1301,0.0,0.7,21.0,30,0.0,11.0,greedy,,,,
+nl_none,baseline_seed1101,0.0,1.0,12.0,12,0.0,3.0,nonlearning,,,,
+nl_full,baseline_seed1101,0.0,1.0,12.0,12,36.0,3.0,nonlearning,,,,
+nl_selective,baseline_seed1101,0.0,1.0,12.0,12,35.0,3.0,nonlearning,,,,
+nl_random_matched,baseline_seed1101,0.0,1.0,12.0,12,35.0,3.0,nonlearning,,,,
+greedy_charge70,baseline_seed1101,0.0,1.0,12.0,12,0.0,7.0,greedy,,,,
+nl_none,peak_stress_seed101,30.0,0.8,32.0,40,0.0,5.0,nonlearning,,,,
+nl_full,peak_stress_seed101,30.0,,,40,,,nonlearning,skipped_full_at_delay_event_blowup,,,
+nl_selective,peak_stress_seed101,30.0,0.8,32.0,40,83.0,5.0,nonlearning,,,,
+nl_random_matched,peak_stress_seed101,30.0,0.8,32.0,40,90.0,5.0,nonlearning,,,,
+greedy_charge70,peak_stress_seed101,30.0,0.9,36.0,40,0.0,8.0,greedy,,,,
+nl_none,tight_windows_seed102,30.0,0.7333333333333333,22.0,30,0.0,5.0,nonlearning,,,,
+nl_full,tight_windows_seed102,30.0,,,30,,,nonlearning,skipped_full_at_delay_event_blowup,,,
+nl_selective,tight_windows_seed102,30.0,0.7333333333333333,22.0,30,53.0,5.0,nonlearning,,,,
+nl_random_matched,tight_windows_seed102,30.0,0.7333333333333333,22.0,30,59.0,5.0,nonlearning,,,,
+greedy_charge70,tight_windows_seed102,30.0,0.6666666666666666,20.0,30,0.0,8.0,greedy,,,,
+nl_none,peak_stress_seed1201,30.0,0.775,31.0,40,0.0,5.0,nonlearning,,,,
+nl_full,peak_stress_seed1201,30.0,,,40,,,nonlearning,skipped_full_at_delay_event_blowup,,,
+nl_selective,peak_stress_seed1201,30.0,0.775,31.0,40,76.0,5.0,nonlearning,,,,
+nl_random_matched,peak_stress_seed1201,30.0,0.775,31.0,40,78.0,5.0,nonlearning,,,,
+greedy_charge70,peak_stress_seed1201,30.0,0.85,34.0,40,0.0,8.0,greedy,,,,
+nl_none,peak_stress_seed1202,30.0,0.8,32.0,40,0.0,7.0,nonlearning,,,,
+nl_full,peak_stress_seed1202,30.0,,,40,,,nonlearning,skipped_full_at_delay_event_blowup,,,
+nl_selective,peak_stress_seed1202,30.0,0.8,32.0,40,81.0,7.0,nonlearning,,,,
+nl_random_matched,peak_stress_seed1202,30.0,0.8,32.0,40,93.0,7.0,nonlearning,,,,
+greedy_charge70,peak_stress_seed1202,30.0,0.8,32.0,40,0.0,8.0,greedy,,,,
+nl_none,tight_windows_seed1301,30.0,0.7,21.0,30,0.0,7.0,nonlearning,,,,
+nl_full,tight_windows_seed1301,30.0,,,30,,,nonlearning,skipped_full_at_delay_event_blowup,,,
+nl_selective,tight_windows_seed1301,30.0,0.7,21.0,30,52.0,7.0,nonlearning,,,,
+nl_random_matched,tight_windows_seed1301,30.0,0.7,21.0,30,60.0,7.0,nonlearning,,,,
+greedy_charge70,tight_windows_seed1301,30.0,0.7,21.0,30,0.0,11.0,greedy,,,,
+nl_none,baseline_seed1101,30.0,1.0,12.0,12,0.0,3.0,nonlearning,,,,
+nl_full,baseline_seed1101,30.0,,,12,,,nonlearning,skipped_full_at_delay_event_blowup,,,
+nl_selective,baseline_seed1101,30.0,1.0,12.0,12,36.0,3.0,nonlearning,,,,
+nl_random_matched,baseline_seed1101,30.0,1.0,12.0,12,36.0,3.0,nonlearning,,,,
+greedy_charge70,baseline_seed1101,30.0,1.0,12.0,12,0.0,7.0,greedy,,,,
+mappo_A_no_comm,peak_stress_seed101,0.0,0.4,16.0,40,0.0,3.0,mappo,,27.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_A_no_comm,tight_windows_seed102,0.0,0.43333333333333335,13.0,30,0.0,3.0,mappo,,22.0,33.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_A_no_comm,peak_stress_seed1201,0.0,0.375,15.0,40,0.0,3.0,mappo,,28.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_A_no_comm,peak_stress_seed1202,0.0,0.45,18.0,40,0.0,3.0,mappo,,32.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_A_no_comm,tight_windows_seed1301,0.0,0.3,9.0,30,0.0,3.0,mappo,,16.0,33.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_A_no_comm,baseline_seed1101,0.0,1.0,12.0,12,0.0,0.0,mappo,,28.0,12.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_A_no_comm,peak_stress_seed101,30.0,0.4,16.0,40,0.0,3.0,mappo,,27.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_A_no_comm,tight_windows_seed102,30.0,0.43333333333333335,13.0,30,0.0,3.0,mappo,,22.0,33.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_A_no_comm,peak_stress_seed1201,30.0,0.375,15.0,40,0.0,3.0,mappo,,28.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_A_no_comm,peak_stress_seed1202,30.0,0.45,18.0,40,0.0,3.0,mappo,,32.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_A_no_comm,tight_windows_seed1301,30.0,0.3,9.0,30,0.0,3.0,mappo,,16.0,33.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_A_no_comm,baseline_seed1101,30.0,1.0,12.0,12,0.0,0.0,mappo,,28.0,12.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt
+mappo_B_full_comm,peak_stress_seed101,0.0,0.4,16.0,40,21.0,0.0,mappo,,27.0,40.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_B_full_comm,tight_windows_seed102,0.0,0.5333333333333333,16.0,30,11.0,0.0,mappo,,27.0,30.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_B_full_comm,peak_stress_seed1201,0.0,0.375,15.0,40,20.0,0.0,mappo,,28.0,40.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_B_full_comm,peak_stress_seed1202,0.0,0.45,18.0,40,24.0,0.0,mappo,,32.0,40.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_B_full_comm,tight_windows_seed1301,0.0,0.5666666666666667,17.0,30,10.0,0.0,mappo,,28.0,30.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_B_full_comm,baseline_seed1101,0.0,1.0,12.0,12,26.0,0.0,mappo,,28.0,12.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_B_full_comm,peak_stress_seed101,30.0,0.4,16.0,40,21.0,0.0,mappo,,27.0,40.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_B_full_comm,tight_windows_seed102,30.0,0.5333333333333333,16.0,30,11.0,0.0,mappo,,27.0,30.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_B_full_comm,peak_stress_seed1201,30.0,0.375,15.0,40,20.0,0.0,mappo,,28.0,40.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_B_full_comm,peak_stress_seed1202,30.0,0.45,18.0,40,24.0,0.0,mappo,,32.0,40.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_B_full_comm,tight_windows_seed1301,30.0,0.5666666666666667,17.0,30,10.0,0.0,mappo,,28.0,30.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_B_full_comm,baseline_seed1101,30.0,1.0,12.0,12,26.0,0.0,mappo,,28.0,12.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt
+mappo_C_random_matched,peak_stress_seed101,0.0,0.4,16.0,40,7.0,0.0,mappo,,27.0,40.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_C_random_matched_seed0_best.pt
+mappo_C_random_matched,tight_windows_seed102,0.0,0.5333333333333333,16.0,30,5.0,0.0,mappo,,27.0,30.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_C_random_matched_seed0_best.pt
+mappo_C_random_matched,peak_stress_seed1201,0.0,0.375,15.0,40,8.0,0.0,mappo,,28.0,40.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_C_random_matched_seed0_best.pt
+mappo_C_random_matched,peak_stress_seed1202,0.0,0.45,18.0,40,10.0,0.0,mappo,,32.0,40.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_C_random_matched_seed0_best.pt
+mappo_C_random_matched,tight_windows_seed1301,0.0,0.3,9.0,30,3.0,0.0,mappo,,16.0,30.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_C_random_matched_seed0_best.pt
+mappo_C_random_matched,baseline_seed1101,0.0,1.0,12.0,12,10.0,0.0,mappo,,28.0,12.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_C_random_matched_seed0_best.pt
+mappo_D_selective,peak_stress_seed101,0.0,0.4,16.0,40,23.0,3.0,mappo,,27.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_D_selective_seed0_best.pt
+mappo_D_selective,tight_windows_seed102,0.0,0.5333333333333333,16.0,30,17.0,3.0,mappo,,27.0,33.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_D_selective_seed0_best.pt
+mappo_D_selective,peak_stress_seed1201,0.0,0.375,15.0,40,23.0,3.0,mappo,,28.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_D_selective_seed0_best.pt
+mappo_D_selective,peak_stress_seed1202,0.0,0.45,18.0,40,27.0,3.0,mappo,,32.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_D_selective_seed0_best.pt
+mappo_D_selective,tight_windows_seed1301,0.0,0.5666666666666667,17.0,30,12.0,3.0,mappo,,28.0,33.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_D_selective_seed0_best.pt
+mappo_D_selective,baseline_seed1101,0.0,1.0,12.0,12,26.0,0.0,mappo,,28.0,12.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_D_selective_seed0_best.pt
+mappo_E_selective_no_energy,peak_stress_seed101,0.0,0.4,16.0,40,23.0,3.0,mappo,,27.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_E_selective_no_energy_seed0_best.pt
+mappo_E_selective_no_energy,tight_windows_seed102,0.0,0.5333333333333333,16.0,30,19.0,0.0,mappo,,27.0,30.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_E_selective_no_energy_seed0_best.pt
+mappo_E_selective_no_energy,peak_stress_seed1201,0.0,0.375,15.0,40,23.0,3.0,mappo,,28.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_E_selective_no_energy_seed0_best.pt
+mappo_E_selective_no_energy,peak_stress_seed1202,0.0,0.45,18.0,40,27.0,3.0,mappo,,32.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_E_selective_no_energy_seed0_best.pt
+mappo_E_selective_no_energy,tight_windows_seed1301,0.0,0.5666666666666667,17.0,30,14.0,3.0,mappo,,28.0,33.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_E_selective_no_energy_seed0_best.pt
+mappo_E_selective_no_energy,baseline_seed1101,0.0,1.0,12.0,12,26.0,0.0,mappo,,28.0,12.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_E_selective_no_energy_seed0_best.pt
+mappo_F_race_marl,peak_stress_seed101,0.0,0.375,15.0,40,22.0,3.0,mappo,,26.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt
+mappo_F_race_marl,tight_windows_seed102,0.0,0.3333333333333333,10.0,30,15.0,3.0,mappo,,17.0,33.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt
+mappo_F_race_marl,peak_stress_seed1201,0.0,0.35,14.0,40,20.0,3.0,mappo,,27.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt
+mappo_F_race_marl,peak_stress_seed1202,0.0,0.425,17.0,40,26.0,3.0,mappo,,31.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt
+mappo_F_race_marl,tight_windows_seed1301,0.0,0.26666666666666666,8.0,30,12.0,3.0,mappo,,14.0,33.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt
+mappo_F_race_marl,baseline_seed1101,0.0,1.0,12.0,12,26.0,0.0,mappo,,28.0,12.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt
+mappo_F_race_marl,peak_stress_seed101,30.0,0.375,15.0,40,22.0,3.0,mappo,,26.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt
+mappo_F_race_marl,tight_windows_seed102,30.0,0.3333333333333333,10.0,30,15.0,0.0,mappo,,17.0,30.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt
+mappo_F_race_marl,peak_stress_seed1201,30.0,0.35,14.0,40,20.0,3.0,mappo,,27.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt
+mappo_F_race_marl,peak_stress_seed1202,30.0,0.425,17.0,40,27.0,3.0,mappo,,31.0,43.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt
+mappo_F_race_marl,tight_windows_seed1301,30.0,0.26666666666666666,8.0,30,12.0,3.0,mappo,,14.0,33.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt
+mappo_F_race_marl,baseline_seed1101,30.0,1.0,12.0,12,26.0,0.0,mappo,,28.0,12.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt

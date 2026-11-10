@@ -1,0 +1,4 @@
+ablation,bc_loss_last,best_val_ot,final_train_side_ot,delay30_ot,delay30_sends,best_checkpoint,n_updates
+A_no_comm,0.1684047132730484,0.4166666666666667,0.7136363636363636,,,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_A_no_comm_seed0_best.pt,25
+B_full_comm,0.1761825829744339,0.4666666666666667,0.7181818181818183,,,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_B_full_comm_seed0_best.pt,25
+F_race_marl,0.5421298146247864,0.35416666666666663,0.8136363636363637,0.35416666666666663,15.0,C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/marl_checkpoints/stage81_F_race_marl_seed0_best.pt,25

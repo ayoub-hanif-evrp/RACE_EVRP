@@ -125,10 +125,14 @@ def main() -> int:
         "torch": torch.__version__,
         "device": str(trainer.device),
         "wall_time_s": round(time.time() - t0, 2),
+        "obs_dim": env.obs_dim,
+        "n_op": env.n_op,
+        "n_comm": env.n_comm,
+        "stage": "8.1",
         "note": (
-            "Genuine MAPPO smoke on toy scenario."
+            "Stage 8.1 factorized MAPPO smoke on toy scenario."
             if args.mode == "smoke"
-            else "Genuine MAPPO on Casablanca train scenarios (frozen geo inputs)."
+            else "Stage 8.1 factorized MAPPO on Casablanca train scenarios (frozen geo inputs)."
         ),
     }
     meta_path = out.with_suffix(".json")

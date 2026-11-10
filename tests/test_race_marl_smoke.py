@@ -1,4 +1,4 @@
-"""Prove RACE-MARL actually runs neural forward/backward updates."""
+"""Prove RACE-MARL actually runs neural forward/backward updates (Stage 8.1)."""
 
 from __future__ import annotations
 
@@ -32,10 +32,11 @@ def test_mappo_parameters_change_and_forward_pass():
     assert "loss" in logs[-1]
     changed = any(not torch.allclose(before[k], v) for k, v in trainer.actor.named_parameters())
     assert changed, "expected gradient updates to change actor weights"
-    # Decentralized actor forward without critic global state
     steps = env.reset(seed=1)
     for st in steps.values():
         o = torch.as_tensor(st.obs).unsqueeze(0)
-        m = torch.as_tensor(st.mask).unsqueeze(0)
-        logits = trainer.actor(o, m)
-        assert logits.shape[-1] == env.n_actions
+        om = torch.as_tensor(st.op_mask).unsqueeze(0)
+        cm = torch.as_tensor(st.comm_mask).unsqueeze(0)
+        op_logits, comm_logits = trainer.actor(o, om, cm)
+        assert op_logits.shape[-1] == env.n_op
+        assert comm_logits.shape[-1] == env.n_comm

@@ -1,20 +1,18 @@
-# RACE-MARL — Research decision (after Milestone 1–4)
+# RACE-MARL — Research decision
 
-## Milestone scores
+## Stage 8 (historical)
 
-| Milestone | Result |
+Executed MAPPO smoke + compact A–F ablations, but the learning formulation had structural defects (action competition, missing peer-bid features, flattened GAE, cumulative message penalty, message-triggered decision loops). Those ablation numbers are **not** valid for final claims.
+
+## Stage 8.1 (current)
+
+| Gate | Result |
 | --- | --- |
-| 1 Protocol repair + larger delayed pilot | **PARTIAL** — repairs landed; compact pilot; full@delay skipped |
-| 2 Genuine MAPPO smoke (gradients, checkpoints) | **PASS** |
-| 3 Casablanca trained policy | **PASS** (seeds 0/1, checkpoints saved) |
-| 4 Full learned ablations | **PARTIAL** — A–F executed on compact matrix |
+| 1 Correctness | **PASS** |
+| 2 Basic learning | **PASS** |
+| 3 Casablanca + delay | **PASS** (no pathological 1500-send collapse) |
+| 4 Selective RACE novelty | **PARTIAL** — full-comm still leads on compact val |
 
-## Binding decision
+**Binding decision: PARTIAL — continue to Stage 8.2 multi-seed evaluation after this repaired stack.**
 
-**PARTIAL.** F mean_ot=0.247; no clear gain over no-comm on this compact diagnostic set. Best=B_full_comm (0.454).
-
-Do **not** claim TRC-ready novelty until larger multi-seed held-out evaluation with uncertainty intervals.
-Do **not** reintroduce RACE-RH / inverse-slack methods.
-
-Pipeline summary: `{"milestone3": "F seeds 0/1 trained; best=seed1_best mean_ot~0.25 on diagnostic", "milestone4": "A-F ablations executed; B strongest on compact diagnostic", "decision": "PARTIAL"}`
-Ablation wall: `n/a` s.
+See `reports/RACE_MARL_8_1_HANDOFF.md`.

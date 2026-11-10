@@ -99,9 +99,12 @@ def main() -> int:
             actions = {}
             for vid, st in steps.items():
                 o = torch.as_tensor(st.obs, dtype=torch.float32, device=trainer.device).unsqueeze(0)
-                m = torch.as_tensor(st.mask, dtype=torch.float32, device=trainer.device).unsqueeze(0)
-                logits = trainer.actor(o, m)
-                actions[vid] = int(torch.argmax(logits, dim=-1).item())
+                om = torch.as_tensor(st.op_mask, dtype=torch.float32, device=trainer.device).unsqueeze(0)
+                cm = torch.as_tensor(st.comm_mask, dtype=torch.float32, device=trainer.device).unsqueeze(0)
+                op_logits, comm_logits = trainer.actor(o, om, cm)
+                op_a = int(torch.argmax(op_logits, dim=-1).item())
+                comm_a = int(torch.argmax(comm_logits, dim=-1).item())
+                actions[vid] = (op_a, comm_a)
             steps = env.step(actions)
             total_r += list(steps.values())[0].reward
             done = list(steps.values())[0].done
@@ -120,6 +123,8 @@ def main() -> int:
             "n_requests": metrics.get("n_requests"),
             "bid_msgs": metrics.get("n_bid_messages", metrics.get("bid_messages")),
             "n_send_actions": metrics.get("n_send_actions"),
+            "n_op_claims": metrics.get("n_op_claims"),
+            "n_decisions": metrics.get("n_decisions"),
             "wall_s": round(time.time() - t0, 2),
         }
         # pull common metric keys if present

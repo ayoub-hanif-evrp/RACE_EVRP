@@ -122,16 +122,48 @@ def make_pool_factory(
     n_vehicles: int = 3,
     n_requests: int | None = None,
     name_filter: Callable[[str], bool] | None = None,
+    procedural_jitter: bool = False,
 ) -> Callable[..., dict]:
+    """Training factory. With procedural_jitter, reshuffle/trim requests by seed.
+
+    This does **not** regenerate geography; it creates varied synthetic request
+    subsets from frozen scenario files (training-only). Not observed orders.
+    """
     names = [n for n in pool.names if name_filter is None or name_filter(n)]
     if not names:
         names = list(pool.names)
 
     def factory(seed: int = 0, n_vehicles: int = n_vehicles) -> dict:
         name = names[int(seed) % len(names)]
-        return pool.to_dict(name, seed=int(seed), n_vehicles=n_vehicles, n_requests=n_requests)
+        sc = pool.to_dict(name, seed=int(seed), n_vehicles=n_vehicles, n_requests=n_requests)
+        if procedural_jitter and sc["requests"]:
+            rng = __import__("random").Random(int(seed) * 9973 + 11)
+            reqs = list(sc["requests"])
+            # Small temporal jitter on release / windows (seconds), clipped to shift.
+            for r in reqs:
+                jitter = rng.uniform(-120.0, 120.0)
+                r.release_s = max(sc["shift_start_s"], float(r.release_s) + jitter)
+                r.tw_start_s = max(r.release_s, float(r.tw_start_s) + jitter)
+                r.tw_end_s = max(r.tw_start_s + 60.0, float(r.tw_end_s) + jitter)
+            rng.shuffle(reqs)
+            # Keep most requests; drop 0–20% for variety
+            keep = max(1, int(len(reqs) * rng.uniform(0.8, 1.0)))
+            sc["requests"] = reqs[:keep]
+            sc["scenario_id"] = f"{sc['scenario_id']}/jitter{seed}"
+        return sc
 
     return factory
+
+
+def make_validation_factory(
+    pool: CasablancaPool | None = None,
+    *,
+    n_vehicles: int = 3,
+) -> Callable[..., dict]:
+    """Fixed validation pool (no jitter) for checkpoint selection."""
+    if pool is None:
+        pool = load_casablanca_pool(split="validation")
+    return make_pool_factory(pool, n_vehicles=n_vehicles, procedural_jitter=False)
 
 
 def resolve_eval_dirs() -> list[Path]:

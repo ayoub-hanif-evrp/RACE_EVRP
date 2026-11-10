@@ -1,0 +1,168 @@
+{
+  "wall_time_s": 1323.35,
+  "n_scenarios": 6,
+  "scenarios": [
+    "peak_stress_seed101",
+    "tight_windows_seed102",
+    "peak_stress_seed1201",
+    "peak_stress_seed1202",
+    "tight_windows_seed1301",
+    "baseline_seed1101"
+  ],
+  "train_meta": [],
+  "summary": [
+    {
+      "method": "nl_full",
+      "delay_s": 0.0,
+      "mean_ot": 0.8319444444444445,
+      "mean_served": 26.166666666666668,
+      "mean_msgs": 321.5,
+      "n": 6
+    },
+    {
+      "method": "nl_selective",
+      "delay_s": 0.0,
+      "mean_ot": 0.8319444444444445,
+      "mean_served": 26.166666666666668,
+      "mean_msgs": 64.66666666666667,
+      "n": 6
+    },
+    {
+      "method": "nl_random_matched",
+      "delay_s": 0.0,
+      "mean_ot": 0.8236111111111111,
+      "mean_served": 25.833333333333332,
+      "mean_msgs": 77.83333333333333,
+      "n": 6
+    },
+    {
+      "method": "nl_none",
+      "delay_s": 0.0,
+      "mean_ot": 0.8208333333333333,
+      "mean_served": 25.666666666666668,
+      "mean_msgs": 0.0,
+      "n": 6
+    },
+    {
+      "method": "greedy_charge70",
+      "delay_s": 0.0,
+      "mean_ot": 0.8194444444444443,
+      "mean_served": 25.833333333333332,
+      "mean_msgs": 0.0,
+      "n": 6
+    },
+    {
+      "method": "mappo_B_full_comm",
+      "delay_s": 0.0,
+      "mean_ot": 0.5541666666666667,
+      "mean_served": 15.666666666666666,
+      "mean_msgs": 18.666666666666668,
+      "n": 6
+    },
+    {
+      "method": "mappo_D_selective",
+      "delay_s": 0.0,
+      "mean_ot": 0.5541666666666667,
+      "mean_served": 15.666666666666666,
+      "mean_msgs": 21.333333333333332,
+      "n": 6
+    },
+    {
+      "method": "mappo_E_selective_no_energy",
+      "delay_s": 0.0,
+      "mean_ot": 0.5541666666666667,
+      "mean_served": 15.666666666666666,
+      "mean_msgs": 22.0,
+      "n": 6
+    },
+    {
+      "method": "mappo_C_random_matched",
+      "delay_s": 0.0,
+      "mean_ot": 0.5097222222222223,
+      "mean_served": 14.333333333333334,
+      "mean_msgs": 7.166666666666667,
+      "n": 6
+    },
+    {
+      "method": "mappo_A_no_comm",
+      "delay_s": 0.0,
+      "mean_ot": 0.4930555555555556,
+      "mean_served": 13.833333333333334,
+      "mean_msgs": 0.0,
+      "n": 6
+    },
+    {
+      "method": "mappo_F_race_marl",
+      "delay_s": 0.0,
+      "mean_ot": 0.4583333333333333,
+      "mean_served": 12.666666666666666,
+      "mean_msgs": 20.166666666666668,
+      "n": 6
+    },
+    {
+      "method": "greedy_charge70",
+      "delay_s": 30.0,
+      "mean_ot": 0.8194444444444443,
+      "mean_served": 25.833333333333332,
+      "mean_msgs": 0.0,
+      "n": 6
+    },
+    {
+      "method": "nl_none",
+      "delay_s": 30.0,
+      "mean_ot": 0.8013888888888889,
+      "mean_served": 25.0,
+      "mean_msgs": 0.0,
+      "n": 6
+    },
+    {
+      "method": "nl_random_matched",
+      "delay_s": 30.0,
+      "mean_ot": 0.8013888888888889,
+      "mean_served": 25.0,
+      "mean_msgs": 69.33333333333333,
+      "n": 6
+    },
+    {
+      "method": "nl_selective",
+      "delay_s": 30.0,
+      "mean_ot": 0.8013888888888889,
+      "mean_served": 25.0,
+      "mean_msgs": 63.5,
+      "n": 6
+    },
+    {
+      "method": "mappo_B_full_comm",
+      "delay_s": 30.0,
+      "mean_ot": 0.5541666666666667,
+      "mean_served": 15.666666666666666,
+      "mean_msgs": 18.666666666666668,
+      "n": 6
+    },
+    {
+      "method": "mappo_A_no_comm",
+      "delay_s": 30.0,
+      "mean_ot": 0.4930555555555556,
+      "mean_served": 13.833333333333334,
+      "mean_msgs": 0.0,
+      "n": 6
+    },
+    {
+      "method": "mappo_F_race_marl",
+      "delay_s": 30.0,
+      "mean_ot": 0.4583333333333333,
+      "mean_served": 12.666666666666666,
+      "mean_msgs": 20.333333333333332,
+      "n": 6
+    },
+    {
+      "method": "nl_full",
+      "delay_s": 30.0,
+      "mean_ot": NaN,
+      "mean_served": NaN,
+      "mean_msgs": NaN,
+      "n": 6
+    }
+  ],
+  "note": "Stage 8.1 fair matched matrix. Stage 8 historical ablations remain invalid. Locked final unused."
+}
