@@ -22,7 +22,6 @@ def test_claim_and_send_same_epoch():
         max_decisions=30,
     )
     steps = env.reset(seed=0)
-    # Find an agent with a feasible claim
     actions = {}
     claimed = False
     for vid, st in steps.items():
@@ -39,15 +38,14 @@ def test_claim_and_send_same_epoch():
                 break
         actions[vid] = (op, comm)
     assert claimed, "expected at least one feasible claim on toy scenario"
-    before_sends = env._n_send_actions
     before_claims = env._n_op_claims
     nxt = env.step(actions)
-    assert not any(s.done for s in nxt.values()) or True
-    # Either a claim executed and/or a send — at least op space is independent of comm.
+    assert all(not s.done for s in nxt.values()), "toy first step must not end episode"
     assert env.n_op == K_TASKS + 2
     assert env.n_comm == K_TASKS + 1
     assert env._n_op_claims >= before_claims
-    # Full-comm ablation can claim while always sending
+    assert env._n_op_claims >= 1, "expected at least one successful claim"
+
     env_b = RaceMultiAgentEnv(
         scenario_factory=_factory,
         n_vehicles=2,
@@ -62,7 +60,20 @@ def test_claim_and_send_same_epoch():
         op = next((i for i in range(K_TASKS) if st.op_mask[i] > 0.5), OP_DEFER)
         actions[vid] = (op, COMM_SUPPRESS)  # suppress requested but B forces send
     env_b.step(actions)
-    assert env_b._n_send_actions >= 0  # may be 0 if no feasible bid
+    assert env_b._n_send_actions >= 1, "B_full_comm must transmit at least one bid when feasible"
+    for st in env_b._observe_all(0.0, False).values():
+        pass
+    info_vid = list(actions.keys())[0]
+    # Re-step once more to inspect executed_comm on a fresh epoch if episode continues
+    steps2 = env_b.reset(seed=0)
+    actions2 = {
+        vid: (next((i for i in range(K_TASKS) if st.op_mask[i] > 0.5), OP_DEFER), COMM_SUPPRESS)
+        for vid, st in steps2.items()
+    }
+    nxt2 = env_b.step(actions2)
+    for st in nxt2.values():
+        assert st.info.get("comm_learnable") is False
+        assert st.info.get("comm_externally_controlled") is True
 
 
 def test_no_comm_masks_send():

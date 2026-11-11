@@ -1,0 +1,11 @@
+{
+  "phase": "C+E",
+  "seed": 2,
+  "eval": {
+    "mean_return": 8.0,
+    "mean_ot": 0.8,
+    "n": 2
+  },
+  "init": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_B_full_comm_seed2.pt",
+  "best": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_F_race_marl_seed2_best.pt"
+}

@@ -1,0 +1,7 @@
+{
+  "n": 6,
+  "mean_ot": 0.4986111111111111,
+  "mean_served": 14.0,
+  "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/stage82_recovery_checkpoints/rec_A_no_comm_seed0_best.pt",
+  "ablation": "A_no_comm"
+}

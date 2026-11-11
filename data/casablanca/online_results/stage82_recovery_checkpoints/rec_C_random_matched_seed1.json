@@ -1,0 +1,10 @@
+{
+  "phase": "D_control",
+  "seed": 1,
+  "eval": {
+    "mean_return": 9.495000000000001,
+    "mean_ot": 0.6388888888888888,
+    "n": 2
+  },
+  "matched_send_p": 0.3074433656957929
+}

@@ -1,0 +1,290 @@
+{
+  "mode": "casablanca",
+  "ablation": "A_no_comm",
+  "seed": 0,
+  "n_vehicles": 3,
+  "initial_soc": 0.35,
+  "message_delay_s": 0.0,
+  "packet_loss_p": 0.0,
+  "matched_send_p": 0.3074433656957929,
+  "params_changed": true,
+  "n_updates": 25,
+  "logs": [
+    {
+      "loss": 6.872719764709473,
+      "policy_loss": -0.004506190773099661,
+      "value_loss": 13.757452964782715,
+      "entropy": 0.1500694453716278,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 0
+    },
+    {
+      "loss": 4.986378192901611,
+      "policy_loss": -0.004244586452841759,
+      "value_loss": 9.983515739440918,
+      "entropy": 0.1135026067495346,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 1
+    },
+    {
+      "loss": 6.929296016693115,
+      "policy_loss": -0.0025188890285789967,
+      "value_loss": 13.866694450378418,
+      "entropy": 0.15324829518795013,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 2
+    },
+    {
+      "loss": 2.0464961528778076,
+      "policy_loss": -0.003767465939745307,
+      "value_loss": 4.1018147468566895,
+      "entropy": 0.06436905264854431,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 3
+    },
+    {
+      "loss": 4.898614883422852,
+      "policy_loss": 0.0012240103678777814,
+      "value_loss": 9.796671867370605,
+      "entropy": 0.09450973570346832,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 4,
+      "eval": {
+        "mean_return": 15.0,
+        "mean_ot": 0.5769230769230769,
+        "n": 2
+      },
+      "is_best": true
+    },
+    {
+      "loss": 3.2524077892303467,
+      "policy_loss": -0.002241346053779125,
+      "value_loss": 6.51181173324585,
+      "entropy": 0.12568135559558868,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 5
+    },
+    {
+      "loss": 3.776975631713867,
+      "policy_loss": 0.00024098862195387483,
+      "value_loss": 7.555776119232178,
+      "entropy": 0.1153549998998642,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 6
+    },
+    {
+      "loss": 4.027742385864258,
+      "policy_loss": -0.0022631601896137,
+      "value_loss": 8.062329292297363,
+      "entropy": 0.11589663475751877,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 7
+    },
+    {
+      "loss": 1.1354711055755615,
+      "policy_loss": -0.004866344854235649,
+      "value_loss": 2.2819652557373047,
+      "entropy": 0.06451258063316345,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 8
+    },
+    {
+      "loss": 2.8173959255218506,
+      "policy_loss": -0.002082303399220109,
+      "value_loss": 5.640648365020752,
+      "entropy": 0.08459286391735077,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 9,
+      "eval": {
+        "mean_return": 16.0,
+        "mean_ot": 0.6020114942528736,
+        "n": 2
+      },
+      "is_best": true
+    },
+    {
+      "loss": 2.494793176651001,
+      "policy_loss": -0.0016288943588733673,
+      "value_loss": 4.995269298553467,
+      "entropy": 0.12125281244516373,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 10
+    },
+    {
+      "loss": 2.7818055152893066,
+      "policy_loss": -0.00109902024269104,
+      "value_loss": 5.567530155181885,
+      "entropy": 0.08604586869478226,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 11
+    },
+    {
+      "loss": 3.421647548675537,
+      "policy_loss": 0.001406884053722024,
+      "value_loss": 6.8424530029296875,
+      "entropy": 0.0985935851931572,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 12
+    },
+    {
+      "loss": 1.1753945350646973,
+      "policy_loss": -0.004566079471260309,
+      "value_loss": 2.3608644008636475,
+      "entropy": 0.04716319963335991,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 13
+    },
+    {
+      "loss": 2.266564130783081,
+      "policy_loss": -0.007432300131767988,
+      "value_loss": 4.5495924949646,
+      "entropy": 0.07999754697084427,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 14,
+      "eval": {
+        "mean_return": 18.0,
+        "mean_ot": 0.6801994301994302,
+        "n": 2
+      },
+      "is_best": true
+    },
+    {
+      "loss": 2.6406168937683105,
+      "policy_loss": -0.0036624735221266747,
+      "value_loss": 5.290983200073242,
+      "entropy": 0.12120282649993896,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 15
+    },
+    {
+      "loss": 2.207174301147461,
+      "policy_loss": 0.0027566419448703527,
+      "value_loss": 4.4109625816345215,
+      "entropy": 0.10635469108819962,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 16
+    },
+    {
+      "loss": 1.3890355825424194,
+      "policy_loss": -0.0007422301569022238,
+      "value_loss": 2.7810564041137695,
+      "entropy": 0.07504047453403473,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 17
+    },
+    {
+      "loss": 0.6723043322563171,
+      "policy_loss": -0.008541245013475418,
+      "value_loss": 1.3633583784103394,
+      "entropy": 0.0833619236946106,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 18
+    },
+    {
+      "loss": 1.7635341882705688,
+      "policy_loss": 0.0057827141135931015,
+      "value_loss": 3.517378807067871,
+      "entropy": 0.09379520267248154,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 19,
+      "eval": {
+        "mean_return": 13.5,
+        "mean_ot": 0.5178571428571428,
+        "n": 2
+      }
+    },
+    {
+      "loss": 2.5000874996185303,
+      "policy_loss": -0.004484187345951796,
+      "value_loss": 5.012070655822754,
+      "entropy": 0.1463678777217865,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 20
+    },
+    {
+      "loss": 2.9429264068603516,
+      "policy_loss": -0.0058868685737252235,
+      "value_loss": 5.900338649749756,
+      "entropy": 0.1356058567762375,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 21
+    },
+    {
+      "loss": 2.6227855682373047,
+      "policy_loss": -0.0033160713501274586,
+      "value_loss": 5.255532741546631,
+      "entropy": 0.16645753383636475,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 22
+    },
+    {
+      "loss": 0.23811079561710358,
+      "policy_loss": -0.0032350835390388966,
+      "value_loss": 0.4846833646297455,
+      "entropy": 0.09958069026470184,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 23
+    },
+    {
+      "loss": 1.725348949432373,
+      "policy_loss": 0.00026147812604904175,
+      "value_loss": 3.4529387950897217,
+      "entropy": 0.13818615674972534,
+      "comm_learnable_frac": 0.0,
+      "comm_grad_norm": 0.0,
+      "iter": 24,
+      "eval": {
+        "mean_return": 13.5,
+        "mean_ot": 0.49725274725274726,
+        "n": 2
+      }
+    }
+  ],
+  "eval": {
+    "mean_return": 11.5,
+    "mean_ot": 0.7007575757575758,
+    "n": 2
+  },
+  "bc": {
+    "op_accuracy": 0.9701389074325562,
+    "comm_accuracy": 1.0,
+    "charge_accuracy": 0.948051929473877,
+    "n": 2880.0,
+    "teacher": "cooperative_dagger",
+    "final_loss": 0.08007576316595078
+  },
+  "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/stage82_recovery_checkpoints/rec_A_no_comm_seed0.pt",
+  "best_checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/stage82_recovery_checkpoints/rec_A_no_comm_seed0_best.pt",
+  "torch": "2.15.0+cpu",
+  "device": "cpu",
+  "wall_time_s": 839.2,
+  "obs_dim": 86,
+  "n_op": 7,
+  "n_comm": 6,
+  "stage": "8.2_recovery_A",
+  "note": "Stage 8.2 MAPPO with cooperative BC init; bid-before-commit env."
+}

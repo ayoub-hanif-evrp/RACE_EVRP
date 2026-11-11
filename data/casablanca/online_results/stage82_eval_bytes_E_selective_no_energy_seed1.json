@@ -1,0 +1,7 @@
+{
+  "n": 6,
+  "mean_ot": 0.48194444444444445,
+  "mean_served": 13.5,
+  "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/stage82_checkpoints/stage82_E_selective_no_energy_seed1_best.pt",
+  "ablation": "E_selective_no_energy"
+}

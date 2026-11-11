@@ -1,0 +1,59 @@
+{
+  "n_scenario_rows": 30,
+  "nl_ot_means": {
+    "greedy_charge70": 0.8194444444444443,
+    "nl_full": 0.8319444444444445,
+    "nl_none": 0.8208333333333333,
+    "nl_selective": 0.8319444444444445
+  },
+  "selective_vs_none_ot_delta": 0.011111111111111183,
+  "selective_delay30_ot": 0.8013888888888889,
+  "mean_owner_hamming_none_vs_sel": 14.166666666666666,
+  "curve": [
+    {
+      "method": "greedy_charge70",
+      "delay_s": 0.0,
+      "on_time_rate_all": 0.8194444444444443,
+      "n_bid_bytes": 0.0,
+      "n_bid_messages": 0.0,
+      "n_served": 25.833333333333332,
+      "n_defers_to_peer": 0.0
+    },
+    {
+      "method": "nl_none",
+      "delay_s": 0.0,
+      "on_time_rate_all": 0.8208333333333333,
+      "n_bid_bytes": 0.0,
+      "n_bid_messages": 0.0,
+      "n_served": 25.666666666666668,
+      "n_defers_to_peer": 0.0
+    },
+    {
+      "method": "nl_selective",
+      "delay_s": 0.0,
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_bytes": 47873.0,
+      "n_bid_messages": 129.33333333333334,
+      "n_served": 26.166666666666668,
+      "n_defers_to_peer": 10.5
+    },
+    {
+      "method": "nl_full",
+      "delay_s": 0.0,
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_bytes": 218588.0,
+      "n_bid_messages": 643.0,
+      "n_served": 26.166666666666668,
+      "n_defers_to_peer": 10.5
+    },
+    {
+      "method": "nl_selective",
+      "delay_s": 30.0,
+      "on_time_rate_all": 0.8013888888888889,
+      "n_bid_bytes": 46968.333333333336,
+      "n_bid_messages": 127.0,
+      "n_served": 25.0,
+      "n_defers_to_peer": 0.0
+    }
+  ]
+}

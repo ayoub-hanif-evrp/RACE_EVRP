@@ -1,0 +1,57 @@
+{
+  "mode": "smoke",
+  "ablation": "F_race_marl",
+  "seed": 0,
+  "n_vehicles": 2,
+  "initial_soc": 1.0,
+  "message_delay_s": 0.0,
+  "packet_loss_p": 0.0,
+  "matched_send_p": 0.5,
+  "params_changed": true,
+  "n_updates": 3,
+  "logs": [
+    {
+      "loss": 0.9804741144180298,
+      "policy_loss": -0.034644994884729385,
+      "value_loss": 2.0525529384613037,
+      "entropy": 1.1157358884811401,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.0,
+      "iter": 0
+    },
+    {
+      "loss": 0.6376935243606567,
+      "policy_loss": -0.018278364092111588,
+      "value_loss": 1.334437370300293,
+      "entropy": 1.1246782541275024,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.0,
+      "iter": 1
+    },
+    {
+      "loss": 0.7783417105674744,
+      "policy_loss": -0.030441101640462875,
+      "value_loss": 1.6393043994903564,
+      "entropy": 1.0869367122650146,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.0,
+      "iter": 2
+    }
+  ],
+  "eval": {
+    "mean_return": 2.0,
+    "mean_ot": 1.0,
+    "n": 2
+  },
+  "bc": null,
+  "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/stage82_checkpoints/smoke_f.pt",
+  "best_checkpoint": null,
+  "torch": "2.14.0+cpu",
+  "device": "cpu",
+  "wall_time_s": 1.45,
+  "obs_dim": 86,
+  "n_op": 7,
+  "n_comm": 6,
+  "stage": "8.2",
+  "note": "Stage smoke MAPPO on toy scenario."
+}

@@ -1,0 +1,158 @@
+{
+  "stage": "8.2_recovery",
+  "matched_send_p": 0.3074433656957929,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "wall_time_s": 5708.74,
+  "rows": [
+    {
+      "phase": "A",
+      "ablation": "A_no_comm",
+      "seed": 0,
+      "mean_ot": 0.4986111111111111,
+      "mean_msgs": NaN,
+      "mean_bytes": NaN,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_A_no_comm_seed0_best.pt"
+    },
+    {
+      "phase": "B",
+      "ablation": "B_full_comm",
+      "seed": 0,
+      "mean_ot": 0.48194444444444445,
+      "mean_msgs": NaN,
+      "mean_bytes": NaN,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_B_full_comm_seed0_best.pt"
+    },
+    {
+      "phase": "F",
+      "ablation": "F_race_marl",
+      "seed": 0,
+      "mean_ot": 0.4875,
+      "mean_msgs": NaN,
+      "mean_bytes": NaN,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_F_race_marl_seed0_best.pt"
+    },
+    {
+      "phase": "C",
+      "ablation": "C_random_matched",
+      "seed": 0,
+      "mean_ot": 0.4986111111111111,
+      "mean_msgs": NaN,
+      "mean_bytes": NaN,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_C_random_matched_seed0.pt"
+    },
+    {
+      "phase": "A",
+      "ablation": "A_no_comm",
+      "seed": 1,
+      "mean_ot": 0.48194444444444445,
+      "mean_msgs": NaN,
+      "mean_bytes": NaN,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_A_no_comm_seed1_best.pt"
+    },
+    {
+      "phase": "B",
+      "ablation": "B_full_comm",
+      "seed": 1,
+      "mean_ot": 0.48194444444444445,
+      "mean_msgs": NaN,
+      "mean_bytes": NaN,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_B_full_comm_seed1_best.pt"
+    },
+    {
+      "phase": "F",
+      "ablation": "F_race_marl",
+      "seed": 1,
+      "mean_ot": 0.48194444444444445,
+      "mean_msgs": NaN,
+      "mean_bytes": NaN,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_F_race_marl_seed1_best.pt"
+    },
+    {
+      "phase": "C",
+      "ablation": "C_random_matched",
+      "seed": 1,
+      "mean_ot": 0.48194444444444445,
+      "mean_msgs": NaN,
+      "mean_bytes": NaN,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_C_random_matched_seed1.pt"
+    },
+    {
+      "phase": "A",
+      "ablation": "A_no_comm",
+      "seed": 2,
+      "mean_ot": 0.4986111111111111,
+      "mean_msgs": 0.0,
+      "mean_bytes": 0.0,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_A_no_comm_seed2_best.pt"
+    },
+    {
+      "phase": "B",
+      "ablation": "B_full_comm",
+      "seed": 2,
+      "mean_ot": 0.4986111111111111,
+      "mean_msgs": 53.666666666666664,
+      "mean_bytes": 20196.666666666668,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_B_full_comm_seed2_best.pt"
+    },
+    {
+      "phase": "F",
+      "ablation": "F_race_marl",
+      "seed": 2,
+      "mean_ot": 0.4986111111111111,
+      "mean_msgs": 4.666666666666667,
+      "mean_bytes": 2093.0,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_F_race_marl_seed2_best.pt"
+    },
+    {
+      "phase": "C",
+      "ablation": "C_random_matched",
+      "seed": 2,
+      "mean_ot": 0.4986111111111111,
+      "mean_msgs": 21.333333333333332,
+      "mean_bytes": 8028.0,
+      "n": 6,
+      "checkpoint": "C:\\Users\\AYOUB\\OneDrive - EMSI\\Bureau\\PHD_WORK\\RACE\\data\\casablanca\\online_results\\stage82_recovery_checkpoints\\rec_C_random_matched_seed2.pt"
+    }
+  ],
+  "by_phase": [
+    {
+      "phase": "A",
+      "mean": 0.4930555555555556,
+      "std": 0.009622504486493764,
+      "count": 3
+    },
+    {
+      "phase": "B",
+      "mean": 0.4875,
+      "std": 0.00962250448649377,
+      "count": 3
+    },
+    {
+      "phase": "C",
+      "mean": 0.4930555555555556,
+      "std": 0.009622504486493764,
+      "count": 3
+    },
+    {
+      "phase": "F",
+      "mean": 0.4893518518518518,
+      "std": 0.008486251286955251,
+      "count": 3
+    }
+  ]
+}

@@ -23,7 +23,6 @@ def test_message_cost_is_incremental_not_cumulative():
         msg_cost=0.01,
     )
     steps = env.reset(seed=0)
-    # Force many decisions; cumulative n_bid_messages must not re-penalize past sends.
     penalties = []
     for _ in range(5):
         actions = {vid: (OP_DEFER, COMM_SUPPRESS) for vid in steps}
@@ -32,10 +31,9 @@ def test_message_cost_is_incremental_not_cumulative():
         penalties.append(info.get("delta_messages", 0.0))
         if list(steps.values())[0].done:
             break
-    # Each step's delta_messages equals only newly sent messages (>=0)
     assert all(p >= 0 for p in penalties)
-    # Sum of deltas equals final cumulative bid messages
     assert abs(sum(penalties) - float(env.sim.n_bid_messages)) < 1e-6
+    assert env.sim.n_bid_messages >= 1, "full-comm defer loop must still emit bids"
 
 
 def test_completed_pickup_rewarded_once():
@@ -51,7 +49,6 @@ def test_completed_pickup_rewarded_once():
     steps = env.reset(seed=0)
     total_ot = 0.0
     while True:
-        # Greedy: claim first feasible
         actions = {}
         for vid, st in steps.items():
             op = OP_DEFER
@@ -65,5 +62,6 @@ def test_completed_pickup_rewarded_once():
         if list(steps.values())[0].done:
             break
     m = env.final_metrics()
-    # On-time completions counted once in reward accounting
-    assert abs(total_ot - float(m.get("n_on_time", total_ot))) < 1e-6 or total_ot >= 0
+    n_on_time = float(m.get("n_on_time", 0.0))
+    assert n_on_time >= 1.0, "toy scenario must complete at least one on-time pickup"
+    assert abs(total_ot - n_on_time) < 1e-6, "incremental OT reward must match final n_on_time"

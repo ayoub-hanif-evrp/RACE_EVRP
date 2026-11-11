@@ -1,4 +1,9 @@
-"""Parameter-shared MAPPO trainer with time-indexed GAE (Yu et al. 2022 CTDE)."""
+"""Parameter-shared MAPPO trainer with time-indexed GAE (Yu et al. 2022 CTDE).
+
+Stage 8.2: store *executed* communication actions. For B/C (external comm),
+comm_learnable=0 so PPO does not apply likelihood ratios / entropy to
+unexecuted sampled communication actions.
+"""
 
 from __future__ import annotations
 
@@ -29,6 +34,8 @@ class MAPPOTrainer:
         device: str | None = None,
         time_aware: bool = True,
         dt_ref: float = 60.0,
+        freeze_comm: bool = False,
+        freeze_op: bool = False,
     ):
         self.env = env
         self.gamma = gamma
@@ -39,6 +46,8 @@ class MAPPOTrainer:
         self.epochs = epochs
         self.time_aware = time_aware
         self.dt_ref = dt_ref
+        self.freeze_comm = bool(freeze_comm)
+        self.freeze_op = bool(freeze_op)
         self.device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
         n_agents = env.n_vehicles
         self.actor = FactorizedActor(env.obs_dim, env.n_op, env.n_comm).to(self.device)
@@ -66,10 +75,6 @@ class MAPPOTrainer:
         )
 
     def collect(self, n_steps: int) -> tuple[FleetRolloutBuffer, float, bool]:
-        """Collect n_steps synchronized fleet transitions.
-
-        Returns buffer, bootstrap value for truncation, and whether last step ended an episode.
-        """
         buf = FleetRolloutBuffer()
         steps = self.env.reset(seed=self.env.seed)
         agent_ids = list(steps.keys())
@@ -77,9 +82,9 @@ class MAPPOTrainer:
         last_done = False
         for _ in range(n_steps):
             op_actions = []
-            comm_actions = []
+            proposed_comm = []
             op_logps = []
-            comm_logps = []
+            proposed_comm_logps = []
             op_masks = []
             comm_masks = []
             obs_rows = []
@@ -90,9 +95,9 @@ class MAPPOTrainer:
                 )
                 action_map[vid] = (op_a, comm_a)
                 op_actions.append(op_a)
-                comm_actions.append(comm_a)
+                proposed_comm.append(comm_a)
                 op_logps.append(olp)
-                comm_logps.append(clp)
+                proposed_comm_logps.append(clp)
                 op_masks.append(steps[vid].op_mask)
                 comm_masks.append(steps[vid].comm_mask)
                 obs_rows.append(steps[vid].obs)
@@ -107,18 +112,44 @@ class MAPPOTrainer:
             next_steps = self.env.step(action_map)
             done = any(s.done for s in next_steps.values())
             trunc = bool(list(next_steps.values())[0].info.get("truncated_budget", False)) and done
-            # If episode ended naturally (not budget), trunc=False, done=True.
             if done and not list(next_steps.values())[0].info.get("truncated_budget", False):
                 trunc = False
             team_reward = float(list(next_steps.values())[0].reward)
             elapsed = float(list(next_steps.values())[0].info.get("elapsed_s", 1.0))
+
+            # Use *executed* communication actions; zero logprob if not learnable.
+            exec_comm = []
+            exec_comm_logps = []
+            learnable = []
+            for i, vid in enumerate(agent_ids):
+                info = next_steps[vid].info
+                ec = int(info.get("executed_comm", proposed_comm[i]))
+                learn = bool(info.get("comm_learnable", not self.env.comm_externally_controlled))
+                exec_comm.append(ec)
+                if learn and ec == proposed_comm[i]:
+                    exec_comm_logps.append(proposed_comm_logps[i])
+                elif learn:
+                    # Recompute logprob for executed action under the same policy.
+                    o = torch.as_tensor(obs_rows[i], dtype=torch.float32, device=self.device).unsqueeze(0)
+                    om = torch.as_tensor(op_masks[i], dtype=torch.float32, device=self.device).unsqueeze(0)
+                    cm = torch.as_tensor(comm_masks[i], dtype=torch.float32, device=self.device).unsqueeze(0)
+                    _, clog = self.actor(o, om, cm)
+                    dist = Categorical(logits=clog)
+                    exec_comm_logps.append(float(dist.log_prob(torch.tensor(ec, device=self.device)).item()))
+                else:
+                    exec_comm_logps.append(0.0)
+                learnable.append(1.0 if learn else 0.0)
+
+            # Natural terminal → dones=1 (cuts GAE). Budget cut → truncs=1.
+            # Mid-buffer episode end + reset is covered by dones=1 so the next
+            # episode's values cannot propagate backward.
             buf.add(
                 obs_arr,
                 gobs,
                 np.asarray(op_actions),
-                np.asarray(comm_actions),
+                np.asarray(exec_comm),
                 np.asarray(op_logps),
-                np.asarray(comm_logps),
+                np.asarray(exec_comm_logps),
                 team_reward,
                 float(done and not trunc),
                 float(trunc),
@@ -126,6 +157,7 @@ class MAPPOTrainer:
                 np.stack(op_masks, axis=0),
                 np.stack(comm_masks, axis=0),
                 elapsed=elapsed,
+                comm_learnable=np.asarray(learnable, dtype=np.float32),
             )
             steps = next_steps
             last_done = done
@@ -134,12 +166,10 @@ class MAPPOTrainer:
                 steps = self.env.reset(seed=ep_seed)
                 agent_ids = list(steps.keys())
         self.env.seed = ep_seed
-        # Bootstrap: if last transition ended the episode, 0; if truncated mid-episode, critic value.
         if last_done and buf.dones[-1] > 0.5:
             bootstrap = 0.0
         elif last_done and buf.truncs[-1] > 0.5:
-            # Budget truncation after drain — treat as terminal for service accounting.
-            bootstrap = 0.0
+            bootstrap = 0.0  # drained episode after budget cut
         else:
             gobs = np.concatenate([steps[vid].obs for vid in agent_ids], axis=0)
             with torch.no_grad():
@@ -160,7 +190,6 @@ class MAPPOTrainer:
         )
         adv_flat = (adv_flat - adv_flat.mean()) / (adv_flat.std() + 1e-8)
         data = buf.as_tensors(adv_flat, ret_flat, self.device)
-        # Time-level returns for critic (one per fleet step)
         returns_time = torch.as_tensor(ret_t, dtype=torch.float32, device=self.device)
         gobs_time = torch.as_tensor(
             np.asarray(buf.global_obs), dtype=torch.float32, device=self.device
@@ -172,14 +201,26 @@ class MAPPOTrainer:
             comm_dist = Categorical(logits=comm_logits)
             new_op_logp = op_dist.log_prob(data["op_actions"])
             new_comm_logp = comm_dist.log_prob(data["comm_actions"])
-            entropy = op_dist.entropy().mean() + comm_dist.entropy().mean()
-            # Joint log-prob ratio (independent heads)
-            old_logp = data["op_logprobs"] + data["comm_logprobs"]
-            new_logp = new_op_logp + new_comm_logp
+            learn = data["comm_learnable"]
+            if self.freeze_comm:
+                learn = torch.zeros_like(learn)
+            if self.freeze_op:
+                op_w = torch.zeros_like(learn)
+            else:
+                op_w = torch.ones_like(learn)
+
+            # Likelihood uses only executed, learnable actions.
+            old_logp = op_w * data["op_logprobs"] + learn * data["comm_logprobs"]
+            new_logp = op_w * new_op_logp + learn * new_comm_logp
             ratio = torch.exp(new_logp - old_logp)
             surr1 = ratio * data["advantages"]
             surr2 = torch.clamp(ratio, 1.0 - self.clip, 1.0 + self.clip) * data["advantages"]
             policy_loss = -torch.min(surr1, surr2).mean()
+
+            ent = op_w * op_dist.entropy() + learn * comm_dist.entropy()
+            # Avoid div0 when all frozen — mean over agents still defined.
+            entropy = ent.mean()
+
             values = self.critic(gobs_time)
             value_loss = F.mse_loss(values, returns_time)
             loss = policy_loss + self.value_coef * value_loss - self.entropy_coef * entropy
@@ -189,11 +230,18 @@ class MAPPOTrainer:
                 list(self.actor.parameters()) + list(self.critic.parameters()), 0.5
             )
             self.opt.step()
+            # Diagnostic: mean |grad| on comm head when learnable fraction is 0
+            comm_grad_norm = 0.0
+            for name, p in self.actor.named_parameters():
+                if "comm" in name and p.grad is not None:
+                    comm_grad_norm += float(p.grad.detach().norm().item())
             metrics = {
                 "loss": float(loss.item()),
                 "policy_loss": float(policy_loss.item()),
                 "value_loss": float(value_loss.item()),
                 "entropy": float(entropy.item()),
+                "comm_learnable_frac": float(learn.mean().item()),
+                "comm_grad_norm": comm_grad_norm,
             }
         self.n_updates += 1
         self.loss_history.append(metrics)

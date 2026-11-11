@@ -1,0 +1,189 @@
+{
+  "mode": "casablanca",
+  "ablation": "D_selective",
+  "seed": 2,
+  "n_vehicles": 3,
+  "initial_soc": 0.35,
+  "message_delay_s": 0.0,
+  "packet_loss_p": 0.0,
+  "matched_send_p": 0.3074433656957929,
+  "params_changed": true,
+  "n_updates": 15,
+  "logs": [
+    {
+      "loss": 9.341432571411133,
+      "policy_loss": -0.009806230664253235,
+      "value_loss": 18.70881462097168,
+      "entropy": 0.3167807459831238,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.0006965810025576502,
+      "iter": 0
+    },
+    {
+      "loss": 5.8549957275390625,
+      "policy_loss": -9.504126501269639e-05,
+      "value_loss": 11.717011451721191,
+      "entropy": 0.34150055050849915,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.00044348706796881743,
+      "iter": 1
+    },
+    {
+      "loss": 6.107315540313721,
+      "policy_loss": -0.005089305341243744,
+      "value_loss": 12.231341361999512,
+      "entropy": 0.32658642530441284,
+      "comm_learnable_frac": 0.8958333134651184,
+      "comm_grad_norm": 0.00033840916148619726,
+      "iter": 2
+    },
+    {
+      "loss": 4.292950630187988,
+      "policy_loss": 0.0006412607035599649,
+      "value_loss": 8.59017276763916,
+      "entropy": 0.2777259051799774,
+      "comm_learnable_frac": 0.8541666865348816,
+      "comm_grad_norm": 0.00022304825688479468,
+      "iter": 3
+    },
+    {
+      "loss": 5.4120917320251465,
+      "policy_loss": -0.003292303066700697,
+      "value_loss": 10.83706283569336,
+      "entropy": 0.31474539637565613,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.001676040526945144,
+      "iter": 4,
+      "eval": {
+        "mean_return": 15.440000000000001,
+        "mean_ot": 0.4245495495495496,
+        "n": 2
+      },
+      "is_best": true
+    },
+    {
+      "loss": 4.491247653961182,
+      "policy_loss": -0.0007031195564195514,
+      "value_loss": 8.988419532775879,
+      "entropy": 0.22587206959724426,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 7.900057971710339e-05,
+      "iter": 5
+    },
+    {
+      "loss": 4.764073371887207,
+      "policy_loss": -0.00609966553747654,
+      "value_loss": 9.547118186950684,
+      "entropy": 0.3386039137840271,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.0017830987344495952,
+      "iter": 6
+    },
+    {
+      "loss": 2.6182515621185303,
+      "policy_loss": -0.0015874893870204687,
+      "value_loss": 5.2458271980285645,
+      "entropy": 0.3074697256088257,
+      "comm_learnable_frac": 0.875,
+      "comm_grad_norm": 0.006203071621712297,
+      "iter": 7
+    },
+    {
+      "loss": 3.7673189640045166,
+      "policy_loss": 0.000844585825689137,
+      "value_loss": 7.538017749786377,
+      "entropy": 0.25343188643455505,
+      "comm_learnable_frac": 0.8958333134651184,
+      "comm_grad_norm": 0.0003809242734860163,
+      "iter": 8
+    },
+    {
+      "loss": 2.9579925537109375,
+      "policy_loss": -0.0024962639436125755,
+      "value_loss": 5.925302982330322,
+      "entropy": 0.21627037227153778,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.001014186862448696,
+      "iter": 9,
+      "eval": {
+        "mean_return": 15.433,
+        "mean_ot": 0.4241741741741742,
+        "n": 2
+      }
+    },
+    {
+      "loss": 3.378967046737671,
+      "policy_loss": -0.002505705924704671,
+      "value_loss": 6.768085479736328,
+      "entropy": 0.25700250267982483,
+      "comm_learnable_frac": 0.9791666865348816,
+      "comm_grad_norm": 0.0002319142695341725,
+      "iter": 10
+    },
+    {
+      "loss": 2.566655397415161,
+      "policy_loss": -0.013095885515213013,
+      "value_loss": 5.166893482208252,
+      "entropy": 0.3695600926876068,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.0006427211992559023,
+      "iter": 11
+    },
+    {
+      "loss": 3.2919909954071045,
+      "policy_loss": 0.002879428444430232,
+      "value_loss": 6.584087371826172,
+      "entropy": 0.2931980490684509,
+      "comm_learnable_frac": 0.9583333134651184,
+      "comm_grad_norm": 0.0005294285583659075,
+      "iter": 12
+    },
+    {
+      "loss": 3.193917989730835,
+      "policy_loss": -0.0029183845035731792,
+      "value_loss": 6.397797107696533,
+      "entropy": 0.20621666312217712,
+      "comm_learnable_frac": 0.8958333134651184,
+      "comm_grad_norm": 0.0007788666189298965,
+      "iter": 13
+    },
+    {
+      "loss": 2.0544676780700684,
+      "policy_loss": -0.004532376769930124,
+      "value_loss": 4.123563289642334,
+      "entropy": 0.27817070484161377,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.0031495032308157533,
+      "iter": 14,
+      "eval": {
+        "mean_return": 20.409999999999997,
+        "mean_ot": 0.5853269537480064,
+        "n": 2
+      },
+      "is_best": true
+    }
+  ],
+  "eval": {
+    "mean_return": 18.921,
+    "mean_ot": 0.6666666666666667,
+    "n": 2
+  },
+  "bc": {
+    "op_accuracy": 0.9016203880310059,
+    "comm_accuracy": 1.0,
+    "charge_accuracy": 0.801556408405304,
+    "n": 864.0,
+    "teacher": "cooperative_dagger",
+    "final_loss": 0.2285604327917099
+  },
+  "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/stage82_checkpoints/stage82_D_selective_seed2.pt",
+  "best_checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/stage82_checkpoints/stage82_D_selective_seed2_best.pt",
+  "torch": "2.15.0+cpu",
+  "device": "cpu",
+  "wall_time_s": 328.49,
+  "obs_dim": 86,
+  "n_op": 7,
+  "n_comm": 6,
+  "stage": "8.2",
+  "note": "Stage 8.2 MAPPO with cooperative BC init; bid-before-commit env."
+}

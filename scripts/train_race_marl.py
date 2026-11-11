@@ -39,6 +39,13 @@ def main() -> int:
     parser.add_argument("--eval-every", type=int, default=5)
     parser.add_argument("--eval-episodes", type=int, default=2)
     parser.add_argument("--max-decisions", type=int, default=400)
+    parser.add_argument("--matched-send-p", type=float, default=None)
+    parser.add_argument("--bc-cooperative", action="store_true")
+    parser.add_argument("--bc-steps", type=int, default=256)
+    parser.add_argument("--bc-epochs", type=int, default=25)
+    parser.add_argument("--dagger-rounds", type=int, default=1)
+    parser.add_argument("--freeze-comm", action="store_true")
+    parser.add_argument("--stage", default="8.2")
     parser.add_argument(
         "--out",
         default="data/casablanca/online_results/marl_checkpoints/smoke.pt",
@@ -46,6 +53,12 @@ def main() -> int:
     args = parser.parse_args()
 
     import torch
+    from race_casablanca.marl.bc import (
+        behavior_clone,
+        collect_bc_batch,
+        dagger_aggregate,
+        evaluate_bc_accuracy,
+    )
     from race_casablanca.marl.env import RaceMultiAgentEnv
     from race_casablanca.marl.mappo import MAPPOTrainer
     from race_casablanca.paths import project_root
@@ -60,7 +73,7 @@ def main() -> int:
         from race_casablanca.marl.scenarios import load_casablanca_pool, make_pool_factory
 
         pool = load_casablanca_pool(split="train")
-        factory = make_pool_factory(pool, n_vehicles=args.n_vehicles)
+        factory = make_pool_factory(pool, n_vehicles=args.n_vehicles, procedural_jitter=True)
         n_veh = args.n_vehicles
         soc = args.soc
         max_dec = args.max_decisions
@@ -74,9 +87,38 @@ def main() -> int:
         ablation=args.ablation,
         seed=args.seed,
         max_decisions=max_dec,
+        matched_send_p=args.matched_send_p,
     )
-    trainer = MAPPOTrainer(env)
+    trainer = MAPPOTrainer(env, freeze_comm=args.freeze_comm)
     before = {k: v.detach().clone() for k, v in trainer.actor.named_parameters()}
+
+    bc_meta = None
+    if args.bc_cooperative and args.mode == "casablanca":
+        print(
+            f"BC from RaceCooperative adapter: steps={args.bc_steps} epochs={args.bc_epochs}",
+            flush=True,
+        )
+        batch = collect_bc_batch(
+            env, n_steps=args.bc_steps, seed=args.seed + 50, teacher="cooperative"
+        )
+        losses = behavior_clone(
+            trainer.actor, batch, epochs=args.bc_epochs, device=trainer.device
+        )
+        for r in range(max(0, args.dagger_rounds)):
+            batch = dagger_aggregate(
+                env,
+                trainer.actor,
+                n_steps=args.bc_steps // 2,
+                seed=args.seed + 200 + r,
+                device=trainer.device,
+                prior_batch=batch,
+            )
+            losses = behavior_clone(
+                trainer.actor, batch, epochs=max(5, args.bc_epochs // 2), device=trainer.device
+            )
+        bc_meta = evaluate_bc_accuracy(trainer.actor, batch, device=trainer.device)
+        bc_meta["final_loss"] = float(losses[-1]) if losses else None
+        print(f"  BC metrics: {bc_meta}", flush=True)
 
     best_path = None
     out = project_root() / args.out
@@ -95,7 +137,7 @@ def main() -> int:
 
     print(
         f"train mode={args.mode} ablation={args.ablation} seed={args.seed} "
-        f"iters={args.iters} steps={args.steps} nv={n_veh} delay={args.delay}",
+        f"iters={args.iters} steps={args.steps} nv={n_veh} delay={args.delay} stage={args.stage}",
         flush=True,
     )
     logs = trainer.train(
@@ -116,10 +158,12 @@ def main() -> int:
         "initial_soc": soc,
         "message_delay_s": args.delay,
         "packet_loss_p": args.packet_loss,
+        "matched_send_p": env.matched_send_p,
         "params_changed": changed,
         "n_updates": trainer.n_updates,
         "logs": logs,
         "eval": eval_stats,
+        "bc": bc_meta,
         "checkpoint": str(out).replace("\\", "/"),
         "best_checkpoint": str(best_path).replace("\\", "/") if best_path else None,
         "torch": torch.__version__,
@@ -128,11 +172,11 @@ def main() -> int:
         "obs_dim": env.obs_dim,
         "n_op": env.n_op,
         "n_comm": env.n_comm,
-        "stage": "8.1",
+        "stage": args.stage,
         "note": (
-            "Stage 8.1 factorized MAPPO smoke on toy scenario."
+            "Stage smoke MAPPO on toy scenario."
             if args.mode == "smoke"
-            else "Stage 8.1 factorized MAPPO on Casablanca train scenarios (frozen geo inputs)."
+            else "Stage 8.2 MAPPO with cooperative BC init; bid-before-commit env."
         ),
     }
     meta_path = out.with_suffix(".json")
