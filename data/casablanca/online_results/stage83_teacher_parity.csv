@@ -1,0 +1,49 @@
+family,method,on_time_rate_all,n_served,n_on_time,n_requests,n_decisions,n_bid_messages,n_bid_bytes,policy_msgs,n_claims_success,n_defers_to_peer,scenario,delay_s,soc,n_op_claims,n_op_charge,n_decision_service_end,n_decision_vehicle_idle,n_decision_charge_end,n_decision_release,reason_counts
+native,native_selective,0.875,35.0,35.0,40.0,87.0,186.0,68428.0,93.0,35.0,18.0,peak_stress_seed101,0.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,0.85,34.0,34.0,40.0,83.0,136.0,51080.0,,,,peak_stress_seed101,0.0,0.35,34.0,36.0,34.0,0.0,9.0,40.0,"{'service_end': 34, 'request_release': 39, 'charge_end': 10}"
+native,native_selective,0.8,32.0,32.0,40.0,290.0,166.0,61346.0,83.0,32.0,0.0,peak_stress_seed101,30.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,0.85,34.0,34.0,40.0,83.0,136.0,51080.0,,,,peak_stress_seed101,30.0,0.35,34.0,36.0,34.0,0.0,9.0,40.0,"{'service_end': 34, 'request_release': 39, 'charge_end': 10}"
+native,native_none,0.825,33.0,33.0,40.0,86.0,0.0,0.0,0.0,33.0,0.0,peak_stress_seed101,0.0,0.35,,,,,,,
+adapter_marl,adapter_A_no_comm,0.85,34.0,34.0,40.0,83.0,0.0,0.0,,,,peak_stress_seed101,0.0,0.35,34.0,36.0,34.0,0.0,9.0,40.0,"{'service_end': 34, 'request_release': 39, 'charge_end': 10}"
+native,native_full,0.875,35.0,35.0,40.0,87.0,638.0,217912.0,319.0,35.0,18.0,peak_stress_seed101,0.0,0.35,,,,,,,
+adapter_marl,adapter_B_full_comm,0.85,34.0,34.0,40.0,83.0,136.0,51080.0,,,,peak_stress_seed101,0.0,0.35,34.0,36.0,34.0,0.0,9.0,40.0,"{'service_end': 34, 'request_release': 39, 'charge_end': 10}"
+native,native_selective,0.7666666666666667,23.0,23.0,30.0,67.0,106.0,39024.0,53.0,23.0,9.0,tight_windows_seed102,0.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,0.7,21.0,21.0,30.0,58.0,80.0,30224.0,,,,tight_windows_seed102,0.0,0.35,21.0,21.0,21.0,0.0,7.0,30.0,"{'request_release': 29, 'service_end': 21, 'charge_end': 8}"
+native,native_selective,0.7333333333333333,22.0,22.0,30.0,202.0,106.0,39006.0,53.0,22.0,0.0,tight_windows_seed102,30.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,0.7,21.0,21.0,30.0,58.0,80.0,30224.0,,,,tight_windows_seed102,30.0,0.35,21.0,21.0,21.0,0.0,7.0,30.0,"{'request_release': 29, 'service_end': 21, 'charge_end': 8}"
+native,native_none,0.7666666666666667,23.0,23.0,30.0,69.0,0.0,0.0,0.0,23.0,0.0,tight_windows_seed102,0.0,0.35,,,,,,,
+adapter_marl,adapter_A_no_comm,0.7,21.0,21.0,30.0,58.0,0.0,0.0,,,,tight_windows_seed102,0.0,0.35,21.0,21.0,21.0,0.0,7.0,30.0,"{'request_release': 29, 'service_end': 21, 'charge_end': 8}"
+native,native_full,0.7666666666666667,23.0,23.0,30.0,67.0,660.0,223158.0,330.0,23.0,9.0,tight_windows_seed102,0.0,0.35,,,,,,,
+adapter_marl,adapter_B_full_comm,0.7,21.0,21.0,30.0,58.0,80.0,30224.0,,,,tight_windows_seed102,0.0,0.35,21.0,21.0,21.0,0.0,7.0,30.0,"{'request_release': 29, 'service_end': 21, 'charge_end': 8}"
+native,native_selective,0.85,34.0,34.0,40.0,85.0,160.0,59228.0,80.0,34.0,11.0,peak_stress_seed1201,0.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,0.475,19.0,19.0,40.0,63.0,66.0,24868.0,,,,peak_stress_seed1201,0.0,0.35,19.0,18.0,19.0,0.0,4.0,40.0,"{'request_release': 40, 'service_end': 19, 'charge_end': 4}"
+native,native_selective,0.775,31.0,31.0,40.0,275.0,152.0,56228.0,76.0,31.0,0.0,peak_stress_seed1201,30.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,0.475,19.0,19.0,40.0,63.0,66.0,24868.0,,,,peak_stress_seed1201,30.0,0.35,19.0,18.0,19.0,0.0,4.0,40.0,"{'request_release': 40, 'service_end': 19, 'charge_end': 4}"
+native,native_none,0.8,32.0,32.0,40.0,83.0,0.0,0.0,0.0,32.0,0.0,peak_stress_seed1201,0.0,0.35,,,,,,,
+adapter_marl,adapter_A_no_comm,0.475,19.0,19.0,40.0,63.0,0.0,0.0,,,,peak_stress_seed1201,0.0,0.35,19.0,18.0,19.0,0.0,4.0,40.0,"{'request_release': 40, 'service_end': 19, 'charge_end': 4}"
+native,native_full,0.85,34.0,34.0,40.0,85.0,686.0,233648.0,343.0,34.0,11.0,peak_stress_seed1201,0.0,0.35,,,,,,,
+adapter_marl,adapter_B_full_comm,0.475,19.0,19.0,40.0,63.0,66.0,24868.0,,,,peak_stress_seed1201,0.0,0.35,19.0,18.0,19.0,0.0,4.0,40.0,"{'request_release': 40, 'service_end': 19, 'charge_end': 4}"
+native,native_selective,0.8,32.0,32.0,40.0,85.0,158.0,58802.0,79.0,32.0,16.0,peak_stress_seed1202,0.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,0.35,14.0,14.0,40.0,58.0,46.0,17344.0,,,,peak_stress_seed1202,0.0,0.35,14.0,11.0,14.0,0.0,4.0,40.0,"{'request_release': 40, 'service_end': 14, 'charge_end': 4}"
+native,native_selective,0.8,32.0,32.0,40.0,286.0,162.0,60170.0,81.0,32.0,0.0,peak_stress_seed1202,30.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,0.35,14.0,14.0,40.0,58.0,46.0,17344.0,,,,peak_stress_seed1202,30.0,0.35,14.0,11.0,14.0,0.0,4.0,40.0,"{'request_release': 40, 'service_end': 14, 'charge_end': 4}"
+native,native_none,0.8,32.0,32.0,40.0,84.0,0.0,0.0,0.0,32.0,0.0,peak_stress_seed1202,0.0,0.35,,,,,,,
+adapter_marl,adapter_A_no_comm,0.35,14.0,14.0,40.0,58.0,0.0,0.0,,,,peak_stress_seed1202,0.0,0.35,14.0,11.0,14.0,0.0,4.0,40.0,"{'request_release': 40, 'service_end': 14, 'charge_end': 4}"
+native,native_full,0.8,32.0,32.0,40.0,85.0,992.0,335916.0,496.0,32.0,16.0,peak_stress_seed1202,0.0,0.35,,,,,,,
+adapter_marl,adapter_B_full_comm,0.35,14.0,14.0,40.0,58.0,46.0,17344.0,,,,peak_stress_seed1202,0.0,0.35,14.0,11.0,14.0,0.0,4.0,40.0,"{'request_release': 40, 'service_end': 14, 'charge_end': 4}"
+native,native_selective,0.7,21.0,21.0,30.0,64.0,96.0,35598.0,48.0,21.0,9.0,tight_windows_seed1301,0.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,0.4,12.0,12.0,30.0,45.0,36.0,13662.0,,,,tight_windows_seed1301,0.0,0.35,12.0,12.0,12.0,0.0,3.0,30.0,"{'request_release': 30, 'service_end': 12, 'charge_end': 3}"
+native,native_selective,0.7,21.0,21.0,30.0,200.0,104.0,38258.0,52.0,21.0,0.0,tight_windows_seed1301,30.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,0.4,12.0,12.0,30.0,45.0,36.0,13662.0,,,,tight_windows_seed1301,30.0,0.35,12.0,12.0,12.0,0.0,3.0,30.0,"{'request_release': 30, 'service_end': 12, 'charge_end': 3}"
+native,native_none,0.7333333333333333,22.0,22.0,30.0,68.0,0.0,0.0,0.0,22.0,0.0,tight_windows_seed1301,0.0,0.35,,,,,,,
+adapter_marl,adapter_A_no_comm,0.4,12.0,12.0,30.0,45.0,0.0,0.0,,,,tight_windows_seed1301,0.0,0.35,12.0,12.0,12.0,0.0,3.0,30.0,"{'request_release': 30, 'service_end': 12, 'charge_end': 3}"
+native,native_full,0.7,21.0,21.0,30.0,64.0,810.0,274080.0,405.0,21.0,9.0,tight_windows_seed1301,0.0,0.35,,,,,,,
+adapter_marl,adapter_B_full_comm,0.4,12.0,12.0,30.0,45.0,36.0,13662.0,,,,tight_windows_seed1301,0.0,0.35,12.0,12.0,12.0,0.0,3.0,30.0,"{'request_release': 30, 'service_end': 12, 'charge_end': 3}"
+native,native_selective,1.0,12.0,12.0,12.0,31.0,70.0,26158.0,35.0,12.0,0.0,baseline_seed1101,0.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,1.0,12.0,12.0,12.0,31.0,66.0,24620.0,,,,baseline_seed1101,0.0,0.35,12.0,14.0,12.0,0.0,7.0,12.0,"{'service_end': 12, 'charge_end': 8, 'request_release': 11}"
+native,native_selective,1.0,12.0,12.0,12.0,116.0,72.0,26802.0,36.0,12.0,0.0,baseline_seed1101,30.0,0.35,,,,,,,
+adapter_marl,adapter_D_selective,1.0,12.0,12.0,12.0,31.0,66.0,24620.0,,,,baseline_seed1101,30.0,0.35,12.0,14.0,12.0,0.0,7.0,12.0,"{'service_end': 12, 'charge_end': 8, 'request_release': 11}"
+native,native_none,1.0,12.0,12.0,12.0,31.0,0.0,0.0,0.0,12.0,0.0,baseline_seed1101,0.0,0.35,,,,,,,
+adapter_marl,adapter_A_no_comm,1.0,12.0,12.0,12.0,31.0,0.0,0.0,,,,baseline_seed1101,0.0,0.35,12.0,14.0,12.0,0.0,7.0,12.0,"{'service_end': 12, 'charge_end': 8, 'request_release': 11}"
+native,native_full,1.0,12.0,12.0,12.0,31.0,72.0,26814.0,36.0,12.0,0.0,baseline_seed1101,0.0,0.35,,,,,,,
+adapter_marl,adapter_B_full_comm,1.0,12.0,12.0,12.0,31.0,66.0,24620.0,,,,baseline_seed1101,0.0,0.35,12.0,14.0,12.0,0.0,7.0,12.0,"{'service_end': 12, 'charge_end': 8, 'request_release': 11}"

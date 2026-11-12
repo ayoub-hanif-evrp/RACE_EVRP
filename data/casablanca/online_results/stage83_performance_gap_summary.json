@@ -1,0 +1,28 @@
+{
+  "means": {
+    "A_native": 0.8319444444444445,
+    "B_adapter": 0.6291666666666667,
+    "C_bc": 0.6291666666666667,
+    "D_dagger": 0.6291666666666667,
+    "E_mappo": 0.6291666666666667
+  },
+  "bc_acc": {
+    "op_accuracy": 1.0,
+    "comm_accuracy": 1.0,
+    "charge_accuracy": 1.0,
+    "n": 1152.0,
+    "teacher": "cooperative"
+  },
+  "dagger_acc": {
+    "op_accuracy": 1.0,
+    "comm_accuracy": 1.0,
+    "charge_accuracy": 1.0,
+    "n": 2304.0,
+    "teacher": "cooperative_dagger"
+  },
+  "gap_native_adapter": 0.20277777777777783,
+  "gap_adapter_bc": 0.0,
+  "gap_bc_dagger": 0.0,
+  "gap_dagger_mappo": 0.0,
+  "gap_native_mappo": 0.20277777777777783
+}

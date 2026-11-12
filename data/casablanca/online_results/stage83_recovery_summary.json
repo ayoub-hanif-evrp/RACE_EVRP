@@ -1,0 +1,73 @@
+{
+  "by_stage": [
+    {
+      "stage": "bc_dagger_native_bridge",
+      "mean": 0.6291666666666667,
+      "std": 0.24692967562826937,
+      "count": 18
+    },
+    {
+      "stage": "greedy_charge70",
+      "mean": 0.8194444444444443,
+      "std": 0.12490737308842843,
+      "count": 6
+    },
+    {
+      "stage": "mappo_A",
+      "mean": 0.6277777777777778,
+      "std": 0.24568165809474463,
+      "count": 18
+    },
+    {
+      "stage": "mappo_C",
+      "mean": 0.6291666666666667,
+      "std": 0.24692967562826937,
+      "count": 18
+    },
+    {
+      "stage": "mappo_D",
+      "mean": 0.6291666666666667,
+      "std": 0.24692967562826937,
+      "count": 18
+    },
+    {
+      "stage": "mappo_E",
+      "mean": 0.5643518518518519,
+      "std": 0.2541936751248801,
+      "count": 18
+    },
+    {
+      "stage": "mappo_F",
+      "mean": 0.5643518518518519,
+      "std": 0.2541936751248801,
+      "count": 18
+    },
+    {
+      "stage": "teacher_intent",
+      "mean": 0.5972222222222222,
+      "std": 0.2652915935902034,
+      "count": 6
+    }
+  ],
+  "matched_send_p": 0.3074433656957929,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "bc_steps": 800,
+  "bc_epochs": 80,
+  "dagger_steps": 400,
+  "mappo_iters": 20,
+  "wall_time_s": 6745.27675318718,
+  "checkpoint_selection": "validation OT on first 2 development scenarios every 5 MAPPO iters",
+  "curriculum": {
+    "A_imitate_validated_teacher": "NativeBridgeTeacher intent + weighted BC (stage83_bc_dagger_*)",
+    "B_eval_before_RL": "bc_dagger_native_bridge row in recovery (~0.629 mean)",
+    "C_mappo_no_comm": "mappo_A freeze_comm, val-selected",
+    "D_full_peer_bids": "mappo_D / env ablation D_selective (certificates change masks/features)",
+    "E_selective_byte_budget": "mappo_F from A with selective energy-certified gate; E strips peer energy",
+    "F_limited_joint_finetune": "10 MAPPO iters F/C/E/D from A; seed-2 shows catastrophic forgetting risk",
+    "greedy_reference": "centralized greedy charge-to-70% appended as greedy_charge70"
+  }
+}

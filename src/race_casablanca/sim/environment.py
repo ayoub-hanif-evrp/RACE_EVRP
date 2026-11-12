@@ -577,7 +577,10 @@ class OnlineSimulator:
             soc = max(0.0, min(1.0, soc))
             tgt_kwh = soc * float(self.energy.battery_kwh_max)
         stop = Stop(kind, None, self.depot_node, target_kwh=tgt_kwh)
-        if v.busy:
+        # Preserve locked + editable pickup commitments. Idle vehicles with a
+        # non-empty plan must NOT have their route replaced by a lone depot stop.
+        has_pickup_plan = any(s.kind == "pickup" for s in v.plan) or bool(v.committed)
+        if v.busy or has_pickup_plan:
             if not any(s.kind.startswith("depot") for s in editable_suffix(v)):
                 v.plan = list(locked_prefix(v)) + editable_suffix(v) + [stop]
             elif do_charge:
@@ -588,6 +591,8 @@ class OnlineSimulator:
                         new_plan[i] = Stop(kind, None, self.depot_node, target_kwh=tgt_kwh)
                         break
                 v.plan = new_plan
+            if not v.busy:
+                self._start_next_leg(vehicle_id)
             return
         v.plan = [stop]
         self._start_next_leg(vehicle_id)

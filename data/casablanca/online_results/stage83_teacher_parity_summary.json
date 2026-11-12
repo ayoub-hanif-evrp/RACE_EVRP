@@ -1,0 +1,8 @@
+{
+  "mean_native_selective_ot": 0.8319444444444445,
+  "mean_adapter_ot": 0.6291666666666667,
+  "mean_ot_gap": 0.2027777777777778,
+  "mean_adapter_decisions": 56.333333333333336,
+  "mean_native_decisions": 69.83333333333333,
+  "n_scenarios": 6
+}

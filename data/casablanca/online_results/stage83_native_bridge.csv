@@ -1,0 +1,13 @@
+method,on_time_rate_all,n_served,n_decisions,n_decision_service_end,policy_msgs,n_claims_success,scenario
+bridge_selective,0.825,33.0,86.0,33.0,33.0,33.0,peak_stress_seed101
+bridge_none,0.825,33.0,86.0,33.0,0.0,33.0,peak_stress_seed101
+bridge_selective,0.7666666666666667,23.0,69.0,23.0,23.0,23.0,tight_windows_seed102
+bridge_none,0.7666666666666667,23.0,69.0,23.0,0.0,23.0,tight_windows_seed102
+bridge_selective,0.8,32.0,83.0,32.0,32.0,32.0,peak_stress_seed1201
+bridge_none,0.8,32.0,83.0,32.0,0.0,32.0,peak_stress_seed1201
+bridge_selective,0.8,32.0,84.0,32.0,32.0,32.0,peak_stress_seed1202
+bridge_none,0.8,32.0,84.0,32.0,0.0,32.0,peak_stress_seed1202
+bridge_selective,0.7333333333333333,22.0,68.0,22.0,22.0,22.0,tight_windows_seed1301
+bridge_none,0.7333333333333333,22.0,68.0,22.0,0.0,22.0,tight_windows_seed1301
+bridge_selective,1.0,12.0,31.0,12.0,12.0,12.0,baseline_seed1101
+bridge_none,1.0,12.0,31.0,12.0,0.0,12.0,baseline_seed1101

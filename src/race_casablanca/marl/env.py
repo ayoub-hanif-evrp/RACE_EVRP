@@ -31,7 +31,7 @@ import numpy as np
 from race_casablanca.coordination.task_bids import TaskBid, compute_self_bid, self_should_claim
 from race_casablanca.sim.environment import OnlineSimulator, SimConfig
 from race_casablanca.sim.policy_api import ActionInterface, RestrictedObservation, build_restricted_observation
-from race_casablanca.sim.types import EventType, RequestStatus
+from race_casablanca.sim.types import EventType, RequestStatus, VehicleMode
 
 
 K_TASKS = 5
@@ -138,10 +138,23 @@ class RaceMultiAgentEnv:
         self._decision_t0 = 0.0
         self._last_executed_comm: dict[str, int] = {}
         self._last_comm_learnable: dict[str, bool] = {}
+        self._pending_autoleg: set[str] = set()
+        self._last_decision_reason: str = "reset"
+        self._n_decision_service_end = 0
+        self._n_decision_vehicle_idle = 0
+        self._n_decision_charge_end = 0
+        self._n_decision_release = 0
+        self._n_second_choice_claims = 0
+        self._n_idle_with_pending = 0
+        self._n_missed_feasible_pickup = 0
+        self._n_claim_attempts = 0
+        self._n_duplicate_task_proposals = 0
         self.obs_dim = BASE_FEAT + K_TASKS * TASK_FEAT
         self.n_op = N_OP
         self.n_comm = N_COMM
         self.n_actions = N_OP  # legacy
+        # Charge-to target matches non-learning readiness charge
+        self.charge_target_soc = 0.70
 
     @property
     def comm_externally_controlled(self) -> bool:
@@ -194,12 +207,67 @@ class RaceMultiAgentEnv:
         self._send_counts = {}
         self._last_executed_comm = {}
         self._last_comm_learnable = {}
+        self._pending_autoleg = set()
+        self._last_decision_reason = "reset"
+        self._n_decision_service_end = 0
+        self._n_decision_vehicle_idle = 0
+        self._n_decision_charge_end = 0
+        self._n_decision_release = 0
+        self._n_second_choice_claims = 0
+        self._n_idle_with_pending = 0
+        self._n_missed_feasible_pickup = 0
+        self._n_claim_attempts = 0
+        self._n_duplicate_task_proposals = 0
         self._advance_to_decision()
         self._decision_t0 = float(self.sim.now_s)
         return self._observe_all(reward=0.0, done=False)
 
+    def _suppress_autoleg(self):
+        """Context: run native event handlers without immediately starting next legs.
+
+        Native sim calls ``_maybe_decide`` then ``_start_next_leg``. With policy=None
+        the decide is a no-op; we still must defer ``_start_next_leg`` until after the
+        MARL step so agents can claim/charge while idle — matching native timing.
+        """
+        assert self.sim is not None
+        sim = self.sim
+        orig = sim._start_next_leg
+
+        def _noop(vehicle_id: str) -> None:
+            self._pending_autoleg.add(vehicle_id)
+
+        sim._start_next_leg = _noop  # type: ignore[method-assign]
+        return orig
+
+    def _restore_autoleg(self, orig) -> None:
+        assert self.sim is not None
+        self.sim._start_next_leg = orig  # type: ignore[method-assign]
+
+    def _flush_autoleg(self) -> None:
+        assert self.sim is not None
+        pending = sorted(self._pending_autoleg)
+        self._pending_autoleg.clear()
+        for vid in pending:
+            v = self.sim.vehicles[vid]
+            if v.busy:
+                continue
+            self.sim._start_next_leg(vid)
+
+    def _vehicle_idle_for_decision(self, vehicle_id: str) -> bool:
+        assert self.sim is not None
+        v = self.sim.vehicles[vehicle_id]
+        from race_casablanca.sim.types import VehicleMode
+
+        return (not v.busy) and v.mode == VehicleMode.IDLE
+
     def _advance_to_decision(self) -> bool:
-        """Pop events until a physical decision point or episode end."""
+        """Pop events until a physical decision point or episode end.
+
+        Decision parity with native ``_maybe_decide`` triggers (except message-only
+        info updates): request_release, service_end, vehicle_idle, charge_end,
+        bid_assign, pickup_missed. Same-time events are processed until a trigger;
+        agents then act; ``_flush_autoleg`` starts next legs afterward.
+        """
         assert self.sim is not None
         sim = self.sim
         while sim._eq:
@@ -212,18 +280,45 @@ class RaceMultiAgentEnv:
                 req = sim.requests[rid]
                 if req.status == RequestStatus.UNRELEASED:
                     req.status = RequestStatus.AVAILABLE
+                    self._last_decision_reason = "request_release"
+                    self._n_decision_release += 1
                     return False
             elif ev.type == EventType.VEHICLE_ARRIVAL:
-                sim._on_arrival(ev.payload["vehicle_id"])
+                vid = ev.payload["vehicle_id"]
+                orig = self._suppress_autoleg()
+                try:
+                    sim._on_arrival(vid)
+                finally:
+                    self._restore_autoleg(orig)
+                if self._vehicle_idle_for_decision(vid):
+                    self._last_decision_reason = "vehicle_idle"
+                    self._n_decision_vehicle_idle += 1
+                    return False
             elif ev.type == EventType.SERVICE_END:
-                sim._on_service_end(ev.payload["vehicle_id"], ev.payload["request_id"])
+                vid = ev.payload["vehicle_id"]
+                orig = self._suppress_autoleg()
+                try:
+                    sim._on_service_end(vid, ev.payload["request_id"])
+                finally:
+                    self._restore_autoleg(orig)
+                if self._vehicle_idle_for_decision(vid):
+                    self._last_decision_reason = "service_end"
+                    self._n_decision_service_end += 1
+                    return False
             elif ev.type == EventType.CHARGE_END:
-                sim._on_charge_end(
-                    ev.payload["vehicle_id"],
-                    ev.payload["target_kwh"],
-                    energy_delivered=float(ev.payload.get("energy_to_deliver_kwh", 0.0)),
-                    duration_s=float(ev.payload.get("duration_s", 0.0)),
-                )
+                vid = ev.payload["vehicle_id"]
+                orig = self._suppress_autoleg()
+                try:
+                    sim._on_charge_end(
+                        vid,
+                        ev.payload["target_kwh"],
+                        energy_delivered=float(ev.payload.get("energy_to_deliver_kwh", 0.0)),
+                        duration_s=float(ev.payload.get("duration_s", 0.0)),
+                    )
+                finally:
+                    self._restore_autoleg(orig)
+                self._last_decision_reason = "charge_end"
+                self._n_decision_charge_end += 1
                 return False
             elif ev.type == EventType.MESSAGE_DELIVER:
                 msg = next(m for m in sim.bus.history if m.msg_id == ev.payload["msg_id"])
@@ -233,10 +328,12 @@ class RaceMultiAgentEnv:
                 elif msg.kind == "state_update":
                     peer = msg.payload["vehicle_id"]
                     sim.local_views.setdefault(msg.recipient, {})[peer] = dict(msg.payload)
-                # Default Stage 8.1: information update only (no extra decision).
+                # Information only by default (parity with Stage 8.1 fairness).
                 if self.message_triggers_decision:
+                    self._last_decision_reason = "message"
                     return False
             elif ev.type == EventType.BID_ASSIGN_WINDOW:
+                self._last_decision_reason = "bid_assign"
                 return False
             elif ev.type == EventType.SHIFT_END:
                 sim._expire_open_requests()
@@ -315,7 +412,8 @@ class RaceMultiAgentEnv:
         op_mask = np.zeros(N_OP, dtype=np.float32)
         comm_mask = np.zeros(N_COMM, dtype=np.float32)
         op_mask[OP_DEFER] = 1.0
-        op_mask[OP_CHARGE] = 1.0
+        if self._charge_action_legal(obs):
+            op_mask[OP_CHARGE] = 1.0
         comm_mask[COMM_SUPPRESS] = 1.0
         task_feats: list[float] = []
         actions = ActionInterface(self.sim, actor_vehicle_id=obs.vehicle_id)
@@ -374,6 +472,32 @@ class RaceMultiAgentEnv:
         if self.sim is not None and task.request_id in getattr(self.sim, "_pending_assign_requests", set()):
             return True
         return False
+
+    def _charge_action_legal(self, obs: RestrictedObservation) -> bool:
+        """Charge only when idle, not already charging/en-route, and SOC needs it.
+
+        Matches non-learning readiness charge spirit: do not offer charge when a
+        feasible announced pickup exists, or when the vehicle is physically busy.
+        Depot return preserves existing pickup commitments (simulator fix).
+        """
+        assert self.sim is not None
+        from race_casablanca.sim.types import VehicleMode
+
+        v = self.sim.vehicles[obs.vehicle_id]
+        if v.busy or v.mode in (VehicleMode.SERVING, VehicleMode.CHARGING, VehicleMode.EN_ROUTE):
+            return False
+        if v.mode == VehicleMode.EMERGENCY_STRANDED:
+            return False
+        bat = float(obs.self_state.battery_kwh)
+        target = self.charge_target_soc * 40.0
+        if bat >= target - 1e-6:
+            return False
+        # If any announced task is feasible, prefer service over readiness charge.
+        act = ActionInterface(self.sim, actor_vehicle_id=obs.vehicle_id)
+        for t in obs.announced:
+            if act.check_insertion(obs.vehicle_id, t.request_id).feasible:
+                return False
+        return True
 
     def _observe_all(self, reward: float, done: bool) -> dict[str, AgentStep]:
         assert self.sim is not None
@@ -490,6 +614,8 @@ class RaceMultiAgentEnv:
             else:
                 defer_vids.append(vid)
         winners: set[str] = set()
+        awarded_rids: set[str] = set()
+        losers: list[str] = []
         for rid in sorted(by_rid.keys()):
             cand = by_rid[rid]
             if len(cand) > 1:
@@ -498,6 +624,7 @@ class RaceMultiAgentEnv:
                 cand,
                 key=lambda x: (float(x[2].marginal_travel_s), -float(x[2].energy_flex_kwh), x[0]),
             )
+            got = False
             for vid, _op, _bid in ranked:
                 if vid in winners:
                     continue
@@ -508,15 +635,56 @@ class RaceMultiAgentEnv:
                 if act.claim_task(vid, rid):
                     self._n_op_claims += 1
                     winners.add(vid)
+                    awarded_rids.add(rid)
+                    got = True
                     break
             for vid, _, _ in cand:
                 if vid not in winners:
-                    defer_vids.append(vid)
+                    losers.append(vid)
+        # Second-choice: losers may claim another feasible announced task (local info only).
+        for vid in sorted(set(losers)):
+            if vid in winners or vid in charge_vids:
+                continue
+            prop = proposals[vid]
+            obs = fresh_obs[vid]
+            act = ActionInterface(self.sim, actor_vehicle_id=vid)
+            tasks = prop["tasks"]
+            for i, task in enumerate(tasks):
+                rid = task.request_id
+                if rid in awarded_rids:
+                    continue
+                chk = act.check_insertion(vid, rid)
+                if not chk.feasible:
+                    continue
+                own = compute_self_bid(obs, act, task)
+                peers_raw = (obs.peer_bids or {}).get(rid, {}) or {}
+                peers = []
+                for sid, payload in peers_raw.items():
+                    if sid == vid or not payload:
+                        continue
+                    try:
+                        peers.append(TaskBid.from_payload(payload))
+                    except (KeyError, TypeError, ValueError):
+                        continue
+                if peers and not self_should_claim(own, peers, now_s=float(obs.now_s)):
+                    continue
+                if act.claim_task(vid, rid):
+                    self._n_op_claims += 1
+                    self._n_second_choice_claims += 1
+                    winners.add(vid)
+                    awarded_rids.add(rid)
+                    break
+            if vid not in winners:
+                defer_vids.append(vid)
         for vid in charge_vids:
             if vid in winners:
                 continue
+            # Honor mask: only charge if still legal after bid refresh
+            if not self._charge_action_legal(fresh_obs[vid]):
+                defer_vids.append(vid)
+                continue
             act = ActionInterface(self.sim, actor_vehicle_id=vid)
-            act.request_return_depot(vid, charge=True, target_soc=0.70)
+            act.request_return_depot(vid, charge=True, target_soc=self.charge_target_soc)
             self._n_op_charge += 1
         for vid in defer_vids:
             if vid not in winners and vid not in charge_vids:
@@ -528,14 +696,43 @@ class RaceMultiAgentEnv:
         t_before = float(self.sim.now_s)
         msgs_before = int(self.sim.n_bid_messages)
         proposals: dict[str, dict[str, Any]] = {}
+        pending_available = [
+            r
+            for r in self.sim.requests.values()
+            if r.status == RequestStatus.AVAILABLE and r.owner is None
+        ]
         for vid, raw in actions.items():
             if isinstance(raw, tuple):
                 op_a, comm_a = int(raw[0]), int(raw[1])
             else:
                 op_a, comm_a = int(raw), COMM_SUPPRESS
+            # Clamp illegal charge to defer
+            if op_a == OP_CHARGE and not self._charge_action_legal(self._pending_obs[vid]):
+                op_a = OP_DEFER
             obs = self._pending_obs[vid]
             tasks = sorted(obs.announced, key=lambda t: t.tw_end_s)[:K_TASKS]
+            # Diagnostics: idle with serviceable pending, claim attempts, missed feasible
+            vstate = self.sim.vehicles[vid]
+            if (not vstate.busy) and vstate.mode == VehicleMode.IDLE and pending_available:
+                act_chk = ActionInterface(self.sim, actor_vehicle_id=vid)
+                if any(act_chk.check_insertion(vid, r.request_id).feasible for r in pending_available):
+                    self._n_idle_with_pending += 1
+            if 0 <= op_a < K_TASKS:
+                self._n_claim_attempts += 1
+            elif op_a in (OP_DEFER, OP_CHARGE) and tasks:
+                act_chk = ActionInterface(self.sim, actor_vehicle_id=vid)
+                if any(act_chk.check_insertion(vid, t.request_id).feasible for t in tasks):
+                    self._n_missed_feasible_pickup += 1
             proposals[vid] = {"op": op_a, "comm_proposed": comm_a, "tasks": tasks, "obs": obs}
+        # Duplicate simultaneous proposals for the same request id
+        claimed_idxs: dict[str, int] = {}
+        for vid, prop in proposals.items():
+            op_a = int(prop["op"])
+            tasks = prop["tasks"]
+            if 0 <= op_a < K_TASKS and op_a < len(tasks):
+                rid = tasks[op_a].request_id
+                claimed_idxs[rid] = claimed_idxs.get(rid, 0) + 1
+        self._n_duplicate_task_proposals += sum(1 for c in claimed_idxs.values() if c > 1)
         self._last_executed_comm = {}
         self._last_comm_learnable = {}
         for vid in sorted(proposals.keys()):
@@ -547,17 +744,27 @@ class RaceMultiAgentEnv:
             self._last_comm_learnable[vid] = learnable
             if 0 <= exec_comm < K_TASKS and exec_comm < len(prop["tasks"]):
                 self._send_bid(vid, prop["obs"], prop["tasks"][exec_comm])
+        # Two-phase parity with native RaceCooperativePolicy: deliver zero-delay
+        # bids before ownership resolution so peer certificates are visible.
+        flush = getattr(self.sim, "_flush_zero_delay_task_bids", None)
+        if callable(flush):
+            flush()
         self._n_msgs_before_commit += max(0, int(self.sim.n_bid_messages) - msgs_before)
         self._batched_resolve_claims(proposals)
+        # After claims/charges, start deferred next legs (native post-decide timing).
+        self._flush_autoleg()
         done = self._advance_to_decision()
         truncated_budget = False
         if self._n_decisions >= self.max_decisions:
             done = True
             truncated_budget = True
         if done:
+            # Drain without further agent control; still flush legs after each trigger.
             while self.sim._eq:
+                self._flush_autoleg()
                 if self._advance_to_decision():
                     break
+            self._flush_autoleg()
         served = sum(1 for r in self.sim.requests.values() if r.status == RequestStatus.COMPLETED)
         on_time = sum(
             1
@@ -583,6 +790,7 @@ class RaceMultiAgentEnv:
             st.info["comm_learnable"] = bool(self._last_comm_learnable.get(vid, False))
             st.info["comm_externally_controlled"] = self.comm_externally_controlled
             st.info["msgs_before_commit_step"] = max(0, int(self.sim.n_bid_messages) - msgs_before)
+            st.info["decision_reason"] = self._last_decision_reason
         if not done:
             self._decision_t0 = float(self.sim.now_s)
         return out
@@ -601,7 +809,16 @@ class RaceMultiAgentEnv:
         m["n_msgs_before_commit"] = self._n_msgs_before_commit
         m["n_batched_conflicts"] = self._n_batched_conflicts
         m["n_claim_defers_to_peer"] = self._n_claim_defers_to_peer
+        m["n_second_choice_claims"] = self._n_second_choice_claims
+        m["n_idle_with_pending"] = self._n_idle_with_pending
+        m["n_missed_feasible_pickup"] = self._n_missed_feasible_pickup
+        m["n_claim_attempts"] = self._n_claim_attempts
+        m["n_duplicate_task_proposals"] = self._n_duplicate_task_proposals
         m["n_decisions"] = self._n_decisions
+        m["n_decision_service_end"] = self._n_decision_service_end
+        m["n_decision_vehicle_idle"] = self._n_decision_vehicle_idle
+        m["n_decision_charge_end"] = self._n_decision_charge_end
+        m["n_decision_release"] = self._n_decision_release
         m["ablation"] = self.ablation
         m["obs_dim"] = self.obs_dim
         m["task_feat"] = TASK_FEAT

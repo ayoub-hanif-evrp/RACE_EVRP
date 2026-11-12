@@ -1,0 +1,9 @@
+{
+  "A_imitate_validated_teacher": "NativeBridgeTeacher intent + weighted BC (stage83_bc_dagger_*)",
+  "B_eval_before_RL": "bc_dagger_native_bridge row in recovery (~0.629 mean)",
+  "C_mappo_no_comm": "mappo_A freeze_comm, val-selected",
+  "D_full_peer_bids": "mappo_D / env ablation D_selective (certificates change masks/features)",
+  "E_selective_byte_budget": "mappo_F from A with selective energy-certified gate; E strips peer energy",
+  "F_limited_joint_finetune": "10 MAPPO iters F/C/E/D from A; seed-2 shows catastrophic forgetting risk",
+  "greedy_reference": "centralized greedy charge-to-70% appended as greedy_charge70"
+}

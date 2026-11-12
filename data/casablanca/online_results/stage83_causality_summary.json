@@ -1,0 +1,77 @@
+{
+  "nl_ot_means": {
+    "greedy_charge70": 0.8194444444444443,
+    "marl_intent_A_no_comm": 0.5972222222222222,
+    "marl_intent_D_selective": 0.5972222222222222,
+    "marl_intent_E_selective_no_energy": 0.5972222222222222,
+    "nl_full": 0.8319444444444445,
+    "nl_none": 0.8208333333333333,
+    "nl_selective": 0.8319444444444445
+  },
+  "selective_vs_none_ot_delta": 0.011111111111111183,
+  "curve": [
+    {
+      "method": "greedy_charge70",
+      "delay_s": 0.0,
+      "on_time_rate_all": 0.8194444444444443,
+      "n_bid_bytes": 0.0,
+      "n_bid_messages": 0.0
+    },
+    {
+      "method": "marl_intent_A_no_comm",
+      "delay_s": 0.0,
+      "on_time_rate_all": 0.5972222222222222,
+      "n_bid_bytes": 0.0,
+      "n_bid_messages": 0.0
+    },
+    {
+      "method": "nl_none",
+      "delay_s": 0.0,
+      "on_time_rate_all": 0.8208333333333333,
+      "n_bid_bytes": 0.0,
+      "n_bid_messages": 0.0
+    },
+    {
+      "method": "marl_intent_E_selective_no_energy",
+      "delay_s": 0.0,
+      "on_time_rate_all": 0.5972222222222222,
+      "n_bid_bytes": 13221.666666666666,
+      "n_bid_messages": 35.333333333333336
+    },
+    {
+      "method": "marl_intent_D_selective",
+      "delay_s": 0.0,
+      "on_time_rate_all": 0.5972222222222222,
+      "n_bid_bytes": 13304.0,
+      "n_bid_messages": 35.333333333333336
+    },
+    {
+      "method": "nl_selective",
+      "delay_s": 0.0,
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_bytes": 47873.0,
+      "n_bid_messages": 129.33333333333334
+    },
+    {
+      "method": "nl_full",
+      "delay_s": 0.0,
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_bytes": 218588.0,
+      "n_bid_messages": 643.0
+    },
+    {
+      "method": "marl_intent_D_selective",
+      "delay_s": 30.0,
+      "on_time_rate_all": 0.5972222222222222,
+      "n_bid_bytes": 13304.0,
+      "n_bid_messages": 35.333333333333336
+    },
+    {
+      "method": "nl_selective",
+      "delay_s": 30.0,
+      "on_time_rate_all": 0.8013888888888889,
+      "n_bid_bytes": 46968.333333333336,
+      "n_bid_messages": 127.0
+    }
+  ]
+}

@@ -1,0 +1,1248 @@
+[
+  {
+    "scenario": "peak_stress_seed101",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "adapter",
+    "native_ot": 0.875,
+    "other_ot": 0.85,
+    "ot_gap": 0.025000000000000022,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-101-0001",
+      "native_owner": "V2",
+      "other_owner": "V1"
+    },
+    "n_completed_on_time_diffs": 5,
+    "completed_on_time_diff_ids": [
+      "peak_stress-101-0010",
+      "peak_stress-101-0016",
+      "peak_stress-101-0017",
+      "peak_stress-101-0018",
+      "peak_stress-101-0019"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 2,
+      "t": 27988.29832027035,
+      "reason": "request_release",
+      "request_id": "peak_stress-101-0001",
+      "marl_owner": "V1",
+      "native_final_owner": "V2",
+      "available": [
+        "peak_stress-101-0001"
+      ],
+      "actions": {
+        "V1": {
+          "op": 0,
+          "comm": 0
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 0,
+          "comm": 0
+        }
+      }
+    },
+    "other_idle_with_pending": 15.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-101-0001: native=V2 vs adapter=V1"
+  },
+  {
+    "scenario": "peak_stress_seed101",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "intent",
+    "native_ot": 0.875,
+    "other_ot": 0.85,
+    "ot_gap": 0.025000000000000022,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-101-0001",
+      "native_owner": "V2",
+      "other_owner": "V1"
+    },
+    "n_completed_on_time_diffs": 5,
+    "completed_on_time_diff_ids": [
+      "peak_stress-101-0010",
+      "peak_stress-101-0016",
+      "peak_stress-101-0017",
+      "peak_stress-101-0018",
+      "peak_stress-101-0019"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 2,
+      "t": 27988.29832027035,
+      "reason": "request_release",
+      "request_id": "peak_stress-101-0001",
+      "marl_owner": "V1",
+      "native_final_owner": "V2",
+      "available": [
+        "peak_stress-101-0001"
+      ],
+      "actions": {
+        "V1": {
+          "op": 0,
+          "comm": 0
+        },
+        "V2": {
+          "op": 5,
+          "comm": 5
+        },
+        "V3": {
+          "op": 5,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 11.0,
+    "other_missed_feasible": 33.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-101-0001: native=V2 vs intent=V1"
+  },
+  {
+    "scenario": "peak_stress_seed101",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "adapter",
+    "native_ot": 0.8,
+    "other_ot": 0.85,
+    "ot_gap": -0.04999999999999993,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-101-0002",
+      "native_owner": "V1",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 4,
+    "completed_on_time_diff_ids": [
+      "peak_stress-101-0009",
+      "peak_stress-101-0011",
+      "peak_stress-101-0013",
+      "peak_stress-101-0016"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 3,
+      "t": 28891.000516497945,
+      "reason": "request_release",
+      "request_id": "peak_stress-101-0002",
+      "marl_owner": "V2",
+      "native_final_owner": "V1",
+      "available": [
+        "peak_stress-101-0002"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 0,
+          "comm": 0
+        }
+      }
+    },
+    "other_idle_with_pending": 15.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-101-0002: native=V1 vs adapter=V2"
+  },
+  {
+    "scenario": "peak_stress_seed101",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "intent",
+    "native_ot": 0.8,
+    "other_ot": 0.85,
+    "ot_gap": -0.04999999999999993,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-101-0002",
+      "native_owner": "V1",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 4,
+    "completed_on_time_diff_ids": [
+      "peak_stress-101-0009",
+      "peak_stress-101-0011",
+      "peak_stress-101-0013",
+      "peak_stress-101-0016"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 3,
+      "t": 28891.000516497945,
+      "reason": "request_release",
+      "request_id": "peak_stress-101-0002",
+      "marl_owner": "V2",
+      "native_final_owner": "V1",
+      "available": [
+        "peak_stress-101-0002"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 5,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 11.0,
+    "other_missed_feasible": 33.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-101-0002: native=V1 vs intent=V2"
+  },
+  {
+    "scenario": "tight_windows_seed102",
+    "condition": "tight_windows",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "adapter",
+    "native_ot": 0.7666666666666667,
+    "other_ot": 0.7,
+    "ot_gap": 0.06666666666666676,
+    "first_owner_divergence": {
+      "request_id": "tight_windows-102-0005",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 6,
+    "completed_on_time_diff_ids": [
+      "tight_windows-102-0009",
+      "tight_windows-102-0011",
+      "tight_windows-102-0012",
+      "tight_windows-102-0020",
+      "tight_windows-102-0026",
+      "tight_windows-102-0028"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 6,
+      "t": 31767.30822088543,
+      "reason": "request_release",
+      "request_id": "tight_windows-102-0005",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "tight_windows-102-0003",
+        "tight_windows-102-0005"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 1,
+          "comm": 1
+        },
+        "V3": {
+          "op": 1,
+          "comm": 1
+        }
+      }
+    },
+    "other_idle_with_pending": 17.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "First ownership mismatch on tight_windows-102-0005: native=V3 vs adapter=V2"
+  },
+  {
+    "scenario": "tight_windows_seed102",
+    "condition": "tight_windows",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "intent",
+    "native_ot": 0.7666666666666667,
+    "other_ot": 0.5333333333333333,
+    "ot_gap": 0.2333333333333334,
+    "first_owner_divergence": {
+      "request_id": "tight_windows-102-0005",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 11,
+    "completed_on_time_diff_ids": [
+      "tight_windows-102-0009",
+      "tight_windows-102-0011",
+      "tight_windows-102-0012",
+      "tight_windows-102-0017",
+      "tight_windows-102-0020",
+      "tight_windows-102-0021",
+      "tight_windows-102-0022",
+      "tight_windows-102-0023",
+      "tight_windows-102-0024",
+      "tight_windows-102-0026",
+      "tight_windows-102-0028"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 6,
+      "t": 31767.30822088543,
+      "reason": "request_release",
+      "request_id": "tight_windows-102-0005",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "tight_windows-102-0003",
+        "tight_windows-102-0005"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 1,
+          "comm": 1
+        },
+        "V3": {
+          "op": 5,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 32.0,
+    "other_missed_feasible": 12.0,
+    "request_level_explanation": "First ownership mismatch on tight_windows-102-0005: native=V3 vs intent=V2"
+  },
+  {
+    "scenario": "tight_windows_seed102",
+    "condition": "tight_windows",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "adapter",
+    "native_ot": 0.7333333333333333,
+    "other_ot": 0.7,
+    "ot_gap": 0.033333333333333326,
+    "first_owner_divergence": {
+      "request_id": "tight_windows-102-0005",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 7,
+    "completed_on_time_diff_ids": [
+      "tight_windows-102-0009",
+      "tight_windows-102-0011",
+      "tight_windows-102-0012",
+      "tight_windows-102-0013",
+      "tight_windows-102-0020",
+      "tight_windows-102-0026",
+      "tight_windows-102-0028"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 6,
+      "t": 31767.30822088543,
+      "reason": "request_release",
+      "request_id": "tight_windows-102-0005",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "tight_windows-102-0003",
+        "tight_windows-102-0005"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 1,
+          "comm": 1
+        },
+        "V3": {
+          "op": 1,
+          "comm": 1
+        }
+      }
+    },
+    "other_idle_with_pending": 17.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "First ownership mismatch on tight_windows-102-0005: native=V3 vs adapter=V2"
+  },
+  {
+    "scenario": "tight_windows_seed102",
+    "condition": "tight_windows",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "intent",
+    "native_ot": 0.7333333333333333,
+    "other_ot": 0.5333333333333333,
+    "ot_gap": 0.19999999999999996,
+    "first_owner_divergence": {
+      "request_id": "tight_windows-102-0005",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 12,
+    "completed_on_time_diff_ids": [
+      "tight_windows-102-0009",
+      "tight_windows-102-0011",
+      "tight_windows-102-0012",
+      "tight_windows-102-0013",
+      "tight_windows-102-0017",
+      "tight_windows-102-0020",
+      "tight_windows-102-0021",
+      "tight_windows-102-0022",
+      "tight_windows-102-0023",
+      "tight_windows-102-0024",
+      "tight_windows-102-0026",
+      "tight_windows-102-0028"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 6,
+      "t": 31767.30822088543,
+      "reason": "request_release",
+      "request_id": "tight_windows-102-0005",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "tight_windows-102-0003",
+        "tight_windows-102-0005"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 1,
+          "comm": 1
+        },
+        "V3": {
+          "op": 5,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 32.0,
+    "other_missed_feasible": 12.0,
+    "request_level_explanation": "First ownership mismatch on tight_windows-102-0005: native=V3 vs intent=V2"
+  },
+  {
+    "scenario": "peak_stress_seed1201",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "adapter",
+    "native_ot": 0.85,
+    "other_ot": 0.475,
+    "ot_gap": 0.375,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-1201-0006",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 15,
+    "completed_on_time_diff_ids": [
+      "peak_stress-1201-0015",
+      "peak_stress-1201-0019",
+      "peak_stress-1201-0020",
+      "peak_stress-1201-0023",
+      "peak_stress-1201-0026",
+      "peak_stress-1201-0028",
+      "peak_stress-1201-0029",
+      "peak_stress-1201-0030",
+      "peak_stress-1201-0031",
+      "peak_stress-1201-0032",
+      "peak_stress-1201-0033",
+      "peak_stress-1201-0034"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 8,
+      "t": 28239.22798020064,
+      "reason": "request_release",
+      "request_id": "peak_stress-1201-0006",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "peak_stress-1201-0006"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 0,
+          "comm": 0
+        }
+      }
+    },
+    "other_idle_with_pending": 35.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-1201-0006: native=V3 vs adapter=V2"
+  },
+  {
+    "scenario": "peak_stress_seed1201",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "intent",
+    "native_ot": 0.85,
+    "other_ot": 0.45,
+    "ot_gap": 0.39999999999999997,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-1201-0006",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 16,
+    "completed_on_time_diff_ids": [
+      "peak_stress-1201-0011",
+      "peak_stress-1201-0015",
+      "peak_stress-1201-0019",
+      "peak_stress-1201-0020",
+      "peak_stress-1201-0023",
+      "peak_stress-1201-0026",
+      "peak_stress-1201-0028",
+      "peak_stress-1201-0029",
+      "peak_stress-1201-0030",
+      "peak_stress-1201-0031",
+      "peak_stress-1201-0032",
+      "peak_stress-1201-0033"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 8,
+      "t": 28239.22798020064,
+      "reason": "request_release",
+      "request_id": "peak_stress-1201-0006",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "peak_stress-1201-0006"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 5,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 35.0,
+    "other_missed_feasible": 13.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-1201-0006: native=V3 vs intent=V2"
+  },
+  {
+    "scenario": "peak_stress_seed1201",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "adapter",
+    "native_ot": 0.775,
+    "other_ot": 0.475,
+    "ot_gap": 0.30000000000000004,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-1201-0001",
+      "native_owner": "V2",
+      "other_owner": "V1"
+    },
+    "n_completed_on_time_diffs": 14,
+    "completed_on_time_diff_ids": [
+      "peak_stress-1201-0017",
+      "peak_stress-1201-0022",
+      "peak_stress-1201-0026",
+      "peak_stress-1201-0027",
+      "peak_stress-1201-0028",
+      "peak_stress-1201-0029",
+      "peak_stress-1201-0030",
+      "peak_stress-1201-0031",
+      "peak_stress-1201-0032",
+      "peak_stress-1201-0033",
+      "peak_stress-1201-0034",
+      "peak_stress-1201-0035"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 1,
+      "t": 25559.80021916482,
+      "reason": "request_release",
+      "request_id": "peak_stress-1201-0001",
+      "marl_owner": "V1",
+      "native_final_owner": "V2",
+      "available": [
+        "peak_stress-1201-0001"
+      ],
+      "actions": {
+        "V1": {
+          "op": 0,
+          "comm": 0
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 0,
+          "comm": 0
+        }
+      }
+    },
+    "other_idle_with_pending": 35.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-1201-0001: native=V2 vs adapter=V1"
+  },
+  {
+    "scenario": "peak_stress_seed1201",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "intent",
+    "native_ot": 0.775,
+    "other_ot": 0.45,
+    "ot_gap": 0.325,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-1201-0001",
+      "native_owner": "V2",
+      "other_owner": "V1"
+    },
+    "n_completed_on_time_diffs": 15,
+    "completed_on_time_diff_ids": [
+      "peak_stress-1201-0011",
+      "peak_stress-1201-0017",
+      "peak_stress-1201-0022",
+      "peak_stress-1201-0026",
+      "peak_stress-1201-0027",
+      "peak_stress-1201-0028",
+      "peak_stress-1201-0029",
+      "peak_stress-1201-0030",
+      "peak_stress-1201-0031",
+      "peak_stress-1201-0032",
+      "peak_stress-1201-0033",
+      "peak_stress-1201-0034"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 1,
+      "t": 25559.80021916482,
+      "reason": "request_release",
+      "request_id": "peak_stress-1201-0001",
+      "marl_owner": "V1",
+      "native_final_owner": "V2",
+      "available": [
+        "peak_stress-1201-0001"
+      ],
+      "actions": {
+        "V1": {
+          "op": 0,
+          "comm": 0
+        },
+        "V2": {
+          "op": 6,
+          "comm": 5
+        },
+        "V3": {
+          "op": 6,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 35.0,
+    "other_missed_feasible": 13.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-1201-0001: native=V2 vs intent=V1"
+  },
+  {
+    "scenario": "peak_stress_seed1202",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "adapter",
+    "native_ot": 0.8,
+    "other_ot": 0.35,
+    "ot_gap": 0.45000000000000007,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-1202-0006",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 24,
+    "completed_on_time_diff_ids": [
+      "peak_stress-1202-0007",
+      "peak_stress-1202-0008",
+      "peak_stress-1202-0010",
+      "peak_stress-1202-0012",
+      "peak_stress-1202-0015",
+      "peak_stress-1202-0016",
+      "peak_stress-1202-0018",
+      "peak_stress-1202-0019",
+      "peak_stress-1202-0020",
+      "peak_stress-1202-0021",
+      "peak_stress-1202-0023",
+      "peak_stress-1202-0024"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 7,
+      "t": 26579.761993856653,
+      "reason": "request_release",
+      "request_id": "peak_stress-1202-0006",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "peak_stress-1202-0006"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 5,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 45.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-1202-0006: native=V3 vs adapter=V2"
+  },
+  {
+    "scenario": "peak_stress_seed1202",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "intent",
+    "native_ot": 0.8,
+    "other_ot": 0.35,
+    "ot_gap": 0.45000000000000007,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-1202-0006",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 24,
+    "completed_on_time_diff_ids": [
+      "peak_stress-1202-0007",
+      "peak_stress-1202-0008",
+      "peak_stress-1202-0010",
+      "peak_stress-1202-0012",
+      "peak_stress-1202-0015",
+      "peak_stress-1202-0016",
+      "peak_stress-1202-0018",
+      "peak_stress-1202-0019",
+      "peak_stress-1202-0020",
+      "peak_stress-1202-0021",
+      "peak_stress-1202-0023",
+      "peak_stress-1202-0024"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 7,
+      "t": 26579.761993856653,
+      "reason": "request_release",
+      "request_id": "peak_stress-1202-0006",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "peak_stress-1202-0006"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 5,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 45.0,
+    "other_missed_feasible": 9.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-1202-0006: native=V3 vs intent=V2"
+  },
+  {
+    "scenario": "peak_stress_seed1202",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "adapter",
+    "native_ot": 0.8,
+    "other_ot": 0.35,
+    "ot_gap": 0.45000000000000007,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-1202-0006",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 24,
+    "completed_on_time_diff_ids": [
+      "peak_stress-1202-0007",
+      "peak_stress-1202-0008",
+      "peak_stress-1202-0010",
+      "peak_stress-1202-0012",
+      "peak_stress-1202-0015",
+      "peak_stress-1202-0016",
+      "peak_stress-1202-0018",
+      "peak_stress-1202-0019",
+      "peak_stress-1202-0020",
+      "peak_stress-1202-0021",
+      "peak_stress-1202-0023",
+      "peak_stress-1202-0024"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 7,
+      "t": 26579.761993856653,
+      "reason": "request_release",
+      "request_id": "peak_stress-1202-0006",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "peak_stress-1202-0006"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 5,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 45.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-1202-0006: native=V3 vs adapter=V2"
+  },
+  {
+    "scenario": "peak_stress_seed1202",
+    "condition": "peak_workload",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "intent",
+    "native_ot": 0.8,
+    "other_ot": 0.35,
+    "ot_gap": 0.45000000000000007,
+    "first_owner_divergence": {
+      "request_id": "peak_stress-1202-0006",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 24,
+    "completed_on_time_diff_ids": [
+      "peak_stress-1202-0007",
+      "peak_stress-1202-0008",
+      "peak_stress-1202-0010",
+      "peak_stress-1202-0012",
+      "peak_stress-1202-0015",
+      "peak_stress-1202-0016",
+      "peak_stress-1202-0018",
+      "peak_stress-1202-0019",
+      "peak_stress-1202-0020",
+      "peak_stress-1202-0021",
+      "peak_stress-1202-0023",
+      "peak_stress-1202-0024"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 7,
+      "t": 26579.761993856653,
+      "reason": "request_release",
+      "request_id": "peak_stress-1202-0006",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "peak_stress-1202-0006"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 5,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 45.0,
+    "other_missed_feasible": 9.0,
+    "request_level_explanation": "First ownership mismatch on peak_stress-1202-0006: native=V3 vs intent=V2"
+  },
+  {
+    "scenario": "tight_windows_seed1301",
+    "condition": "tight_windows",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "adapter",
+    "native_ot": 0.7,
+    "other_ot": 0.4,
+    "ot_gap": 0.29999999999999993,
+    "first_owner_divergence": {
+      "request_id": "tight_windows-1301-0003",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 17,
+    "completed_on_time_diff_ids": [
+      "tight_windows-1301-0004",
+      "tight_windows-1301-0005",
+      "tight_windows-1301-0011",
+      "tight_windows-1301-0013",
+      "tight_windows-1301-0014",
+      "tight_windows-1301-0015",
+      "tight_windows-1301-0017",
+      "tight_windows-1301-0018",
+      "tight_windows-1301-0019",
+      "tight_windows-1301-0020",
+      "tight_windows-1301-0021",
+      "tight_windows-1301-0023"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 3,
+      "t": 29278.13216603154,
+      "reason": "request_release",
+      "request_id": "tight_windows-1301-0003",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "tight_windows-1301-0003"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 0,
+          "comm": 0
+        }
+      }
+    },
+    "other_idle_with_pending": 36.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "First ownership mismatch on tight_windows-1301-0003: native=V3 vs adapter=V2"
+  },
+  {
+    "scenario": "tight_windows_seed1301",
+    "condition": "tight_windows",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "intent",
+    "native_ot": 0.7,
+    "other_ot": 0.4,
+    "ot_gap": 0.29999999999999993,
+    "first_owner_divergence": {
+      "request_id": "tight_windows-1301-0003",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 15,
+    "completed_on_time_diff_ids": [
+      "tight_windows-1301-0004",
+      "tight_windows-1301-0005",
+      "tight_windows-1301-0013",
+      "tight_windows-1301-0015",
+      "tight_windows-1301-0017",
+      "tight_windows-1301-0018",
+      "tight_windows-1301-0019",
+      "tight_windows-1301-0020",
+      "tight_windows-1301-0021",
+      "tight_windows-1301-0023",
+      "tight_windows-1301-0024",
+      "tight_windows-1301-0025"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 3,
+      "t": 29278.13216603154,
+      "reason": "request_release",
+      "request_id": "tight_windows-1301-0003",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "tight_windows-1301-0003"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 6,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 37.0,
+    "other_missed_feasible": 9.0,
+    "request_level_explanation": "First ownership mismatch on tight_windows-1301-0003: native=V3 vs intent=V2"
+  },
+  {
+    "scenario": "tight_windows_seed1301",
+    "condition": "tight_windows",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "adapter",
+    "native_ot": 0.7,
+    "other_ot": 0.4,
+    "ot_gap": 0.29999999999999993,
+    "first_owner_divergence": {
+      "request_id": "tight_windows-1301-0003",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 17,
+    "completed_on_time_diff_ids": [
+      "tight_windows-1301-0004",
+      "tight_windows-1301-0005",
+      "tight_windows-1301-0009",
+      "tight_windows-1301-0011",
+      "tight_windows-1301-0014",
+      "tight_windows-1301-0015",
+      "tight_windows-1301-0017",
+      "tight_windows-1301-0018",
+      "tight_windows-1301-0019",
+      "tight_windows-1301-0020",
+      "tight_windows-1301-0021",
+      "tight_windows-1301-0023"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 3,
+      "t": 29278.13216603154,
+      "reason": "request_release",
+      "request_id": "tight_windows-1301-0003",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "tight_windows-1301-0003"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 0,
+          "comm": 0
+        }
+      }
+    },
+    "other_idle_with_pending": 36.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "First ownership mismatch on tight_windows-1301-0003: native=V3 vs adapter=V2"
+  },
+  {
+    "scenario": "tight_windows_seed1301",
+    "condition": "tight_windows",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "intent",
+    "native_ot": 0.7,
+    "other_ot": 0.4,
+    "ot_gap": 0.29999999999999993,
+    "first_owner_divergence": {
+      "request_id": "tight_windows-1301-0003",
+      "native_owner": "V3",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 15,
+    "completed_on_time_diff_ids": [
+      "tight_windows-1301-0004",
+      "tight_windows-1301-0005",
+      "tight_windows-1301-0009",
+      "tight_windows-1301-0015",
+      "tight_windows-1301-0017",
+      "tight_windows-1301-0018",
+      "tight_windows-1301-0019",
+      "tight_windows-1301-0020",
+      "tight_windows-1301-0021",
+      "tight_windows-1301-0023",
+      "tight_windows-1301-0024",
+      "tight_windows-1301-0025"
+    ],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 3,
+      "t": 29278.13216603154,
+      "reason": "request_release",
+      "request_id": "tight_windows-1301-0003",
+      "marl_owner": "V2",
+      "native_final_owner": "V3",
+      "available": [
+        "tight_windows-1301-0003"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 6,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 37.0,
+    "other_missed_feasible": 9.0,
+    "request_level_explanation": "First ownership mismatch on tight_windows-1301-0003: native=V3 vs intent=V2"
+  },
+  {
+    "scenario": "baseline_seed1101",
+    "condition": "normal_workload",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "adapter",
+    "native_ot": 1.0,
+    "other_ot": 1.0,
+    "ot_gap": 0.0,
+    "first_owner_divergence": {
+      "request_id": "baseline-1101-0010",
+      "native_owner": "V1",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 0,
+    "completed_on_time_diff_ids": [],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 21,
+      "t": 54414.86381437284,
+      "reason": "request_release",
+      "request_id": "baseline-1101-0010",
+      "marl_owner": "V2",
+      "native_final_owner": "V1",
+      "available": [
+        "baseline-1101-0010"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 0,
+          "comm": 0
+        }
+      }
+    },
+    "other_idle_with_pending": 25.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "First ownership mismatch on baseline-1101-0010: native=V1 vs adapter=V2"
+  },
+  {
+    "scenario": "baseline_seed1101",
+    "condition": "normal_workload",
+    "soc": 0.35,
+    "delay_s": 0.0,
+    "compare": "intent",
+    "native_ot": 1.0,
+    "other_ot": 1.0,
+    "ot_gap": 0.0,
+    "first_owner_divergence": {
+      "request_id": "baseline-1101-0010",
+      "native_owner": "V1",
+      "other_owner": "V2"
+    },
+    "n_completed_on_time_diffs": 0,
+    "completed_on_time_diff_ids": [],
+    "first_conflicting_claim_epoch": {
+      "epoch_i": 21,
+      "t": 54414.86381437284,
+      "reason": "request_release",
+      "request_id": "baseline-1101-0010",
+      "marl_owner": "V2",
+      "native_final_owner": "V1",
+      "available": [
+        "baseline-1101-0010"
+      ],
+      "actions": {
+        "V1": {
+          "op": 5,
+          "comm": 5
+        },
+        "V2": {
+          "op": 0,
+          "comm": 0
+        },
+        "V3": {
+          "op": 5,
+          "comm": 5
+        }
+      }
+    },
+    "other_idle_with_pending": 25.0,
+    "other_missed_feasible": 21.0,
+    "request_level_explanation": "First ownership mismatch on baseline-1101-0010: native=V1 vs intent=V2"
+  },
+  {
+    "scenario": "baseline_seed1101",
+    "condition": "normal_workload",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "adapter",
+    "native_ot": 1.0,
+    "other_ot": 1.0,
+    "ot_gap": 0.0,
+    "first_owner_divergence": null,
+    "n_completed_on_time_diffs": 0,
+    "completed_on_time_diff_ids": [],
+    "first_conflicting_claim_epoch": null,
+    "other_idle_with_pending": 25.0,
+    "other_missed_feasible": 0.0,
+    "request_level_explanation": "No ownership mismatch; OT gap (if any) from timing/completion, not final owner set."
+  },
+  {
+    "scenario": "baseline_seed1101",
+    "condition": "normal_workload",
+    "soc": 0.35,
+    "delay_s": 30.0,
+    "compare": "intent",
+    "native_ot": 1.0,
+    "other_ot": 1.0,
+    "ot_gap": 0.0,
+    "first_owner_divergence": null,
+    "n_completed_on_time_diffs": 0,
+    "completed_on_time_diff_ids": [],
+    "first_conflicting_claim_epoch": null,
+    "other_idle_with_pending": 25.0,
+    "other_missed_feasible": 21.0,
+    "request_level_explanation": "No ownership mismatch; OT gap (if any) from timing/completion, not final owner set."
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "n_comparisons": 24,
+  "mean_ot_gap_adapter": 0.1875,
+  "mean_ot_gap_intent": 0.21944444444444441,
+  "n_with_owner_divergence_adapter": 11,
+  "n_with_owner_divergence_intent": 11
+}
