@@ -1,0 +1,7 @@
+{
+  "scenario": "peak_stress_seed101",
+  "native_full_ot": 0.875,
+  "hybrid_full_ot": 0.875,
+  "ot_abs_diff": 0.0,
+  "owner_hamming": 0
+}

@@ -37,12 +37,21 @@ class TaskBid:
     commitment_version: int = 0
     reason: str = ""
     withdrawn: bool = False
+    # Optional travel-cost certificate interval (seconds). Absent → derive at ingest.
+    cost_L_s: float | None = None
+    cost_U_s: float | None = None
+    race_cert: str = ""  # e.g. heuristic_interval_v1
 
     def to_payload(self) -> dict:
         return asdict(self)
 
     @staticmethod
     def from_payload(payload: dict) -> "TaskBid":
+        def _opt_float(key: str) -> float | None:
+            if key not in payload or payload[key] is None:
+                return None
+            return float(payload[key])
+
         return TaskBid(
             request_id=str(payload["request_id"]),
             sender_id=str(payload["sender_id"]),
@@ -58,6 +67,9 @@ class TaskBid:
             commitment_version=int(payload.get("commitment_version", 0)),
             reason=str(payload.get("reason", "")),
             withdrawn=bool(payload.get("withdrawn", False)),
+            cost_L_s=_opt_float("cost_L_s"),
+            cost_U_s=_opt_float("cost_U_s"),
+            race_cert=str(payload.get("race_cert", "")),
         )
 
     def is_fresh(self, now_s: float) -> bool:
@@ -99,10 +111,11 @@ def compute_self_bid(
 
     chk: FeasibilityCheck = actions.check_insertion(obs.vehicle_id, task.request_id)
     travel = float(chk.marginal_travel_s or chk.added_travel_s or 0.0)
+    feas = bool(chk.feasible)
     return TaskBid(
         request_id=task.request_id,
         sender_id=obs.vehicle_id,
-        feasible=bool(chk.feasible),
+        feasible=feas,
         marginal_travel_s=travel,
         marginal_energy_kwh=float(chk.marginal_energy_kwh or 0.0),
         energy_flex_kwh=float(chk.energy_flex_kwh or 0.0),
@@ -114,6 +127,10 @@ def compute_self_bid(
         commitment_version=int(commitment_version),
         reason=str(chk.reason or ""),
         withdrawn=False,
+        # Self certificate is a point interval under current commitments (A2).
+        cost_L_s=travel if feas else None,
+        cost_U_s=travel if feas else None,
+        race_cert="heuristic_interval_v1" if feas else "",
     )
 
 

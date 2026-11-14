@@ -1,0 +1,106 @@
+{
+  "hybrid_parity": {
+    "scenario": "peak_stress_seed101",
+    "native_full_ot": 0.875,
+    "hybrid_full_ot": 0.875,
+    "ot_abs_diff": 0.0,
+    "owner_hamming": 0
+  },
+  "matched_message_budget": 129,
+  "means_delay0": [
+    {
+      "treatment": "A_none",
+      "on_time_rate_all": 0.8208333333333333,
+      "n_bid_bytes": 0.0,
+      "n_bid_messages": 0.0,
+      "n_certified_resolutions": 0.0,
+      "n_ambiguous_fallbacks": 0.0
+    },
+    {
+      "treatment": "B_full",
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_bytes": 253946.0,
+      "n_bid_messages": 643.0,
+      "n_certified_resolutions": 0.0,
+      "n_ambiguous_fallbacks": 0.0
+    },
+    {
+      "treatment": "C_periodic",
+      "on_time_rate_all": 0.8208333333333333,
+      "n_bid_bytes": 0.0,
+      "n_bid_messages": 0.0,
+      "n_certified_resolutions": 0.0,
+      "n_ambiguous_fallbacks": 0.0
+    },
+    {
+      "treatment": "D_random_matched",
+      "on_time_rate_all": 0.8180555555555555,
+      "n_bid_bytes": 104139.0,
+      "n_bid_messages": 261.3333333333333,
+      "n_certified_resolutions": 0.0,
+      "n_ambiguous_fallbacks": 0.0
+    },
+    {
+      "treatment": "E_selective",
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_bytes": 59088.666666666664,
+      "n_bid_messages": 129.33333333333334,
+      "n_certified_resolutions": 0.0,
+      "n_ambiguous_fallbacks": 0.0
+    },
+    {
+      "treatment": "F_certified",
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_bytes": 65814.0,
+      "n_bid_messages": 129.33333333333334,
+      "n_certified_resolutions": 58.5,
+      "n_ambiguous_fallbacks": 0.0
+    },
+    {
+      "treatment": "G_learned",
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_bytes": 253946.0,
+      "n_bid_messages": 643.0,
+      "n_certified_resolutions": 0.0,
+      "n_ambiguous_fallbacks": 0.0
+    }
+  ],
+  "means_delay30": [
+    {
+      "treatment": "A_none",
+      "on_time_rate_all": 0.8013888888888889,
+      "n_bid_bytes": 0.0,
+      "n_bid_messages": 0.0
+    },
+    {
+      "treatment": "E_selective",
+      "on_time_rate_all": 0.8013888888888889,
+      "n_bid_bytes": 57908.333333333336,
+      "n_bid_messages": 127.0
+    },
+    {
+      "treatment": "F_certified",
+      "on_time_rate_all": 0.8013888888888889,
+      "n_bid_bytes": 64373.666666666664,
+      "n_bid_messages": 127.0
+    }
+  ],
+  "mean_ot_delta_vs_full_delay0": {
+    "A_none": -0.011111111111111108,
+    "B_full": 0.0,
+    "C_periodic": -0.011111111111111108,
+    "D_random_matched": -0.013888888888888914,
+    "E_selective": 0.0,
+    "F_certified": 0.0,
+    "G_learned": 0.0
+  },
+  "mean_byte_ratio_vs_full_delay0": {
+    "A_none": 0.0,
+    "B_full": 1.0,
+    "C_periodic": 0.0,
+    "D_random_matched": 0.5041436715529706,
+    "E_selective": 0.34793675455207906,
+    "F_certified": 0.3871442710527304,
+    "G_learned": 1.0
+  }
+}
