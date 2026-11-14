@@ -1,0 +1,150 @@
+{
+  "matched_recipient_messages": 129,
+  "matched_bytes_from_selective": 59088.666666666664,
+  "means_delay0": [
+    {
+      "treatment": "A_none",
+      "on_time_rate_all": 0.8208333333333333,
+      "n_bid_messages": 0.0,
+      "n_bid_bytes": 0.0,
+      "n_ecom_proved": 0.0,
+      "n_ecom_fallback": 0.0
+    },
+    {
+      "treatment": "B_full",
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_messages": 643.0,
+      "n_bid_bytes": 253946.0,
+      "n_ecom_proved": 0.0,
+      "n_ecom_fallback": 0.0
+    },
+    {
+      "treatment": "C_periodic",
+      "on_time_rate_all": 0.8347222222222223,
+      "n_bid_messages": 455.3333333333333,
+      "n_bid_bytes": 164203.0,
+      "n_ecom_proved": 0.0,
+      "n_ecom_fallback": 0.0
+    },
+    {
+      "treatment": "D_random_matched",
+      "on_time_rate_all": 0.8152777777777778,
+      "n_bid_messages": 118.66666666666667,
+      "n_bid_bytes": 49396.0,
+      "n_ecom_proved": 0.0,
+      "n_ecom_fallback": 0.0
+    },
+    {
+      "treatment": "E_selective",
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_messages": 129.33333333333334,
+      "n_bid_bytes": 59088.666666666664,
+      "n_ecom_proved": 0.0,
+      "n_ecom_fallback": 0.0
+    },
+    {
+      "treatment": "F_certified",
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_messages": 129.33333333333334,
+      "n_bid_bytes": 65814.0,
+      "n_ecom_proved": 0.0,
+      "n_ecom_fallback": 0.0
+    },
+    {
+      "treatment": "G_ecom",
+      "on_time_rate_all": 0.8319444444444445,
+      "n_bid_messages": 129.33333333333334,
+      "n_bid_bytes": 63227.333333333336,
+      "n_ecom_proved": 0.0,
+      "n_ecom_fallback": 64.66666666666667
+    }
+  ],
+  "means_delay30": [
+    {
+      "treatment": "A_none",
+      "on_time_rate_all": 0.8013888888888889,
+      "n_bid_messages": 0.0,
+      "n_bid_bytes": 0.0
+    },
+    {
+      "treatment": "B_full",
+      "on_time_rate_all": 0.7611111111111111,
+      "n_bid_messages": 840.3333333333334,
+      "n_bid_bytes": 333825.0
+    },
+    {
+      "treatment": "C_periodic",
+      "on_time_rate_all": 0.8250000000000001,
+      "n_bid_messages": 489.6666666666667,
+      "n_bid_bytes": 176958.33333333334
+    },
+    {
+      "treatment": "D_random_matched",
+      "on_time_rate_all": 0.7652777777777778,
+      "n_bid_messages": 122.33333333333333,
+      "n_bid_bytes": 52750.666666666664
+    },
+    {
+      "treatment": "E_selective",
+      "on_time_rate_all": 0.7749999999999999,
+      "n_bid_messages": 228.33333333333334,
+      "n_bid_bytes": 103395.0
+    },
+    {
+      "treatment": "F_certified",
+      "on_time_rate_all": 0.7791666666666667,
+      "n_bid_messages": 182.0,
+      "n_bid_bytes": 91601.33333333333
+    },
+    {
+      "treatment": "G_ecom",
+      "on_time_rate_all": 0.7749999999999999,
+      "n_bid_messages": 174.0,
+      "n_bid_bytes": 84533.33333333333
+    }
+  ],
+  "means_delay120": [
+    {
+      "treatment": "A_none",
+      "on_time_rate_all": 0.798611111111111,
+      "n_bid_messages": 0.0,
+      "n_bid_bytes": 0.0
+    },
+    {
+      "treatment": "B_full",
+      "on_time_rate_all": 0.7791666666666667,
+      "n_bid_messages": 895.6666666666666,
+      "n_bid_bytes": 354818.3333333333
+    },
+    {
+      "treatment": "E_selective",
+      "on_time_rate_all": 0.7861111111111111,
+      "n_bid_messages": 277.0,
+      "n_bid_bytes": 127264.0
+    },
+    {
+      "treatment": "G_ecom",
+      "on_time_rate_all": 0.7833333333333333,
+      "n_bid_messages": 144.66666666666666,
+      "n_bid_bytes": 71717.33333333333
+    }
+  ],
+  "byte_ratio_mean_of_ratios": {
+    "A_none": 0.0,
+    "B_full": 1.0,
+    "C_periodic": 0.5575419969250296,
+    "D_random_matched": 0.3177442554815117,
+    "E_selective": 0.34793675455207906,
+    "F_certified": 0.38714427105273047,
+    "G_ecom": 0.3720644570140184
+  },
+  "ratio_of_mean_bytes": {
+    "A_none": 0.0,
+    "B_full": 1.0,
+    "C_periodic": 0.6466059713482394,
+    "D_random_matched": 0.194513794271223,
+    "E_selective": 0.23268201376145584,
+    "F_certified": 0.2591653343624235,
+    "G_ecom": 0.2489794418235898
+  }
+}

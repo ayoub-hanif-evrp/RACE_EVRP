@@ -84,18 +84,51 @@ def random_should_send(rng: random.Random, p_send: float) -> bool:
 
 @dataclass
 class MatchedBudgetController:
-    """Random sends until a fixed message budget is exhausted (matched to selective)."""
+    """Random sends until a fixed *recipient-transmission* budget is exhausted.
+
+    ``broadcast_task_bid`` fans out to ``n_recipients`` peers. Each allow() that
+    results in a send must charge ``n_recipients`` against the budget so that
+    matching selective's ``n_bid_messages`` (recipient count) is apples-to-apples.
+    """
 
     budget: int
-    sent: int = 0
+    sent: int = 0  # recipient transmissions charged
+    n_recipients: int = 1
 
     def allow(self, rng: random.Random, n_candidates: int) -> bool:
         if self.sent >= self.budget or n_candidates <= 0:
             return False
+        cost = max(1, int(self.n_recipients))
+        if self.sent + cost > self.budget:
+            return False
         remaining_slots = max(1, n_candidates)
-        # Approximate uniform spend of remaining budget over remaining candidates
-        p = min(1.0, (self.budget - self.sent) / float(remaining_slots))
+        remaining_budget_units = max(1, (self.budget - self.sent) // cost)
+        p = min(1.0, remaining_budget_units / float(remaining_slots))
         if rng.random() < p:
-            self.sent += 1
+            self.sent += cost
+            return True
+        return False
+
+
+@dataclass
+class MatchedByteBudgetController:
+    """Random sends until a fixed serialized-byte budget is exhausted."""
+
+    budget_bytes: float
+    used_bytes: float = 0.0
+    typical_payload_bytes: float = 400.0
+    n_recipients: int = 1
+
+    def allow(self, rng: random.Random, n_candidates: int) -> bool:
+        if self.used_bytes >= self.budget_bytes or n_candidates <= 0:
+            return False
+        cost = max(1.0, float(self.typical_payload_bytes) * max(1, int(self.n_recipients)))
+        if self.used_bytes + cost > self.budget_bytes:
+            return False
+        remaining_slots = max(1, n_candidates)
+        remaining_units = max(1.0, (self.budget_bytes - self.used_bytes) / cost)
+        p = min(1.0, remaining_units / float(remaining_slots))
+        if rng.random() < p:
+            self.used_bytes += cost
             return True
         return False

@@ -96,6 +96,8 @@ class RestrictedObservation:
     # request_id -> sender_id -> bid payload dict (delivered task_bid messages only)
     peer_bids: dict[str, dict[str, dict[str, Any]]] = field(default_factory=dict)
     info_mode: str = "restricted"
+    # Public membership only (IDs). Does NOT expose peer private state.
+    fleet_vehicle_ids: tuple[str, ...] = ()
 
 
 class ActionInterface:
@@ -128,6 +130,11 @@ class ActionInterface:
                 )
             )
         return out
+
+    def public_fleet_roster(self) -> tuple[str, ...]:
+        """Public EV identifiers only — no private vehicle state."""
+
+        return tuple(self.__sim.vehicles.keys())
 
     def check_insertion(self, vehicle_id: str, request_id: str) -> FeasibilityCheck:
         if self.__sim.config.info_mode == "restricted":
@@ -229,4 +236,5 @@ def build_restricted_observation(sim: "OnlineSimulator", vehicle_id: str) -> Res
         peers=peers,
         inbox=inbox,
         peer_bids=peer_bids,
+        fleet_vehicle_ids=tuple(sim.vehicles.keys()),
     )

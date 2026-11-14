@@ -59,6 +59,11 @@ class SimConfig:
     periodic_broadcast_s: float = 0.0
     # If False, PERIODIC_BROADCAST only triggers decisions (no generic state floods).
     periodic_state_broadcast: bool = True
+    # If False, delayed MESSAGE_DELIVER ingests only (no per-message decide storm).
+    # Decisions still occur on release / bid_assign / periodic / physical events.
+    message_triggers_decision: bool = True
+    # Max pending delayed task_bid delivers retained per (sender, recipient, request_id).
+    max_pending_bid_delivers: int = 1
     # Independent packet-loss stream for peer messages (0 disables).
     packet_loss_p: float = 0.0
     packet_loss_seed: int = 0
@@ -150,7 +155,11 @@ class OnlineSimulator:
         self.n_bid_bytes = 0
         self.n_state_broadcast_messages = 0
         self.n_packets_dropped = 0
+        self.n_bid_delivers_coalesced = 0
+        self.n_bid_delivers_superseded = 0
         self._pending_assign_requests: set[str] = set()
+        # (sender, recipient, request_id) -> msg_id of latest scheduled delayed deliver
+        self._pending_bid_deliver_ids: dict[tuple[str, str, str], int] = {}
         import random as _random
 
         self._packet_rng = _random.Random(int(config.packet_loss_seed) ^ (int(config.seed) * 10007))
@@ -171,6 +180,21 @@ class OnlineSimulator:
         heapq.heappush(self._eq, Event(time_s, pri, self._seq, etype, payload))
 
     def _schedule_message(self, deliver_s: float, msg: Message) -> None:
+        # Bounded delayed-bid scheduling: keep only the latest pending deliver per
+        # (sender, recipient, request_id). Older pending events are skipped at pop.
+        if msg.kind == "task_bid":
+            rid = str((msg.payload or {}).get("request_id", ""))
+            key = (str(msg.sender), str(msg.recipient), rid)
+            prev = self._pending_bid_deliver_ids.get(key)
+            if prev is not None:
+                self.n_bid_delivers_superseded += 1
+            self._pending_bid_deliver_ids[key] = int(msg.msg_id)
+            self._schedule(
+                deliver_s,
+                EventType.MESSAGE_DELIVER,
+                {"msg_id": msg.msg_id, "bid_key": key, "latest_only": True},
+            )
+            return
         self._schedule(deliver_s, EventType.MESSAGE_DELIVER, {"msg_id": msg.msg_id})
 
     def available_requests(self) -> list[Request]:
@@ -1079,14 +1103,48 @@ class OnlineSimulator:
                     duration_s=float(ev.payload.get("duration_s", 0.0)),
                 )
             elif ev.type == EventType.MESSAGE_DELIVER:
-                msg = next(m for m in self.bus.history if m.msg_id == ev.payload["msg_id"])
+                mid = int(ev.payload["msg_id"])
+                # Skip superseded delayed bid delivers (bounded scheduling).
+                if ev.payload.get("latest_only"):
+                    key = tuple(ev.payload.get("bid_key") or ())
+                    if key and self._pending_bid_deliver_ids.get(key) != mid:
+                        self.n_bid_delivers_coalesced += 1
+                        continue
+                    if key:
+                        self._pending_bid_deliver_ids.pop(key, None)
+                msg = next(m for m in self.bus.history if m.msg_id == mid)
+                if msg.delivered:
+                    continue
                 self.bus.deliver(msg)
                 if msg.kind == "state_update":
                     peer = msg.payload["vehicle_id"]
                     self.local_views.setdefault(msg.recipient, {})[peer] = dict(msg.payload)
                 elif msg.kind == "task_bid":
                     self._ingest_task_bid(msg.recipient, dict(msg.payload), sender=msg.sender)
-                self._maybe_decide("message")
+                # Drain all remaining MESSAGE_DELIVER at this exact time before deciding once.
+                while self._eq and abs(self._eq[0].time_s - self.now_s) <= 1e-12:
+                    if self._eq[0].type != EventType.MESSAGE_DELIVER:
+                        break
+                    ev2 = heapq.heappop(self._eq)
+                    mid2 = int(ev2.payload["msg_id"])
+                    if ev2.payload.get("latest_only"):
+                        key2 = tuple(ev2.payload.get("bid_key") or ())
+                        if key2 and self._pending_bid_deliver_ids.get(key2) != mid2:
+                            self.n_bid_delivers_coalesced += 1
+                            continue
+                        if key2:
+                            self._pending_bid_deliver_ids.pop(key2, None)
+                    msg2 = next(m for m in self.bus.history if m.msg_id == mid2)
+                    if msg2.delivered:
+                        continue
+                    self.bus.deliver(msg2)
+                    if msg2.kind == "state_update":
+                        peer = msg2.payload["vehicle_id"]
+                        self.local_views.setdefault(msg2.recipient, {})[peer] = dict(msg2.payload)
+                    elif msg2.kind == "task_bid":
+                        self._ingest_task_bid(msg2.recipient, dict(msg2.payload), sender=msg2.sender)
+                if bool(self.config.message_triggers_decision):
+                    self._maybe_decide("message")
             elif ev.type == EventType.PERIODIC_BROADCAST:
                 # Optional generic state floods (disabled for task-bid-only fairness).
                 if bool(self.config.periodic_state_broadcast):

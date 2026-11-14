@@ -12,6 +12,7 @@ from dataclasses import replace
 from race_casablanca.coordination.selective_protocol import (
     BidMemory,
     MatchedBudgetController,
+    MatchedByteBudgetController,
     selective_should_send,
 )
 from race_casablanca.coordination.task_bids import (
@@ -39,15 +40,26 @@ class RaceCooperativePolicy:
         bid_ttl_s: float = 180.0,
         random_p_send: float = 0.25,
         matched_message_budget: int | None = None,
+        matched_byte_budget: float | None = None,
+        matched_n_recipients: int = 2,
+        typical_payload_bytes: float = 400.0,
         rng_seed: int = 0,
         charge_target_soc: float = 0.70,
         enable_readiness_charge: bool = True,
         max_assign_wait_s: float = 120.0,
         urgency_slack_s: float = 180.0,
     ):
-        """comm_mode: none | periodic | full | random | selective | random_matched."""
+        """comm_mode: none | periodic | full | random | selective | random_matched | random_matched_bytes."""
 
-        allowed = {"none", "periodic", "full", "random", "selective", "random_matched"}
+        allowed = {
+            "none",
+            "periodic",
+            "full",
+            "random",
+            "selective",
+            "random_matched",
+            "random_matched_bytes",
+        }
         if comm_mode not in allowed:
             raise ValueError(f"unknown comm_mode={comm_mode}")
         self.comm_mode = comm_mode
@@ -59,8 +71,20 @@ class RaceCooperativePolicy:
         self.max_assign_wait_s = float(max_assign_wait_s)
         self.urgency_slack_s = float(urgency_slack_s)
         self._matched = (
-            MatchedBudgetController(budget=int(matched_message_budget))
+            MatchedBudgetController(
+                budget=int(matched_message_budget),
+                n_recipients=max(1, int(matched_n_recipients)),
+            )
             if matched_message_budget is not None
+            else None
+        )
+        self._matched_bytes = (
+            MatchedByteBudgetController(
+                budget_bytes=float(matched_byte_budget),
+                typical_payload_bytes=float(typical_payload_bytes),
+                n_recipients=max(1, int(matched_n_recipients)),
+            )
+            if matched_byte_budget is not None
             else None
         )
 
@@ -129,8 +153,15 @@ class RaceCooperativePolicy:
 
         exchange_only = reason == "bid_exchange"
         assign_only = reason == "bid_assign"
+        # Delayed full-comm cascade guard: message deliveries update local bid tables;
+        # rebroadcasting on every delivery recreates the event flood. Communicate on
+        # release / exchange / assign / periodic / charge / idle triggers instead.
+        skip_comm = assign_only or (
+            reason == "message"
+            and self.comm_mode in {"full", "random", "random_matched", "random_matched_bytes"}
+        )
 
-        if self.comm_mode != "none" and not assign_only:
+        if self.comm_mode != "none" and not skip_comm:
             self._maybe_communicate(obs, actions, own_bids, reason)
 
         if exchange_only:
@@ -201,6 +232,12 @@ class RaceCooperativePolicy:
                 else:
                     send = self._matched.allow(self.rng, len(candidates))
                 kind = "random_matched"
+            elif self.comm_mode == "random_matched_bytes":
+                if self._matched_bytes is None:
+                    send = False
+                else:
+                    send = self._matched_bytes.allow(self.rng, len(candidates))
+                kind = "random_matched_bytes"
             elif self.comm_mode == "selective":
                 send, kind = selective_should_send(own, peers, mem, now_s=obs.now_s)
 
@@ -233,6 +270,14 @@ class RaceCooperativePolicy:
             mem = self._sent.get(key)
             if mem is None:
                 continue
+            # Matched-budget modes must charge invalidations or stop — otherwise
+            # recipient totals systematically exceed the selective-calibrated budget.
+            if self.comm_mode == "random_matched" and self._matched is not None:
+                if not self._matched.allow(self.rng, n_candidates=1):
+                    continue
+            if self.comm_mode == "random_matched_bytes" and self._matched_bytes is not None:
+                if not self._matched_bytes.allow(self.rng, n_candidates=1):
+                    continue
             # Only refresh if we previously advertised interest
             nbytes = actions.broadcast_task_bid(obs.vehicle_id, bid.to_payload())
             self.n_messages_sent_by_policy += 1
