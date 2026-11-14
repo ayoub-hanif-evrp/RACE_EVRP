@@ -139,13 +139,27 @@ def best_bid(bids: Iterable[TaskBid]) -> TaskBid | None:
     return ranked[0] if ranked else None
 
 
-def self_should_claim(own: TaskBid, peer_bids: Iterable[TaskBid], *, now_s: float | None = None) -> bool:
-    """True iff own feasible bid is best among fresh peers (or tied with own id)."""
+def self_should_claim(
+    own: TaskBid,
+    peer_bids: Iterable[TaskBid],
+    *,
+    now_s: float | None = None,
+    message_delay_s: float = 0.0,
+    delay_aware_trust: bool = False,
+) -> bool:
+    """True iff own feasible bid is best among trusted peers (or tied with own id)."""
 
     if not own.feasible or own.withdrawn:
         return False
     t = float(own.as_of_s if now_s is None else now_s)
-    fresh = [b for b in peer_bids if b.feasible and b.is_fresh(t)]
+    if delay_aware_trust:
+        fresh = [
+            b
+            for b in peer_bids
+            if peer_bid_trustworthy(b, now_s=t, message_delay_s=float(message_delay_s))
+        ]
+    else:
+        fresh = [b for b in peer_bids if b.feasible and b.is_fresh(t)]
     best = best_bid([own, *fresh])
     return best is not None and best.sender_id == own.sender_id
 
@@ -158,10 +172,14 @@ def assignment_wait_s(
     max_wait_s: float = 120.0,
     urgency_slack_s: float = 180.0,
 ) -> float:
-    """Deadline-aware wait before assigning under delayed bids.
+    """Legacy deadline-aware wait before assigning under delayed bids.
 
     Urgent tasks (slack < urgency_slack_s) wait 0. Otherwise wait up to
-    max(message_delay_s, small epsilon) capped by max_wait_s and remaining slack.
+    ``1.25 * message_delay_s`` capped by max_wait_s and remaining slack.
+
+    PASS-1 follow-up diagnosis: this rule can schedule waits that consume a large
+    fraction of TW slack under 30–120 s delays. Prefer
+    ``deadline_energy_assignment_wait_s`` for commit-now under tight slack.
     """
 
     slack = float(task.tw_end_s) - float(now_s)
@@ -171,3 +189,66 @@ def assignment_wait_s(
         return 0.0
     wait = min(float(max_wait_s), float(message_delay_s) * 1.25, max(0.0, slack - urgency_slack_s))
     return float(wait)
+
+
+def deadline_energy_assignment_wait_s(
+    task: TaskAnnouncement,
+    *,
+    now_s: float,
+    message_delay_s: float,
+    max_wait_s: float = 60.0,
+    urgency_slack_s: float = 180.0,
+    local_feasible: bool = True,
+    local_travel_s: float | None = None,
+    n_roster_competitors: int = 0,
+    n_fresh_peer_bids: int = 0,
+    delay_slack_frac: float = 0.35,
+) -> float:
+    """Commit-now vs brief wait under delayed peer bids (EV / hard-TW aware).
+
+    Prefer immediate assignment when:
+    - delay is a large fraction of remaining TW slack;
+    - local travel already burns most remaining slack;
+    - roster has no competitors, or peer coverage is already complete;
+    - local insertion is infeasible (nothing to coordinate).
+
+    Otherwise wait at most ``min(delay, useful_slack, max_wait)`` — never ``1.25×delay``.
+    """
+
+    if message_delay_s <= 1e-12:
+        return 0.0
+    slack = float(task.tw_end_s) - float(now_s)
+    if slack <= urgency_slack_s:
+        return 0.0
+    if not local_feasible:
+        return 0.0
+    if int(n_roster_competitors) <= 0:
+        return 0.0
+    if int(n_fresh_peer_bids) >= int(n_roster_competitors):
+        return 0.0
+    if float(message_delay_s) >= float(delay_slack_frac) * max(slack, 1.0):
+        return 0.0
+    travel = float(local_travel_s) if local_travel_s is not None else 0.0
+    if travel + urgency_slack_s >= slack:
+        return 0.0
+    useful = max(0.0, slack - urgency_slack_s - travel)
+    wait = min(float(max_wait_s), float(message_delay_s), useful)
+    return float(wait)
+
+
+def peer_bid_trustworthy(
+    bid: TaskBid,
+    *,
+    now_s: float,
+    message_delay_s: float,
+    max_trust_age_s: float | None = None,
+) -> bool:
+    """Whether a peer bid is fresh enough to defer to under link delay."""
+
+    if not bid.feasible or bid.withdrawn or not bid.is_fresh(now_s):
+        return False
+    age = max(0.0, float(now_s) - float(bid.as_of_s))
+    if max_trust_age_s is None:
+        # Trust horizon shrinks with delay: stale delayed bids should not veto local claims.
+        max_trust_age_s = max(15.0, 0.5 * float(message_delay_s)) if message_delay_s > 1e-12 else 1e9
+    return age <= float(max_trust_age_s)

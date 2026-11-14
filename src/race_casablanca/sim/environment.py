@@ -157,6 +157,11 @@ class OnlineSimulator:
         self.n_packets_dropped = 0
         self.n_bid_delivers_coalesced = 0
         self.n_bid_delivers_superseded = 0
+        self.n_assign_windows = 0
+        self.n_assign_immediate = 0
+        self.n_assign_deferred = 0
+        self.sum_assign_wait_s = 0.0
+        self.max_assign_wait_s = 0.0
         self._pending_assign_requests: set[str] = set()
         # (sender, recipient, request_id) -> msg_id of latest scheduled delayed deliver
         self._pending_bid_deliver_ids: dict[tuple[str, str, str], int] = {}
@@ -947,7 +952,12 @@ class OnlineSimulator:
                 wait_fn = getattr(self.policy, "assignment_wait_for_request", None)
                 if callable(wait_fn):
                     wait = float(wait_fn(self, request_id))
+                # Diagnosis: physical wait vs communication bytes are distinct costs.
+                self.n_assign_windows += 1
+                self.sum_assign_wait_s += float(wait)
+                self.max_assign_wait_s = max(self.max_assign_wait_s, float(wait))
                 if wait <= 1e-12:
+                    self.n_assign_immediate += 1
                     for vid in self.vehicles:
                         obs = build_restricted_observation(self, vid)
                         for peer in obs.peers.values():
@@ -955,6 +965,7 @@ class OnlineSimulator:
                         actions = ActionInterface(self, actor_vehicle_id=vid)
                         self.policy.on_decision(obs, actions, "bid_assign")
                 else:
+                    self.n_assign_deferred += 1
                     self._pending_assign_requests.add(request_id)
                     self._schedule(
                         self.now_s + wait,

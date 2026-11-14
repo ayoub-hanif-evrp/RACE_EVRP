@@ -1,0 +1,609 @@
+{
+  "by_delay": {
+    "0.0": {
+      "means": [
+        {
+          "treatment": "A_none",
+          "on_time_rate_all": 0.8208333333333333,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "mean_assign_wait_s": 0.0,
+          "n_assign_deferred": 0.0,
+          "n_defers_to_peer": 0.0,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 18.50599233309428
+        },
+        {
+          "treatment": "B_full",
+          "on_time_rate_all": 0.8319444444444445,
+          "n_bid_messages": 643.0,
+          "n_bid_bytes": 253946.0,
+          "mean_assign_wait_s": 0.0,
+          "n_assign_deferred": 0.0,
+          "n_defers_to_peer": 10.5,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 18.52111275990804
+        },
+        {
+          "treatment": "C_periodic",
+          "on_time_rate_all": 0.8347222222222223,
+          "n_bid_messages": 455.3333333333333,
+          "n_bid_bytes": 164203.0,
+          "mean_assign_wait_s": 0.0,
+          "n_assign_deferred": 0.0,
+          "n_defers_to_peer": 0.0,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 22.619980971018474
+        },
+        {
+          "treatment": "D_random_matched",
+          "on_time_rate_all": 0.8069444444444445,
+          "n_bid_messages": 98.66666666666667,
+          "n_bid_bytes": 41505.333333333336,
+          "mean_assign_wait_s": 0.0,
+          "n_assign_deferred": 0.0,
+          "n_defers_to_peer": 2.1666666666666665,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 18.77914810180664
+        },
+        {
+          "treatment": "E_selective",
+          "on_time_rate_all": 0.8319444444444445,
+          "n_bid_messages": 129.33333333333334,
+          "n_bid_bytes": 59088.666666666664,
+          "mean_assign_wait_s": 0.0,
+          "n_assign_deferred": 0.0,
+          "n_defers_to_peer": 10.5,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 18.083014090855915
+        },
+        {
+          "treatment": "G_ecom",
+          "on_time_rate_all": 0.8319444444444445,
+          "n_bid_messages": 129.33333333333334,
+          "n_bid_bytes": 63227.333333333336,
+          "mean_assign_wait_s": 0.0,
+          "n_assign_deferred": 0.0,
+          "n_defers_to_peer": 10.5,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 17.916275024414062
+        },
+        {
+          "treatment": "H_selective_deadline",
+          "on_time_rate_all": 0.8319444444444445,
+          "n_bid_messages": 129.33333333333334,
+          "n_bid_bytes": 59088.666666666664,
+          "mean_assign_wait_s": 0.0,
+          "n_assign_deferred": 0.0,
+          "n_defers_to_peer": 10.5,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 18.02068082491557
+        },
+        {
+          "treatment": "I_ecom_deadline",
+          "on_time_rate_all": 0.8319444444444445,
+          "n_bid_messages": 129.33333333333334,
+          "n_bid_bytes": 63227.333333333336,
+          "mean_assign_wait_s": 0.0,
+          "n_assign_deferred": 0.0,
+          "n_defers_to_peer": 10.5,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 18.04866373538971
+        }
+      ],
+      "paired_vs_selective": {
+        "A_none": {
+          "n": 6,
+          "mean_dOT": -0.011111111111111108,
+          "ci95": [
+            -0.03733502819381433,
+            0.015112805971592114
+          ],
+          "wins": 1,
+          "ties": 3,
+          "losses": 2,
+          "mean_byte_ratio_vs_sel": 0.0
+        },
+        "B_full": {
+          "n": 6,
+          "mean_dOT": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "wins": 0,
+          "ties": 6,
+          "losses": 0,
+          "mean_byte_ratio_vs_sel": 4.287732425625976
+        },
+        "C_periodic": {
+          "n": 6,
+          "mean_dOT": 0.0027777777777777866,
+          "ci95": [
+            -0.021691956614621474,
+            0.027247512170177044
+          ],
+          "wins": 2,
+          "ties": 3,
+          "losses": 1,
+          "mean_byte_ratio_vs_sel": 2.646698641010568
+        },
+        "D_random_matched": {
+          "n": 6,
+          "mean_dOT": -0.025000000000000005,
+          "ci95": [
+            -0.06028403269133169,
+            0.010284032691331674
+          ],
+          "wins": 1,
+          "ties": 2,
+          "losses": 3,
+          "mean_byte_ratio_vs_sel": 0.761514092964438
+        },
+        "E_selective": {
+          "n": 6,
+          "mean_dOT": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "wins": 0,
+          "ties": 6,
+          "losses": 0,
+          "mean_byte_ratio_vs_sel": 1.0
+        },
+        "G_ecom": {
+          "n": 6,
+          "mean_dOT": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "wins": 0,
+          "ties": 6,
+          "losses": 0,
+          "mean_byte_ratio_vs_sel": 1.0699187966746637
+        },
+        "H_selective_deadline": {
+          "n": 6,
+          "mean_dOT": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "wins": 0,
+          "ties": 6,
+          "losses": 0,
+          "mean_byte_ratio_vs_sel": 1.0
+        },
+        "I_ecom_deadline": {
+          "n": 6,
+          "mean_dOT": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "wins": 0,
+          "ties": 6,
+          "losses": 0,
+          "mean_byte_ratio_vs_sel": 1.0699187966746637
+        }
+      }
+    },
+    "30.0": {
+      "means": [
+        {
+          "treatment": "A_none",
+          "on_time_rate_all": 0.8013888888888889,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "mean_assign_wait_s": 37.5,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 0.0,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 18.246228297551472
+        },
+        {
+          "treatment": "B_full",
+          "on_time_rate_all": 0.7611111111111111,
+          "n_bid_messages": 840.3333333333334,
+          "n_bid_bytes": 333825.0,
+          "mean_assign_wait_s": 37.5,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 61.5,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 24.35076638062795
+        },
+        {
+          "treatment": "C_periodic",
+          "on_time_rate_all": 0.8250000000000001,
+          "n_bid_messages": 489.6666666666667,
+          "n_bid_bytes": 176958.33333333334,
+          "mean_assign_wait_s": 37.5,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 0.0,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 26.918237924575806
+        },
+        {
+          "treatment": "D_random_matched",
+          "on_time_rate_all": 0.7611111111111111,
+          "n_bid_messages": 102.33333333333333,
+          "n_bid_bytes": 44555.0,
+          "mean_assign_wait_s": 37.5,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 30.5,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 18.981964548428852
+        },
+        {
+          "treatment": "E_selective",
+          "on_time_rate_all": 0.7749999999999999,
+          "n_bid_messages": 228.33333333333334,
+          "n_bid_bytes": 103395.0,
+          "mean_assign_wait_s": 37.5,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 82.16666666666667,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 23.73878602186839
+        },
+        {
+          "treatment": "G_ecom",
+          "on_time_rate_all": 0.7749999999999999,
+          "n_bid_messages": 174.0,
+          "n_bid_bytes": 84533.33333333333,
+          "mean_assign_wait_s": 37.5,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 63.833333333333336,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 23.43552577495575
+        },
+        {
+          "treatment": "H_selective_deadline",
+          "on_time_rate_all": 0.8013888888888889,
+          "n_bid_messages": 134.0,
+          "n_bid_bytes": 60527.333333333336,
+          "mean_assign_wait_s": 30.0,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 0.0,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 21.659762501716614
+        },
+        {
+          "treatment": "I_ecom_deadline",
+          "on_time_rate_all": 0.8013888888888889,
+          "n_bid_messages": 104.0,
+          "n_bid_bytes": 52379.333333333336,
+          "mean_assign_wait_s": 30.0,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 0.0,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 20.998005112012226
+        }
+      ],
+      "paired_vs_selective": {
+        "A_none": {
+          "n": 6,
+          "mean_dOT": 0.026388888888888924,
+          "ci95": [
+            -0.01872121646388401,
+            0.07149899424166185
+          ],
+          "wins": 3,
+          "ties": 2,
+          "losses": 1,
+          "mean_byte_ratio_vs_sel": 0.0
+        },
+        "B_full": {
+          "n": 6,
+          "mean_dOT": -0.013888888888888859,
+          "ci95": [
+            -0.043907483948996434,
+            0.016129706171218713
+          ],
+          "wins": 1,
+          "ties": 3,
+          "losses": 2,
+          "mean_byte_ratio_vs_sel": 3.6387704498908153
+        },
+        "C_periodic": {
+          "n": 6,
+          "mean_dOT": 0.050000000000000044,
+          "ci95": [
+            0.01872404781329297,
+            0.08127595218670712
+          ],
+          "wins": 5,
+          "ties": 1,
+          "losses": 0,
+          "mean_byte_ratio_vs_sel": 2.110256994563583
+        },
+        "D_random_matched": {
+          "n": 6,
+          "mean_dOT": -0.013888888888888876,
+          "ci95": [
+            -0.043907483948996455,
+            0.016129706171218706
+          ],
+          "wins": 1,
+          "ties": 3,
+          "losses": 2,
+          "mean_byte_ratio_vs_sel": 0.6415464742301621
+        },
+        "E_selective": {
+          "n": 6,
+          "mean_dOT": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "wins": 0,
+          "ties": 6,
+          "losses": 0,
+          "mean_byte_ratio_vs_sel": 1.0
+        },
+        "G_ecom": {
+          "n": 6,
+          "mean_dOT": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "wins": 0,
+          "ties": 6,
+          "losses": 0,
+          "mean_byte_ratio_vs_sel": 0.8382330905490365
+        },
+        "H_selective_deadline": {
+          "n": 6,
+          "mean_dOT": 0.026388888888888924,
+          "ci95": [
+            -0.01872121646388401,
+            0.07149899424166185
+          ],
+          "wins": 3,
+          "ties": 2,
+          "losses": 1,
+          "mean_byte_ratio_vs_sel": 0.7807248706157873
+        },
+        "I_ecom_deadline": {
+          "n": 6,
+          "mean_dOT": 0.026388888888888924,
+          "ci95": [
+            -0.01872121646388401,
+            0.07149899424166185
+          ],
+          "wins": 3,
+          "ties": 2,
+          "losses": 1,
+          "mean_byte_ratio_vs_sel": 0.6722609701907376
+        }
+      }
+    },
+    "120.0": {
+      "means": [
+        {
+          "treatment": "A_none",
+          "on_time_rate_all": 0.798611111111111,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "mean_assign_wait_s": 120.0,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 0.0,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 18.976763049761455
+        },
+        {
+          "treatment": "B_full",
+          "on_time_rate_all": 0.7791666666666667,
+          "n_bid_messages": 895.6666666666666,
+          "n_bid_bytes": 354818.3333333333,
+          "mean_assign_wait_s": 120.0,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 21.166666666666668,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 23.09925401210785
+        },
+        {
+          "treatment": "C_periodic",
+          "on_time_rate_all": 0.8319444444444445,
+          "n_bid_messages": 493.3333333333333,
+          "n_bid_bytes": 178708.33333333334,
+          "mean_assign_wait_s": 120.0,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 0.0,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 27.552633325258892
+        },
+        {
+          "treatment": "D_random_matched",
+          "on_time_rate_all": 0.7666666666666666,
+          "n_bid_messages": 101.33333333333333,
+          "n_bid_bytes": 44270.666666666664,
+          "mean_assign_wait_s": 120.0,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 17.5,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 19.763864199320476
+        },
+        {
+          "treatment": "E_selective",
+          "on_time_rate_all": 0.7861111111111111,
+          "n_bid_messages": 277.0,
+          "n_bid_bytes": 127264.0,
+          "mean_assign_wait_s": 120.0,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 54.833333333333336,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 23.351958711942036
+        },
+        {
+          "treatment": "G_ecom",
+          "on_time_rate_all": 0.7833333333333333,
+          "n_bid_messages": 144.66666666666666,
+          "n_bid_bytes": 71717.33333333333,
+          "mean_assign_wait_s": 120.0,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 21.5,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 20.972956617673237
+        },
+        {
+          "treatment": "H_selective_deadline",
+          "on_time_rate_all": 0.7916666666666666,
+          "n_bid_messages": 107.66666666666667,
+          "n_bid_bytes": 50768.0,
+          "mean_assign_wait_s": 60.0,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 0.0,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 21.436517119407654
+        },
+        {
+          "treatment": "I_ecom_deadline",
+          "on_time_rate_all": 0.7916666666666666,
+          "n_bid_messages": 107.0,
+          "n_bid_bytes": 53772.0,
+          "mean_assign_wait_s": 60.0,
+          "n_assign_deferred": 32.0,
+          "n_defers_to_peer": 0.0,
+          "n_ecom_proved": 0.0,
+          "battery_reserve_violations": 0.0,
+          "wall_s": 21.299094398816425
+        }
+      ],
+      "paired_vs_selective": {
+        "A_none": {
+          "n": 6,
+          "mean_dOT": 0.012500000000000011,
+          "ci95": [
+            -0.015073840259685764,
+            0.040073840259685786
+          ],
+          "wins": 2,
+          "ties": 3,
+          "losses": 1,
+          "mean_byte_ratio_vs_sel": 0.0
+        },
+        "B_full": {
+          "n": 6,
+          "mean_dOT": -0.006944444444444438,
+          "ci95": [
+            -0.04770512054346647,
+            0.03381623165457759
+          ],
+          "wins": 2,
+          "ties": 1,
+          "losses": 3,
+          "mean_byte_ratio_vs_sel": 3.040540738008057
+        },
+        "C_periodic": {
+          "n": 6,
+          "mean_dOT": 0.04583333333333337,
+          "ci95": [
+            0.00226076721061666,
+            0.08940589945605008
+          ],
+          "wins": 4,
+          "ties": 1,
+          "losses": 1,
+          "mean_byte_ratio_vs_sel": 1.5103174293882125
+        },
+        "D_random_matched": {
+          "n": 6,
+          "mean_dOT": -0.019444444444444448,
+          "ci95": [
+            -0.060041166321469164,
+            0.02115227743258027
+          ],
+          "wins": 1,
+          "ties": 1,
+          "losses": 4,
+          "mean_byte_ratio_vs_sel": 0.3966630542245282
+        },
+        "E_selective": {
+          "n": 6,
+          "mean_dOT": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "wins": 0,
+          "ties": 6,
+          "losses": 0,
+          "mean_byte_ratio_vs_sel": 1.0
+        },
+        "G_ecom": {
+          "n": 6,
+          "mean_dOT": -0.002777777777777768,
+          "ci95": [
+            -0.042934015858431276,
+            0.03737846030287574
+          ],
+          "wins": 2,
+          "ties": 2,
+          "losses": 2,
+          "mean_byte_ratio_vs_sel": 0.5847254622736926
+        },
+        "H_selective_deadline": {
+          "n": 6,
+          "mean_dOT": 0.005555555555555573,
+          "ci95": [
+            -0.031128850927476793,
+            0.04223996203858794
+          ],
+          "wins": 2,
+          "ties": 3,
+          "losses": 1,
+          "mean_byte_ratio_vs_sel": 0.42921042952475225
+        },
+        "I_ecom_deadline": {
+          "n": 6,
+          "mean_dOT": 0.005555555555555573,
+          "ci95": [
+            -0.031128850927476793,
+            0.04223996203858794
+          ],
+          "wins": 2,
+          "ties": 3,
+          "losses": 1,
+          "mean_byte_ratio_vs_sel": 0.45470996132499786
+        }
+      }
+    }
+  },
+  "noninferiority_margin": {
+    "primary_metric": "on_time_rate_all",
+    "comparator": "E_selective",
+    "margin_absolute_ot": 0.02,
+    "rationale": "2 percentage points OT \u2248 0.64 requests per 32-request episode; practical ops tolerance before claiming noninferior service at lower bytes.",
+    "frozen_before_expanded_eval": true
+  },
+  "matched_budget": {
+    "msgs": 105,
+    "bytes": 47985.25
+  }
+}

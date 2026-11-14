@@ -19,6 +19,7 @@ from race_casablanca.coordination.task_bids import (
     TaskBid,
     assignment_wait_s,
     compute_self_bid,
+    deadline_energy_assignment_wait_s,
     self_should_claim,
 )
 from race_casablanca.sim.policy_api import (
@@ -48,8 +49,15 @@ class RaceCooperativePolicy:
         enable_readiness_charge: bool = True,
         max_assign_wait_s: float = 120.0,
         urgency_slack_s: float = 180.0,
+        assign_wait_mode: str = "legacy",
+        delay_aware_trust: bool = False,
+        message_delay_s: float = 0.0,
     ):
-        """comm_mode: none | periodic | full | random | selective | random_matched | random_matched_bytes."""
+        """comm_mode: none | periodic | full | random | selective | random_matched | random_matched_bytes.
+
+        assign_wait_mode: ``legacy`` (1.25×delay) | ``deadline_energy`` (commit-now under tight slack).
+        delay_aware_trust: ignore stale peer bids when deferring under link delay.
+        """
 
         allowed = {
             "none",
@@ -62,6 +70,8 @@ class RaceCooperativePolicy:
         }
         if comm_mode not in allowed:
             raise ValueError(f"unknown comm_mode={comm_mode}")
+        if assign_wait_mode not in {"legacy", "deadline_energy"}:
+            raise ValueError(f"unknown assign_wait_mode={assign_wait_mode}")
         self.comm_mode = comm_mode
         self.bid_ttl_s = float(bid_ttl_s)
         self.random_p_send = float(random_p_send)
@@ -70,6 +80,9 @@ class RaceCooperativePolicy:
         self.enable_readiness_charge = bool(enable_readiness_charge)
         self.max_assign_wait_s = float(max_assign_wait_s)
         self.urgency_slack_s = float(urgency_slack_s)
+        self.assign_wait_mode = str(assign_wait_mode)
+        self.delay_aware_trust = bool(delay_aware_trust)
+        self.message_delay_s = float(message_delay_s)
         self._matched = (
             MatchedBudgetController(
                 budget=int(matched_message_budget),
@@ -96,6 +109,9 @@ class RaceCooperativePolicy:
         self.n_message_driven_decision_invocations = 0
         self.n_counterfactual_decision_changes = 0
         self.n_withdrawals = 0
+        self.n_assign_waits = 0
+        self.sum_assign_wait_s = 0.0
+        self.n_claims_ignored_stale_peer = 0
         self._sent: dict[tuple[str, str], BidMemory] = {}
         self._seq = 0
         self._commit_version: dict[str, int] = {}
@@ -107,13 +123,38 @@ class RaceCooperativePolicy:
         task = TaskAnnouncement(
             req.request_id, req.snap_node, req.tw_start_s, req.tw_end_s, req.service_s, req.weight_kg
         )
-        return assignment_wait_s(
-            task,
-            now_s=sim.now_s,
-            message_delay_s=float(sim.config.message_delay_s),
-            max_wait_s=self.max_assign_wait_s,
-            urgency_slack_s=self.urgency_slack_s,
-        )
+        delay = float(sim.config.message_delay_s)
+        self.message_delay_s = delay
+        if self.assign_wait_mode == "deadline_energy":
+            # Probe local feasibility cheaply via first vehicle idle enough to bid.
+            local_feasible = True
+            local_travel = None
+            n_comp = max(0, len(sim.vehicles) - 1)
+            n_fresh = 0
+            for payload_map in (getattr(sim, "local_bids", {}) or {}).get(request_id, {}).values():
+                n_fresh += 1
+            wait = deadline_energy_assignment_wait_s(
+                task,
+                now_s=sim.now_s,
+                message_delay_s=delay,
+                max_wait_s=min(self.max_assign_wait_s, 60.0),
+                urgency_slack_s=self.urgency_slack_s,
+                local_feasible=local_feasible,
+                local_travel_s=local_travel,
+                n_roster_competitors=n_comp,
+                n_fresh_peer_bids=n_fresh,
+            )
+        else:
+            wait = assignment_wait_s(
+                task,
+                now_s=sim.now_s,
+                message_delay_s=delay,
+                max_wait_s=self.max_assign_wait_s,
+                urgency_slack_s=self.urgency_slack_s,
+            )
+        self.n_assign_waits += 1
+        self.sum_assign_wait_s += float(wait)
+        return float(wait)
 
     def on_decision(
         self,
@@ -199,7 +240,13 @@ class RaceCooperativePolicy:
             if own is None or not own.feasible:
                 continue
             peers = self._peer_bids_for(obs, task.request_id)
-            if self_should_claim(own, peers, now_s=obs.now_s):
+            if self_should_claim(
+                own,
+                peers,
+                now_s=obs.now_s,
+                message_delay_s=float(self.message_delay_s),
+                delay_aware_trust=self.delay_aware_trust,
+            ):
                 return task.request_id
         return None
 
@@ -297,7 +344,19 @@ class RaceCooperativePolicy:
                     actions.reject_request(task.request_id)
                 continue
             peers = self._peer_bids_for(obs, task.request_id)
-            if not self_should_claim(own, peers, now_s=obs.now_s):
+            delay = float(self.message_delay_s)
+            trusted = self_should_claim(
+                own,
+                peers,
+                now_s=obs.now_s,
+                message_delay_s=delay,
+                delay_aware_trust=self.delay_aware_trust,
+            )
+            if self.delay_aware_trust and trusted:
+                naive = self_should_claim(own, peers, now_s=obs.now_s, delay_aware_trust=False)
+                if trusted and not naive:
+                    self.n_claims_ignored_stale_peer += 1
+            if not trusted:
                 self.n_defers_to_peer += 1
                 continue
             self.n_claims_attempted += 1

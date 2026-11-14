@@ -1,0 +1,7 @@
+{
+  "primary_metric": "on_time_rate_all",
+  "comparator": "E_selective",
+  "margin_absolute_ot": 0.02,
+  "rationale": "2 percentage points OT \u2248 0.64 requests per 32-request episode; practical ops tolerance before claiming noninferior service at lower bytes.",
+  "frozen_before_expanded_eval": true
+}
