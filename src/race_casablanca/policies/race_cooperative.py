@@ -9,6 +9,7 @@ from __future__ import annotations
 import random
 from dataclasses import replace
 
+from race_casablanca.coordination.race_csc import csc_should_claim
 from race_casablanca.coordination.selective_protocol import (
     BidMemory,
     MatchedBudgetController,
@@ -74,6 +75,9 @@ class RaceCooperativePolicy:
         peer_trust_mode: str | None = None,
         ignore_peer_bids: bool = False,
         force_peer_wait_schedule: bool = False,
+        claim_mode: str = "legacy",
+        send_claim_signals: bool = True,
+        wait_authority: str = "decentralized_signal",
     ):
         """comm_mode includes none|periodic|full|random|selective|event_triggered|matched*.
 
@@ -83,6 +87,10 @@ class RaceCooperativePolicy:
         ignore_peer_bids: claims ignore peers (H_NO_PEER) while messaging may still run.
         force_peer_wait_schedule: apply deadline wait even for none (NONE_MATCHED_WAIT).
         fair_physical_decisions: message/periodic update info only — no extra claims/charges.
+        claim_mode: ``legacy`` (offer-rank deferral) | ``csc`` (commitment-safe).
+        send_claim_signals: CSC broadcasts claim_intent/owned (ablation when False).
+        wait_authority: ``decentralized_signal`` (TW+delay+local table; default) |
+            ``coordinator_assisted`` (may probe all EV insertions — documented env authority).
         """
 
         allowed = {
@@ -99,6 +107,10 @@ class RaceCooperativePolicy:
             raise ValueError(f"unknown comm_mode={comm_mode}")
         if assign_wait_mode not in {"legacy", "deadline_energy", "immediate"}:
             raise ValueError(f"unknown assign_wait_mode={assign_wait_mode}")
+        if claim_mode not in {"legacy", "csc"}:
+            raise ValueError(f"unknown claim_mode={claim_mode}")
+        if wait_authority not in {"decentralized_signal", "coordinator_assisted"}:
+            raise ValueError(f"unknown wait_authority={wait_authority}")
         self.comm_mode = comm_mode
         self.bid_ttl_s = float(bid_ttl_s)
         self.random_p_send = float(random_p_send)
@@ -114,6 +126,9 @@ class RaceCooperativePolicy:
         self.peer_trust_mode = peer_trust_mode
         self.ignore_peer_bids = bool(ignore_peer_bids)
         self.force_peer_wait_schedule = bool(force_peer_wait_schedule)
+        self.claim_mode = str(claim_mode)
+        self.send_claim_signals = bool(send_claim_signals)
+        self.wait_authority = str(wait_authority)
         self._matched = (
             MatchedBudgetController(
                 budget=int(matched_message_budget),
@@ -148,9 +163,17 @@ class RaceCooperativePolicy:
         self.n_peer_bids_trusted = 0
         self.n_peer_bids_untrusted = 0
         self.n_wait_used_local_travel = 0
+        self.n_claim_intents_sent = 0
+        self.n_owned_announcements = 0
+        self.n_csc_defers_to_credible = 0
+        self.n_csc_safe_fallbacks = 0
+        self.n_speculative_offers_ignored = 0
         self._sent: dict[tuple[str, str], BidMemory] = {}
         self._seq = 0
-        self._commit_version: dict[str, int] = {}
+        # Own commitment versions only (never share across EVs via shared policy state).
+        self._own_commit_version: dict[str, int] = {}
+        # viewer_id -> sender_id -> max commitment_version observed in delivered messages.
+        self._peer_commit_known: dict[str, dict[str, int]] = {}
 
     def expects_delayed_peer_bids(self) -> bool:
         """True only if this mode can deliver peer bids during an assign wait.
@@ -164,8 +187,8 @@ class RaceCooperativePolicy:
             return True
         return self.comm_mode not in {"none", "periodic"}
 
-    def _local_insertion_for_wait(self, sim, request_id: str) -> tuple[bool, float | None]:
-        """Probe each EV's own insertion — no peer bid tables involved."""
+    def _coordinator_insertion_for_wait(self, sim, request_id: str) -> tuple[bool, float | None]:
+        """Coordinator-assisted: probe each EV insertion (documented env authority only)."""
 
         best_travel: float | None = None
         any_feasible = False
@@ -187,10 +210,11 @@ class RaceCooperativePolicy:
         return sum(1 for s in senders if s != viewer_id)
 
     def assignment_wait_for_request(self, sim, request_id: str) -> float:
-        """Centrally scheduled assign window (env authority), using local insertion costs.
+        """Env-scheduled assign window. Default wait uses decentralized signals only.
 
-        Wait length uses each EV's conservative insertion check (energy/travel), not
-        global peer ranking. Peer coverage uses one viewer's local_bids only.
+        ``decentralized_signal``: TW slack, message delay, roster size, and one viewer's
+        local_bids coverage — no cross-fleet insertion probes.
+        ``coordinator_assisted``: may probe all EV insertions (explicit authority).
         """
 
         req = sim.requests.get(request_id)
@@ -209,13 +233,18 @@ class RaceCooperativePolicy:
             self.n_assign_waits += 1
             return 0.0
         if self.assign_wait_mode == "deadline_energy":
-            local_feasible, local_travel = self._local_insertion_for_wait(sim, request_id)
-            if local_travel is not None:
-                self.n_wait_used_local_travel += 1
             n_comp = max(0, len(sim.vehicles) - 1)
-            # Use first vehicle's local table as the coverage view (no global merge).
             viewer = next(iter(sim.vehicles))
             n_fresh = self._local_fresh_peer_count(sim, request_id, viewer)
+            if self.wait_authority == "coordinator_assisted":
+                local_feasible, local_travel = self._coordinator_insertion_for_wait(sim, request_id)
+                if local_travel is not None:
+                    self.n_wait_used_local_travel += 1
+            else:
+                # Decentralized: do not inspect peer physics. Assume open roster
+                # competition; travel-based commit-now uses only TW/delay rules.
+                local_feasible = True
+                local_travel = None
             wait = deadline_energy_assignment_wait_s(
                 task,
                 now_s=sim.now_s,
@@ -269,7 +298,7 @@ class RaceCooperativePolicy:
         ):
             self._maybe_charge(obs, actions)
 
-        cv = self._commit_version.get(obs.vehicle_id, 0)
+        cv = self._own_commit_version.get(obs.vehicle_id, 0)
         tasks = sorted(obs.announced, key=lambda t: t.tw_end_s)
         own_bids: dict[str, TaskBid] = {}
         for task in tasks:
@@ -277,6 +306,9 @@ class RaceCooperativePolicy:
             own_bids[task.request_id] = compute_self_bid(
                 obs, actions, task, ttl_s=self.bid_ttl_s, seq=self._seq, commitment_version=cv
             )
+            # Learn peer commitment versions only from delivered messages.
+            peers_here = self._peer_bids_for(obs, task.request_id)
+            self._ingest_peer_versions(obs.vehicle_id, peers_here)
 
         exchange_only = reason == "bid_exchange"
         assign_only = reason == "bid_assign"
@@ -309,7 +341,7 @@ class RaceCooperativePolicy:
         self.n_physical_claim_decisions += 1
         claimed = self._claim_pass(obs, actions, own_bids)
         if claimed:
-            self._commit_version[obs.vehicle_id] = cv + 1
+            self._own_commit_version[obs.vehicle_id] = cv + 1
             # Invalidate stale self certificates for other open tasks after commitment change
             if self.comm_mode not in ("none",):
                 self._send_commitment_invalidations(obs, actions, claimed)
@@ -327,31 +359,70 @@ class RaceCooperativePolicy:
                 out.append(bid)
         return out
 
-    def _claim_kwargs(self) -> dict:
+    def _ingest_peer_versions(self, viewer_id: str, peers: list[TaskBid]) -> None:
+        """Record commitment versions only from messages delivered to this viewer."""
+
+        known = self._peer_commit_known.setdefault(viewer_id, {})
+        for b in peers:
+            prev = known.get(b.sender_id)
+            cv = int(b.commitment_version)
+            if prev is None or cv > int(prev):
+                known[b.sender_id] = cv
+
+    def _known_versions_for(self, obs: RestrictedObservation) -> dict[str, int]:
+        """Versions available to this EV: own + peer versions from its inbox only."""
+
+        known = {obs.vehicle_id: int(self._own_commit_version.get(obs.vehicle_id, 0))}
+        known.update(self._peer_commit_known.get(obs.vehicle_id, {}))
+        return known
+
+    def _claim_kwargs(self, obs: RestrictedObservation) -> dict:
         return dict(
             message_delay_s=float(self.message_delay_s),
             delay_aware_trust=self.delay_aware_trust,
             peer_trust_mode=self.peer_trust_mode,
             ignore_peer_bids=self.ignore_peer_bids,
-            known_commitment_versions=dict(self._commit_version),
+            known_commitment_versions=self._known_versions_for(obs),
         )
 
-    def _tally_peer_trust(self, peers: list[TaskBid], *, now_s: float) -> None:
+    def _should_claim(
+        self,
+        own: TaskBid,
+        peers: list[TaskBid],
+        *,
+        obs: RestrictedObservation,
+    ) -> bool:
+        kw = self._claim_kwargs(obs)
+        if self.claim_mode == "csc":
+            return csc_should_claim(own, peers, now_s=float(obs.now_s), **kw)
+        return self_should_claim(own, peers, now_s=obs.now_s, **kw)
+
+    def _tally_peer_trust(self, peers: list[TaskBid], *, now_s: float, obs: RestrictedObservation) -> None:
         mode = resolve_peer_trust_mode(
             peer_trust_mode=self.peer_trust_mode, delay_aware_trust=self.delay_aware_trust
         )
+        known = self._known_versions_for(obs)
         for b in peers:
             ok = peer_bid_trustworthy(
                 b,
                 now_s=now_s,
                 message_delay_s=float(self.message_delay_s),
                 peer_trust_mode=mode,
-                known_commitment_versions=dict(self._commit_version),
+                known_commitment_versions=known,
             )
             if ok:
                 self.n_peer_bids_trusted += 1
             else:
                 self.n_peer_bids_untrusted += 1
+            # Speculative offer under delay: feasible offer without intent/owned.
+            if (
+                self.claim_mode == "csc"
+                and float(self.message_delay_s) > 1e-12
+                and ok
+                and not bool(getattr(b, "claim_intent", False))
+                and not bool(getattr(b, "owned", False))
+            ):
+                self.n_speculative_offers_ignored += 1
 
     def _intended_claim(self, obs: RestrictedObservation, own_bids: dict[str, TaskBid]) -> str | None:
         for task in sorted(obs.announced, key=lambda t: t.tw_end_s):
@@ -359,9 +430,34 @@ class RaceCooperativePolicy:
             if own is None or not own.feasible:
                 continue
             peers = self._peer_bids_for(obs, task.request_id)
-            if self_should_claim(own, peers, now_s=obs.now_s, **self._claim_kwargs()):
+            if self._should_claim(own, peers, obs=obs):
                 return task.request_id
         return None
+
+    def _broadcast_claim_signal(
+        self,
+        obs: RestrictedObservation,
+        actions: ActionInterface,
+        own: TaskBid,
+        *,
+        claim_intent: bool = False,
+        owned: bool = False,
+    ) -> None:
+        if self.comm_mode == "none" or not self.send_claim_signals:
+            return
+        payload = own.to_payload()
+        payload["claim_intent"] = bool(claim_intent)
+        payload["owned"] = bool(owned)
+        if owned:
+            payload["feasible"] = True
+            payload["withdrawn"] = False
+        nbytes = actions.broadcast_task_bid(obs.vehicle_id, payload)
+        self.n_messages_sent_by_policy += 1
+        self.n_bid_bytes_sent += int(nbytes)
+        if claim_intent:
+            self.n_claim_intents_sent += 1
+        if owned:
+            self.n_owned_announcements += 1
 
     def _maybe_communicate(
         self,
@@ -420,7 +516,7 @@ class RaceCooperativePolicy:
     ) -> None:
         """After accepting a task, publish material updates for remaining announced tasks."""
 
-        cv = self._commit_version.get(obs.vehicle_id, 0)
+        cv = self._own_commit_version.get(obs.vehicle_id, 0)
         for task in obs.announced:
             if task.request_id == claimed_rid:
                 continue
@@ -459,8 +555,14 @@ class RaceCooperativePolicy:
                     actions.reject_request(task.request_id)
                 continue
             peers = self._peer_bids_for(obs, task.request_id)
-            self._tally_peer_trust(peers, now_s=float(obs.now_s))
-            trusted = self_should_claim(own, peers, now_s=obs.now_s, **self._claim_kwargs())
+            self._ingest_peer_versions(obs.vehicle_id, peers)
+            self._tally_peer_trust(peers, now_s=float(obs.now_s), obs=obs)
+            legacy_would = self_should_claim(
+                own, peers, now_s=obs.now_s, **self._claim_kwargs(obs)
+            )
+            trusted = self._should_claim(own, peers, obs=obs)
+            if self.claim_mode == "csc" and trusted and not legacy_would:
+                self.n_csc_safe_fallbacks += 1
             mode = resolve_peer_trust_mode(
                 peer_trust_mode=self.peer_trust_mode, delay_aware_trust=self.delay_aware_trust
             )
@@ -476,7 +578,12 @@ class RaceCooperativePolicy:
                     self.n_claims_ignored_stale_peer += 1
             if not trusted:
                 self.n_defers_to_peer += 1
+                if self.claim_mode == "csc":
+                    self.n_csc_defers_to_credible += 1
                 continue
+            # CSC: announce claim intent before registry attempt (nonbinding).
+            if self.claim_mode == "csc" and self.send_claim_signals and self.comm_mode != "none":
+                self._broadcast_claim_signal(obs, actions, own, claim_intent=True, owned=False)
             self.n_claims_attempted += 1
             # Fresh safety check at commitment time (bid never bypasses physics).
             chk = actions.check_insertion(obs.vehicle_id, task.request_id)
@@ -484,6 +591,8 @@ class RaceCooperativePolicy:
                 continue
             if actions.claim_task(obs.vehicle_id, task.request_id):
                 self.n_claims_success += 1
+                if self.claim_mode == "csc" and self.send_claim_signals and self.comm_mode != "none":
+                    self._broadcast_claim_signal(obs, actions, own, claim_intent=False, owned=True)
                 return task.request_id
         return None
 

@@ -1,0 +1,92 @@
+{
+  "scenarios": [
+    "baseline_seed1",
+    "baseline_seed4",
+    "peak_stress_seed2",
+    "peak_stress_seed5",
+    "tight_windows_seed3",
+    "tight_windows_seed6"
+  ],
+  "n_vehicles": 3,
+  "initial_soc": 0.35,
+  "delays_s": [
+    0.0,
+    15.0,
+    30.0,
+    120.0
+  ],
+  "packet_loss_pilot": {
+    "delay_s": 30.0,
+    "p": 0.1
+  },
+  "arms": {
+    "A_NONE_NOW": {
+      "comm_mode": "none",
+      "assign_wait_mode": "immediate",
+      "claim_mode": "legacy"
+    },
+    "B_FULL_COMM": {
+      "comm_mode": "full",
+      "assign_wait_mode": "deadline_energy",
+      "peer_trust_mode": "ttl_commitment",
+      "claim_mode": "legacy",
+      "max_assign_wait_s": 60.0
+    },
+    "C_SELECTIVE_LEGACY": {
+      "comm_mode": "selective",
+      "assign_wait_mode": "legacy",
+      "peer_trust_mode": "ttl",
+      "claim_mode": "legacy"
+    },
+    "D_SELECTIVE_CURRENT": {
+      "comm_mode": "selective",
+      "assign_wait_mode": "deadline_energy",
+      "peer_trust_mode": "ttl_commitment",
+      "claim_mode": "legacy",
+      "max_assign_wait_s": 60.0
+    },
+    "E_MATCHED_WAIT_NO_PEER": {
+      "comm_mode": "selective",
+      "assign_wait_mode": "deadline_energy",
+      "peer_trust_mode": "ttl_commitment",
+      "ignore_peer_bids": true,
+      "claim_mode": "legacy",
+      "max_assign_wait_s": 60.0
+    },
+    "F_VALID_PEER_SELECTIVE": {
+      "comm_mode": "selective",
+      "assign_wait_mode": "deadline_energy",
+      "peer_trust_mode": "ttl_commitment",
+      "claim_mode": "legacy",
+      "max_assign_wait_s": 60.0
+    },
+    "G_FINAL_CANDIDATE": {
+      "comm_mode": "selective",
+      "assign_wait_mode": "deadline_energy",
+      "peer_trust_mode": "ttl_commitment",
+      "claim_mode": "csc",
+      "send_claim_signals": true,
+      "max_assign_wait_s": 60.0,
+      "wait_authority": "decentralized_signal"
+    },
+    "H_CANDIDATE_NO_CONFIRMATION": {
+      "comm_mode": "selective",
+      "assign_wait_mode": "deadline_energy",
+      "peer_trust_mode": "ttl_commitment",
+      "claim_mode": "csc",
+      "send_claim_signals": false,
+      "max_assign_wait_s": 60.0,
+      "wait_authority": "decentralized_signal"
+    },
+    "I_CANDIDATE_NO_DEADLINE_FALLBACK": {
+      "comm_mode": "selective",
+      "assign_wait_mode": "legacy",
+      "peer_trust_mode": "ttl_commitment",
+      "claim_mode": "csc",
+      "send_claim_signals": true,
+      "wait_authority": "decentralized_signal"
+    }
+  },
+  "random_p_send": 0.25,
+  "locked_final_used": false
+}

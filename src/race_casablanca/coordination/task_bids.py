@@ -41,6 +41,9 @@ class TaskBid:
     cost_L_s: float | None = None
     cost_U_s: float | None = None
     race_cert: str = ""  # e.g. heuristic_interval_v1
+    # Commitment-safe coordination signals (distinct from cost offers).
+    claim_intent: bool = False  # sender intends to attempt ownership
+    owned: bool = False  # sender asserts successful registry ownership
 
     def to_payload(self) -> dict:
         return asdict(self)
@@ -70,6 +73,8 @@ class TaskBid:
             cost_L_s=_opt_float("cost_L_s"),
             cost_U_s=_opt_float("cost_U_s"),
             race_cert=str(payload.get("race_cert", "")),
+            claim_intent=bool(payload.get("claim_intent", False)),
+            owned=bool(payload.get("owned", False)),
         )
 
     def is_fresh(self, now_s: float) -> bool:
