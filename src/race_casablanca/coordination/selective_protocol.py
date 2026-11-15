@@ -82,6 +82,32 @@ def random_should_send(rng: random.Random, p_send: float) -> bool:
     return rng.random() < float(p_send)
 
 
+def event_triggered_should_send(
+    own: TaskBid,
+    peer_bids: list[TaskBid],
+    memory: BidMemory | None,
+    *,
+    now_s: float,
+) -> tuple[bool, str]:
+    """Minimal event-triggered baseline: first feasible bid + material/invalidation only.
+
+    No contest refresh and no near-expiry refresh — isolates whether selective's
+    extra refresh rules matter beyond eliminating repeated full broadcasts.
+    """
+
+    if memory is None:
+        if own.feasible:
+            return True, "initial"
+        if any(b.feasible and b.is_fresh(now_s) for b in peer_bids):
+            return True, "withdraw"
+        return False, "none"
+    if material_change(memory.bid, own):
+        if memory.bid.feasible and not own.feasible:
+            return True, "withdraw"
+        return True, "material_change"
+    return False, "none"
+
+
 @dataclass
 class MatchedBudgetController:
     """Random sends until a fixed *recipient-transmission* budget is exhausted.

@@ -1,0 +1,7 @@
+{
+  "primary_metric": "on_time_rate_all",
+  "comparator": "F_selective",
+  "margin_absolute_ot": 0.02,
+  "rationale": "2pp OT \u2248 0.64 requests / 32-request episode; frozen before closeout inspection.",
+  "frozen_before_expanded_eval": true
+}

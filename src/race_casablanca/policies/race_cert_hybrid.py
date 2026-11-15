@@ -35,6 +35,7 @@ class RaceCertHybridPolicy(RaceCooperativePolicy):
             "full",
             "random",
             "selective",
+            "event_triggered",
             "random_matched",
             "certified",
             "ecom",
@@ -45,7 +46,16 @@ class RaceCertHybridPolicy(RaceCooperativePolicy):
             raise ValueError(f"unknown comm_mode={mode}")
         parent_mode = (
             mode
-            if mode in {"none", "periodic", "full", "random", "selective", "random_matched"}
+            if mode
+            in {
+                "none",
+                "periodic",
+                "full",
+                "random",
+                "selective",
+                "event_triggered",
+                "random_matched",
+            }
             else "selective"
         )
         super().__init__(comm_mode=parent_mode, **kwargs)
