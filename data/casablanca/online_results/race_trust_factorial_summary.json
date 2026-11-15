@@ -1,0 +1,471 @@
+{
+  "by_delay": {
+    "0.0": {
+      "means": [
+        {
+          "treatment": "FULL_VALID_PEER",
+          "on_time_rate_all": 0.8423611111111111,
+          "n_bid_bytes": 202029.13333333333,
+          "mean_assign_wait_s": 0.0,
+          "n_defers_to_peer": 8.383333333333333,
+          "n_peer_bids_trusted": 39.21666666666667,
+          "n_peer_bids_untrusted": 22.383333333333333,
+          "n_physical_claim_decisions": 174.0,
+          "n_counterfactual_decision_changes": 8.383333333333333
+        },
+        {
+          "treatment": "H_CURRENT",
+          "on_time_rate_all": 0.8423611111111111,
+          "n_bid_bytes": 51832.9,
+          "mean_assign_wait_s": 0.0,
+          "n_defers_to_peer": 8.383333333333333,
+          "n_peer_bids_trusted": 39.21666666666667,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 174.0,
+          "n_counterfactual_decision_changes": 8.383333333333333
+        },
+        {
+          "treatment": "H_NO_PEER",
+          "on_time_rate_all": 0.836111111111111,
+          "n_bid_bytes": 47092.46666666667,
+          "mean_assign_wait_s": 0.0,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 23.483333333333334,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 173.85,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "H_VALID_PEER",
+          "on_time_rate_all": 0.8423611111111111,
+          "n_bid_bytes": 51832.9,
+          "mean_assign_wait_s": 0.0,
+          "n_defers_to_peer": 8.383333333333333,
+          "n_peer_bids_trusted": 39.21666666666667,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 174.0,
+          "n_counterfactual_decision_changes": 8.383333333333333
+        },
+        {
+          "treatment": "NONE_MATCHED_WAIT",
+          "on_time_rate_all": 0.836111111111111,
+          "n_bid_bytes": 0.0,
+          "mean_assign_wait_s": 0.0,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 0.0,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 173.85,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "NONE_NOW",
+          "on_time_rate_all": 0.836111111111111,
+          "n_bid_bytes": 0.0,
+          "mean_assign_wait_s": 0.0,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 0.0,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 173.85,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "SELECTIVE_LEGACY",
+          "on_time_rate_all": 0.8423611111111111,
+          "n_bid_bytes": 51832.9,
+          "mean_assign_wait_s": 0.0,
+          "n_defers_to_peer": 8.383333333333333,
+          "n_peer_bids_trusted": 39.21666666666667,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 174.0,
+          "n_counterfactual_decision_changes": 8.383333333333333
+        }
+      ]
+    },
+    "30.0": {
+      "means": [
+        {
+          "treatment": "FULL_VALID_PEER",
+          "on_time_rate_all": 0.7748611111111111,
+          "n_bid_bytes": 298845.5,
+          "mean_assign_wait_s": 23.904166666666665,
+          "n_defers_to_peer": 38.31666666666667,
+          "n_peer_bids_trusted": 83.01666666666667,
+          "n_peer_bids_untrusted": 26.983333333333334,
+          "n_physical_claim_decisions": 164.9,
+          "n_counterfactual_decision_changes": 47.583333333333336
+        },
+        {
+          "treatment": "H_CURRENT",
+          "on_time_rate_all": 0.8352777777777778,
+          "n_bid_bytes": 59155.9,
+          "mean_assign_wait_s": 24.616666666666667,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 0.0,
+          "n_peer_bids_untrusted": 22.05,
+          "n_physical_claim_decisions": 174.0,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "H_NO_PEER",
+          "on_time_rate_all": 0.8352777777777778,
+          "n_bid_bytes": 59155.9,
+          "mean_assign_wait_s": 24.616666666666667,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 21.95,
+          "n_peer_bids_untrusted": 0.1,
+          "n_physical_claim_decisions": 174.0,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "H_VALID_PEER",
+          "on_time_rate_all": 0.7730555555555555,
+          "n_bid_bytes": 217979.16666666666,
+          "mean_assign_wait_s": 23.875,
+          "n_defers_to_peer": 40.75,
+          "n_peer_bids_trusted": 85.51666666666667,
+          "n_peer_bids_untrusted": 8.95,
+          "n_physical_claim_decisions": 164.5,
+          "n_counterfactual_decision_changes": 113.65
+        },
+        {
+          "treatment": "NONE_MATCHED_WAIT",
+          "on_time_rate_all": 0.8352777777777778,
+          "n_bid_bytes": 0.0,
+          "mean_assign_wait_s": 24.616666666666667,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 0.0,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 174.0,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "NONE_NOW",
+          "on_time_rate_all": 0.836111111111111,
+          "n_bid_bytes": 0.0,
+          "mean_assign_wait_s": 0.0,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 0.0,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 173.85,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "SELECTIVE_LEGACY",
+          "on_time_rate_all": 0.7643055555555556,
+          "n_bid_bytes": 254756.73333333334,
+          "mean_assign_wait_s": 37.5,
+          "n_defers_to_peer": 45.06666666666667,
+          "n_peer_bids_trusted": 100.28333333333333,
+          "n_peer_bids_untrusted": 1.8833333333333333,
+          "n_physical_claim_decisions": 162.4,
+          "n_counterfactual_decision_changes": 129.28333333333333
+        }
+      ]
+    },
+    "120.0": {
+      "means": [
+        {
+          "treatment": "FULL_VALID_PEER",
+          "on_time_rate_all": 0.8318055555555556,
+          "n_bid_bytes": 228820.8,
+          "mean_assign_wait_s": 49.11666666666667,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 0.0,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 173.85,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "H_CURRENT",
+          "on_time_rate_all": 0.8318055555555556,
+          "n_bid_bytes": 44727.96666666667,
+          "mean_assign_wait_s": 49.11666666666667,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 0.0,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 173.85,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "H_NO_PEER",
+          "on_time_rate_all": 0.8318055555555556,
+          "n_bid_bytes": 44727.96666666667,
+          "mean_assign_wait_s": 49.11666666666667,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 0.0,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 173.85,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "H_VALID_PEER",
+          "on_time_rate_all": 0.8318055555555556,
+          "n_bid_bytes": 44727.96666666667,
+          "mean_assign_wait_s": 49.11666666666667,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 0.0,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 173.85,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "NONE_MATCHED_WAIT",
+          "on_time_rate_all": 0.8318055555555556,
+          "n_bid_bytes": 0.0,
+          "mean_assign_wait_s": 49.11666666666667,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 0.0,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 173.85,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "NONE_NOW",
+          "on_time_rate_all": 0.836111111111111,
+          "n_bid_bytes": 0.0,
+          "mean_assign_wait_s": 0.0,
+          "n_defers_to_peer": 0.0,
+          "n_peer_bids_trusted": 0.0,
+          "n_peer_bids_untrusted": 0.0,
+          "n_physical_claim_decisions": 173.85,
+          "n_counterfactual_decision_changes": 0.0
+        },
+        {
+          "treatment": "SELECTIVE_LEGACY",
+          "on_time_rate_all": 0.7973611111111112,
+          "n_bid_bytes": 163004.23333333334,
+          "mean_assign_wait_s": 120.0,
+          "n_defers_to_peer": 15.55,
+          "n_peer_bids_trusted": 42.85,
+          "n_peer_bids_untrusted": 0.05,
+          "n_physical_claim_decisions": 167.25,
+          "n_counterfactual_decision_changes": 67.3
+        }
+      ]
+    }
+  },
+  "decisive": {
+    "0.0": {
+      "A_H_CURRENT_vs_H_NO_PEER": {
+        "mean_dOT": 0.006249999999999996,
+        "ci95": [
+          -0.004952447453084021,
+          0.017452447453084014
+        ],
+        "wins": 17,
+        "ties": 29,
+        "losses": 14,
+        "mean_owner_hamming": 11.15,
+        "frac_identical_owners": 0.15
+      },
+      "B_H_CURRENT_vs_NONE_MATCHED_WAIT": {
+        "mean_dOT": 0.006249999999999996,
+        "ci95": [
+          -0.004952447453084021,
+          0.017452447453084014
+        ],
+        "wins": 17,
+        "ties": 29,
+        "losses": 14,
+        "mean_owner_hamming": 11.15,
+        "frac_identical_owners": 0.15
+      },
+      "C_H_VALID_PEER_vs_H_NO_PEER": {
+        "mean_dOT": 0.006249999999999996,
+        "ci95": [
+          -0.004952447453084021,
+          0.017452447453084014
+        ],
+        "wins": 17,
+        "ties": 29,
+        "losses": 14,
+        "mean_owner_hamming": 11.15,
+        "frac_identical_owners": 0.15
+      },
+      "C2_H_VALID_PEER_vs_NONE_NOW": {
+        "mean_dOT": 0.006249999999999996,
+        "ci95": [
+          -0.004952447453084021,
+          0.017452447453084014
+        ],
+        "wins": 17,
+        "ties": 29,
+        "losses": 14,
+        "mean_owner_hamming": 11.15,
+        "frac_identical_owners": 0.15
+      },
+      "D_H_VALID_PEER_vs_SELECTIVE_LEGACY": {
+        "mean_dOT": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "wins": 0,
+        "ties": 60,
+        "losses": 0,
+        "mean_owner_hamming": 0.0,
+        "frac_identical_owners": 1.0
+      },
+      "H_VALID_PEER_vs_NONE_MATCHED_WAIT": {
+        "mean_dOT": 0.006249999999999996,
+        "ci95": [
+          -0.004952447453084021,
+          0.017452447453084014
+        ],
+        "wins": 17,
+        "ties": 29,
+        "losses": 14,
+        "mean_owner_hamming": 11.15,
+        "frac_identical_owners": 0.15
+      }
+    },
+    "30.0": {
+      "A_H_CURRENT_vs_H_NO_PEER": {
+        "mean_dOT": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "wins": 0,
+        "ties": 60,
+        "losses": 0,
+        "mean_owner_hamming": 0.0,
+        "frac_identical_owners": 1.0
+      },
+      "B_H_CURRENT_vs_NONE_MATCHED_WAIT": {
+        "mean_dOT": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "wins": 0,
+        "ties": 60,
+        "losses": 0,
+        "mean_owner_hamming": 0.0,
+        "frac_identical_owners": 1.0
+      },
+      "C_H_VALID_PEER_vs_H_NO_PEER": {
+        "mean_dOT": -0.062222222222222213,
+        "ci95": [
+          -0.08551424843375457,
+          -0.038930196010689845
+        ],
+        "wins": 4,
+        "ties": 20,
+        "losses": 36,
+        "mean_owner_hamming": 14.35,
+        "frac_identical_owners": 0.016666666666666666
+      },
+      "C2_H_VALID_PEER_vs_NONE_NOW": {
+        "mean_dOT": -0.06305555555555555,
+        "ci95": [
+          -0.08459568783458375,
+          -0.04151542327652734
+        ],
+        "wins": 4,
+        "ties": 17,
+        "losses": 39,
+        "mean_owner_hamming": 14.55,
+        "frac_identical_owners": 0.016666666666666666
+      },
+      "D_H_VALID_PEER_vs_SELECTIVE_LEGACY": {
+        "mean_dOT": 0.008750000000000008,
+        "ci95": [
+          -0.009131421208039763,
+          0.02663142120803978
+        ],
+        "wins": 20,
+        "ties": 28,
+        "losses": 12,
+        "mean_owner_hamming": 10.75,
+        "frac_identical_owners": 0.2
+      },
+      "H_VALID_PEER_vs_NONE_MATCHED_WAIT": {
+        "mean_dOT": -0.062222222222222213,
+        "ci95": [
+          -0.08551424843375457,
+          -0.038930196010689845
+        ],
+        "wins": 4,
+        "ties": 20,
+        "losses": 36,
+        "mean_owner_hamming": 14.35,
+        "frac_identical_owners": 0.016666666666666666
+      }
+    },
+    "120.0": {
+      "A_H_CURRENT_vs_H_NO_PEER": {
+        "mean_dOT": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "wins": 0,
+        "ties": 60,
+        "losses": 0,
+        "mean_owner_hamming": 0.0,
+        "frac_identical_owners": 1.0
+      },
+      "B_H_CURRENT_vs_NONE_MATCHED_WAIT": {
+        "mean_dOT": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "wins": 0,
+        "ties": 60,
+        "losses": 0,
+        "mean_owner_hamming": 0.0,
+        "frac_identical_owners": 1.0
+      },
+      "C_H_VALID_PEER_vs_H_NO_PEER": {
+        "mean_dOT": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "wins": 0,
+        "ties": 60,
+        "losses": 0,
+        "mean_owner_hamming": 0.0,
+        "frac_identical_owners": 1.0
+      },
+      "C2_H_VALID_PEER_vs_NONE_NOW": {
+        "mean_dOT": -0.004305555555555553,
+        "ci95": [
+          -0.014566062217796577,
+          0.005954951106685472
+        ],
+        "wins": 9,
+        "ties": 38,
+        "losses": 13,
+        "mean_owner_hamming": 5.416666666666667,
+        "frac_identical_owners": 0.4
+      },
+      "D_H_VALID_PEER_vs_SELECTIVE_LEGACY": {
+        "mean_dOT": 0.03444444444444445,
+        "ci95": [
+          0.02061745212228237,
+          0.04827143676660653
+        ],
+        "wins": 34,
+        "ties": 21,
+        "losses": 5,
+        "mean_owner_hamming": 14.066666666666666,
+        "frac_identical_owners": 0.016666666666666666
+      },
+      "H_VALID_PEER_vs_NONE_MATCHED_WAIT": {
+        "mean_dOT": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "wins": 0,
+        "ties": 60,
+        "losses": 0,
+        "mean_owner_hamming": 0.0,
+        "frac_identical_owners": 1.0
+      }
+    }
+  }
+}

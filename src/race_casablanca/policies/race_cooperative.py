@@ -21,6 +21,8 @@ from race_casablanca.coordination.task_bids import (
     assignment_wait_s,
     compute_self_bid,
     deadline_energy_assignment_wait_s,
+    peer_bid_trustworthy,
+    resolve_peer_trust_mode,
     self_should_claim,
 )
 from race_casablanca.sim.policy_api import (
@@ -69,11 +71,17 @@ class RaceCooperativePolicy:
         delay_aware_trust: bool = False,
         message_delay_s: float = 0.0,
         fair_physical_decisions: bool = True,
+        peer_trust_mode: str | None = None,
+        ignore_peer_bids: bool = False,
+        force_peer_wait_schedule: bool = False,
     ):
         """comm_mode includes none|periodic|full|random|selective|event_triggered|matched*.
 
         assign_wait_mode: ``legacy`` (1.25×delay) | ``deadline_energy`` (commit-now under tight slack).
-        delay_aware_trust: ignore stale peer bids when deferring under link delay.
+        peer_trust_mode: ``ttl`` | ``ttl_commitment`` | ``delay_half`` (broken H_CURRENT) | ``none``.
+        delay_aware_trust: legacy alias → delay_half when peer_trust_mode unset.
+        ignore_peer_bids: claims ignore peers (H_NO_PEER) while messaging may still run.
+        force_peer_wait_schedule: apply deadline wait even for none (NONE_MATCHED_WAIT).
         fair_physical_decisions: message/periodic update info only — no extra claims/charges.
         """
 
@@ -89,7 +97,7 @@ class RaceCooperativePolicy:
         }
         if comm_mode not in allowed:
             raise ValueError(f"unknown comm_mode={comm_mode}")
-        if assign_wait_mode not in {"legacy", "deadline_energy"}:
+        if assign_wait_mode not in {"legacy", "deadline_energy", "immediate"}:
             raise ValueError(f"unknown assign_wait_mode={assign_wait_mode}")
         self.comm_mode = comm_mode
         self.bid_ttl_s = float(bid_ttl_s)
@@ -103,6 +111,9 @@ class RaceCooperativePolicy:
         self.delay_aware_trust = bool(delay_aware_trust)
         self.message_delay_s = float(message_delay_s)
         self.fair_physical_decisions = bool(fair_physical_decisions)
+        self.peer_trust_mode = peer_trust_mode
+        self.ignore_peer_bids = bool(ignore_peer_bids)
+        self.force_peer_wait_schedule = bool(force_peer_wait_schedule)
         self._matched = (
             MatchedBudgetController(
                 budget=int(matched_message_budget),
@@ -134,6 +145,9 @@ class RaceCooperativePolicy:
         self.n_claims_ignored_stale_peer = 0
         self.n_info_only_decisions = 0
         self.n_physical_claim_decisions = 0
+        self.n_peer_bids_trusted = 0
+        self.n_peer_bids_untrusted = 0
+        self.n_wait_used_local_travel = 0
         self._sent: dict[tuple[str, str], BidMemory] = {}
         self._seq = 0
         self._commit_version: dict[str, int] = {}
@@ -143,11 +157,42 @@ class RaceCooperativePolicy:
 
         ``none`` has no peers. ``periodic`` transmits only on timer ticks, not on
         bid_exchange — waiting ``message_delay`` does not gather peer bids.
+        ``force_peer_wait_schedule`` overrides for NONE_MATCHED_WAIT ablation.
         """
 
+        if self.force_peer_wait_schedule:
+            return True
         return self.comm_mode not in {"none", "periodic"}
 
+    def _local_insertion_for_wait(self, sim, request_id: str) -> tuple[bool, float | None]:
+        """Probe each EV's own insertion — no peer bid tables involved."""
+
+        best_travel: float | None = None
+        any_feasible = False
+        for vid in sim.vehicles:
+            chk = sim.check_insertion(vid, request_id)
+            if not chk.feasible:
+                continue
+            any_feasible = True
+            travel = float(chk.marginal_travel_s)
+            if best_travel is None or travel < best_travel:
+                best_travel = travel
+        return any_feasible, best_travel
+
+    def _local_fresh_peer_count(self, sim, request_id: str, viewer_id: str) -> int:
+        """Count peer senders known to one vehicle's local bid table only."""
+
+        by_req = (getattr(sim, "local_bids", {}) or {}).get(viewer_id) or {}
+        senders = by_req.get(request_id) or {}
+        return sum(1 for s in senders if s != viewer_id)
+
     def assignment_wait_for_request(self, sim, request_id: str) -> float:
+        """Centrally scheduled assign window (env authority), using local insertion costs.
+
+        Wait length uses each EV's conservative insertion check (energy/travel), not
+        global peer ranking. Peer coverage uses one viewer's local_bids only.
+        """
+
         req = sim.requests.get(request_id)
         if req is None:
             return 0.0
@@ -156,17 +201,21 @@ class RaceCooperativePolicy:
         )
         delay = float(sim.config.message_delay_s)
         self.message_delay_s = delay
+        if self.assign_wait_mode == "immediate":
+            self.n_assign_waits += 1
+            return 0.0
         # CRITICAL: do not wait for nonexistent / non-arriving peer messages.
         if not self.expects_delayed_peer_bids() or delay <= 1e-12:
             self.n_assign_waits += 1
             return 0.0
         if self.assign_wait_mode == "deadline_energy":
-            local_feasible = True
-            local_travel = None
+            local_feasible, local_travel = self._local_insertion_for_wait(sim, request_id)
+            if local_travel is not None:
+                self.n_wait_used_local_travel += 1
             n_comp = max(0, len(sim.vehicles) - 1)
-            n_fresh = 0
-            for _vid, by_req in (getattr(sim, "local_bids", {}) or {}).items():
-                n_fresh += len(by_req.get(request_id) or {})
+            # Use first vehicle's local table as the coverage view (no global merge).
+            viewer = next(iter(sim.vehicles))
+            n_fresh = self._local_fresh_peer_count(sim, request_id, viewer)
             wait = deadline_energy_assignment_wait_s(
                 task,
                 now_s=sim.now_s,
@@ -278,19 +327,39 @@ class RaceCooperativePolicy:
                 out.append(bid)
         return out
 
+    def _claim_kwargs(self) -> dict:
+        return dict(
+            message_delay_s=float(self.message_delay_s),
+            delay_aware_trust=self.delay_aware_trust,
+            peer_trust_mode=self.peer_trust_mode,
+            ignore_peer_bids=self.ignore_peer_bids,
+            known_commitment_versions=dict(self._commit_version),
+        )
+
+    def _tally_peer_trust(self, peers: list[TaskBid], *, now_s: float) -> None:
+        mode = resolve_peer_trust_mode(
+            peer_trust_mode=self.peer_trust_mode, delay_aware_trust=self.delay_aware_trust
+        )
+        for b in peers:
+            ok = peer_bid_trustworthy(
+                b,
+                now_s=now_s,
+                message_delay_s=float(self.message_delay_s),
+                peer_trust_mode=mode,
+                known_commitment_versions=dict(self._commit_version),
+            )
+            if ok:
+                self.n_peer_bids_trusted += 1
+            else:
+                self.n_peer_bids_untrusted += 1
+
     def _intended_claim(self, obs: RestrictedObservation, own_bids: dict[str, TaskBid]) -> str | None:
         for task in sorted(obs.announced, key=lambda t: t.tw_end_s):
             own = own_bids.get(task.request_id)
             if own is None or not own.feasible:
                 continue
             peers = self._peer_bids_for(obs, task.request_id)
-            if self_should_claim(
-                own,
-                peers,
-                now_s=obs.now_s,
-                message_delay_s=float(self.message_delay_s),
-                delay_aware_trust=self.delay_aware_trust,
-            ):
+            if self_should_claim(own, peers, now_s=obs.now_s, **self._claim_kwargs()):
                 return task.request_id
         return None
 
@@ -390,16 +459,19 @@ class RaceCooperativePolicy:
                     actions.reject_request(task.request_id)
                 continue
             peers = self._peer_bids_for(obs, task.request_id)
-            delay = float(self.message_delay_s)
-            trusted = self_should_claim(
-                own,
-                peers,
-                now_s=obs.now_s,
-                message_delay_s=delay,
-                delay_aware_trust=self.delay_aware_trust,
+            self._tally_peer_trust(peers, now_s=float(obs.now_s))
+            trusted = self_should_claim(own, peers, now_s=obs.now_s, **self._claim_kwargs())
+            mode = resolve_peer_trust_mode(
+                peer_trust_mode=self.peer_trust_mode, delay_aware_trust=self.delay_aware_trust
             )
-            if self.delay_aware_trust and trusted:
-                naive = self_should_claim(own, peers, now_s=obs.now_s, delay_aware_trust=False)
+            if mode == "delay_half" and trusted:
+                naive = self_should_claim(
+                    own,
+                    peers,
+                    now_s=obs.now_s,
+                    peer_trust_mode="ttl",
+                    ignore_peer_bids=False,
+                )
                 if trusted and not naive:
                     self.n_claims_ignored_stale_peer += 1
             if not trusted:

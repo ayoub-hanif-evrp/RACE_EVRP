@@ -48,7 +48,8 @@ def test_deadline_energy_brief_wait_when_slack_ample():
     assert abs(w - 30.0) < 1e-6
 
 
-def test_stale_peer_not_trusted_under_delay():
+def test_stale_peer_not_trusted_under_delay_half_mode():
+    """Historical broken filter (delay_half) rejects age > 0.5*delay."""
     peer = TaskBid(
         request_id="R1",
         sender_id="V2",
@@ -61,7 +62,9 @@ def test_stale_peer_not_trusted_under_delay():
         as_of_s=0.0,
         expires_s=500.0,
     )
-    assert not peer_bid_trustworthy(peer, now_s=100.0, message_delay_s=120.0)
+    assert not peer_bid_trustworthy(
+        peer, now_s=100.0, message_delay_s=120.0, peer_trust_mode="delay_half"
+    )
     own = TaskBid(
         request_id="R1",
         sender_id="V1",
@@ -74,8 +77,8 @@ def test_stale_peer_not_trusted_under_delay():
         as_of_s=100.0,
         expires_s=500.0,
     )
-    # Without trust filter, peer wins; with delay-aware trust, own claims.
-    assert not self_should_claim(own, [peer], now_s=100.0, delay_aware_trust=False)
+    # TTL mode: peer wins; delay_half ignores peer → own claims.
+    assert not self_should_claim(own, [peer], now_s=100.0, peer_trust_mode="ttl")
     assert self_should_claim(
-        own, [peer], now_s=100.0, message_delay_s=120.0, delay_aware_trust=True
+        own, [peer], now_s=100.0, message_delay_s=120.0, peer_trust_mode="delay_half"
     )

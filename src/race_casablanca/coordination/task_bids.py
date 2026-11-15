@@ -139,6 +139,23 @@ def best_bid(bids: Iterable[TaskBid]) -> TaskBid | None:
     return ranked[0] if ranked else None
 
 
+def resolve_peer_trust_mode(
+    *,
+    peer_trust_mode: str | None = None,
+    delay_aware_trust: bool = False,
+) -> str:
+    """Map policy flags to a concrete trust mode.
+
+    Legacy ``delay_aware_trust=True`` without an explicit mode ⇒ broken ``delay_half``.
+    """
+
+    if peer_trust_mode is not None and str(peer_trust_mode) != "":
+        return str(peer_trust_mode)
+    if delay_aware_trust:
+        return "delay_half"
+    return "ttl"
+
+
 def self_should_claim(
     own: TaskBid,
     peer_bids: Iterable[TaskBid],
@@ -146,20 +163,31 @@ def self_should_claim(
     now_s: float | None = None,
     message_delay_s: float = 0.0,
     delay_aware_trust: bool = False,
+    peer_trust_mode: str | None = None,
+    ignore_peer_bids: bool = False,
+    known_commitment_versions: dict[str, int] | None = None,
 ) -> bool:
     """True iff own feasible bid is best among trusted peers (or tied with own id)."""
 
     if not own.feasible or own.withdrawn:
         return False
+    if ignore_peer_bids:
+        return True
     t = float(own.as_of_s if now_s is None else now_s)
-    if delay_aware_trust:
-        fresh = [
-            b
-            for b in peer_bids
-            if peer_bid_trustworthy(b, now_s=t, message_delay_s=float(message_delay_s))
-        ]
-    else:
-        fresh = [b for b in peer_bids if b.feasible and b.is_fresh(t)]
+    mode = resolve_peer_trust_mode(
+        peer_trust_mode=peer_trust_mode, delay_aware_trust=delay_aware_trust
+    )
+    fresh = [
+        b
+        for b in peer_bids
+        if peer_bid_trustworthy(
+            b,
+            now_s=t,
+            message_delay_s=float(message_delay_s),
+            peer_trust_mode=mode,
+            known_commitment_versions=known_commitment_versions,
+        )
+    ]
     best = best_bid([own, *fresh])
     return best is not None and best.sender_id == own.sender_id
 
@@ -240,15 +268,45 @@ def peer_bid_trustworthy(
     bid: TaskBid,
     *,
     now_s: float,
-    message_delay_s: float,
+    message_delay_s: float = 0.0,
     max_trust_age_s: float | None = None,
+    peer_trust_mode: str = "ttl_commitment",
+    known_commitment_versions: dict[str, int] | None = None,
 ) -> bool:
-    """Whether a peer bid is fresh enough to defer to under link delay."""
+    """Whether a peer bid may influence assignment ranking.
 
-    if not bid.feasible or bid.withdrawn or not bid.is_fresh(now_s):
+    Modes
+    -----
+    ``delay_half`` (BROKEN / historical H_CURRENT):
+        Rejects if age > max(15, 0.5 * message_delay). Under deterministic
+        delivery at send+delay, age ≥ delay > 0.5*delay, so **all** normally
+        delivered delayed bids fail. Kept only for ablation.
+
+    ``ttl`` / ``ttl_commitment`` (repaired):
+        Transport latency alone does **not** invalidate a bid. Require
+        feasible, not withdrawn, within certificate TTL (``is_fresh``).
+        ``ttl_commitment`` also rejects if ``known_commitment_versions`` shows
+        a newer commitment version for the sender than the bid carries.
+    """
+
+    if not bid.feasible or bid.withdrawn:
         return False
-    age = max(0.0, float(now_s) - float(bid.as_of_s))
-    if max_trust_age_s is None:
-        # Trust horizon shrinks with delay: stale delayed bids should not veto local claims.
-        max_trust_age_s = max(15.0, 0.5 * float(message_delay_s)) if message_delay_s > 1e-12 else 1e9
-    return age <= float(max_trust_age_s)
+    if not bid.is_fresh(now_s):
+        return False
+    mode = str(peer_trust_mode or "ttl_commitment")
+    if mode == "delay_half":
+        age = max(0.0, float(now_s) - float(bid.as_of_s))
+        if max_trust_age_s is None:
+            max_trust_age_s = (
+                max(15.0, 0.5 * float(message_delay_s)) if message_delay_s > 1e-12 else 1e9
+            )
+        return age <= float(max_trust_age_s)
+    if mode in {"ttl", "ttl_commitment"}:
+        if mode == "ttl_commitment" and known_commitment_versions is not None:
+            known = known_commitment_versions.get(bid.sender_id)
+            if known is not None and int(bid.commitment_version) < int(known):
+                return False
+        return True
+    if mode == "none":
+        return False
+    raise ValueError(f"unknown peer_trust_mode={mode}")
