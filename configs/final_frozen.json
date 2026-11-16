@@ -1,7 +1,7 @@
 {
   "freeze_name": "RACE-COMM Selective CSC-lite",
   "prompt1_sha": "a725992ab58b70c44d7faaff380dcfd47618b027",
-  "prompt2_freeze_pending_sha": "PENDING_GIT_PUSH",
+  "prompt2_sha": "deb750af7edebdc8868eed2af6fa389e77765136",
   "experiment_counts": {
     "primary_ok": 2100,
     "ablation_ok": 1440,
