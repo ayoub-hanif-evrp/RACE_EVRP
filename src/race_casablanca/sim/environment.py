@@ -42,6 +42,13 @@ from race_casablanca.sim.types import (
 )
 
 
+def _percentile(values: list[float], q: float) -> float:
+    if not values:
+        return 0.0
+    arr = np.asarray(values, dtype=float)
+    return float(np.quantile(arr, q))
+
+
 @dataclass
 class SimConfig:
     info_mode: str = "full"  # full | restricted
@@ -151,12 +158,23 @@ class OnlineSimulator:
         self.local_views: dict[str, dict[str, Any]] = {vid: {} for vid in self.vehicles}
         # recipient -> request_id -> sender_id -> bid payload
         self.local_bids: dict[str, dict[str, dict[str, Any]]] = {vid: {} for vid in self.vehicles}
+        # Legacy scheduled counters: incremented only for non-dropped frames (pre-Prompt-2).
         self.n_bid_messages = 0
         self.n_bid_bytes = 0
+        # Primary communication accounting (Prompt 2): attempted includes network drops.
+        self.n_bid_attempted_messages = 0
+        self.n_bid_attempted_bytes = 0
+        self.n_bid_dropped_messages = 0
+        self.n_bid_dropped_bytes = 0
+        self.n_bid_scheduled_messages = 0
+        self.n_bid_scheduled_bytes = 0
+        self.n_bid_delivered_messages = 0
+        self.n_bid_delivered_bytes = 0
         self.n_state_broadcast_messages = 0
         self.n_packets_dropped = 0
         self.n_bid_delivers_coalesced = 0
         self.n_bid_delivers_superseded = 0
+        self.n_strandings = 0
         self.n_assign_windows = 0
         self.n_assign_immediate = 0
         self.n_assign_deferred = 0
@@ -632,6 +650,7 @@ class OnlineSimulator:
         v.busy = False
         v.moving_to = None
         v.path_nodes = []
+        self.n_strandings += 1
         rec = {
             "event": "emergency_stranded",
             "vehicle_id": vehicle_id,
@@ -1054,7 +1073,21 @@ class OnlineSimulator:
         table[sid] = dict(payload)
 
     def broadcast_task_bid(self, vehicle_id: str, payload: dict[str, Any]) -> int:
-        """Broadcast a compact task bid to all peers. Returns serialized payload bytes."""
+        """Broadcast a compact task bid to all peers.
+
+        Returns serialized payload size (one copy). Counters use recipient fan-out:
+        each peer destination is one attempted transmission of ``nbytes``.
+
+        Accounting
+        ----------
+        - ``n_bid_attempted_*``: sender attempts (includes frames later dropped).
+        - ``n_bid_dropped_*``: network drops before scheduling.
+        - ``n_bid_scheduled_*`` / legacy ``n_bid_messages`` / ``n_bid_bytes``:
+          successfully handed to the message bus (historical semantics).
+        - ``n_bid_delivered_*``: recipient ingest (incremented on deliver).
+        Superseded/coalesced delayed delivers are tracked separately and are
+        not classified as packet loss.
+        """
 
         import json
 
@@ -1065,7 +1098,11 @@ class OnlineSimulator:
         for peer in self.vehicles:
             if peer == vehicle_id:
                 continue
+            self.n_bid_attempted_messages += 1
+            self.n_bid_attempted_bytes += nbytes
             if self._drop_packet():
+                self.n_bid_dropped_messages += 1
+                self.n_bid_dropped_bytes += nbytes
                 continue
             msg = self.bus.send(
                 vehicle_id,
@@ -1075,11 +1112,16 @@ class OnlineSimulator:
                 self.now_s,
                 schedule_delivery=None if zero_delay else self._schedule_message,
             )
+            # Legacy + scheduled: only non-dropped frames (pre-Prompt-2 behavior).
             self.n_bid_messages += 1
             self.n_bid_bytes += nbytes
+            self.n_bid_scheduled_messages += 1
+            self.n_bid_scheduled_bytes += nbytes
             if zero_delay:
                 self.bus.deliver(msg)
                 self._ingest_task_bid(peer, body, sender=vehicle_id)
+                self.n_bid_delivered_messages += 1
+                self.n_bid_delivered_bytes += nbytes
         return nbytes
 
     def run(self) -> EpisodeMetrics:
@@ -1132,6 +1174,11 @@ class OnlineSimulator:
                     self.local_views.setdefault(msg.recipient, {})[peer] = dict(msg.payload)
                 elif msg.kind == "task_bid":
                     self._ingest_task_bid(msg.recipient, dict(msg.payload), sender=msg.sender)
+                    import json as _json
+
+                    _nb = len(_json.dumps(dict(msg.payload), separators=(",", ":")).encode("utf-8"))
+                    self.n_bid_delivered_messages += 1
+                    self.n_bid_delivered_bytes += _nb
                 # Drain all remaining MESSAGE_DELIVER at this exact time before deciding once.
                 while self._eq and abs(self._eq[0].time_s - self.now_s) <= 1e-12:
                     if self._eq[0].type != EventType.MESSAGE_DELIVER:
@@ -1241,7 +1288,10 @@ class OnlineSimulator:
             mean_decision_runtime_s=(sum(self._decision_runtimes) / len(self._decision_runtimes))
             if self._decision_runtimes
             else 0.0,
+            p50_decision_runtime_s=_percentile(self._decision_runtimes, 0.50),
+            p95_decision_runtime_s=_percentile(self._decision_runtimes, 0.95),
             n_decisions=len(self._decision_runtimes),
+            n_strandings=int(self.n_strandings),
             energy_changed_dispatch=self.energy_changed_dispatch,
             config={
                 "energy_uncertainty_delta": self.config.energy_uncertainty_delta,

@@ -1,0 +1,33 @@
+{
+  "n_jobs": 2100,
+  "n_scenarios": 60,
+  "treatments_d0": [
+    "A_NONE_NOW",
+    "B_FULL_COMM",
+    "C_PERIODIC_COMM",
+    "D_RANDOM_BYTE_MATCHED",
+    "E_EVENT_TRIGGERED",
+    "F_SELECTIVE_LEGACY",
+    "G_SELECTIVE_VALID_PEER",
+    "H_CSC_LITE",
+    "I_MATCHED_WAIT_ZERO_COMM",
+    "J_MATCHED_WAIT_MESSAGE_PLACEBO"
+  ],
+  "treatments_delay": [
+    "A_NONE_NOW",
+    "B_FULL_COMM",
+    "F_SELECTIVE_LEGACY",
+    "G_SELECTIVE_VALID_PEER",
+    "H_CSC_LITE",
+    "I_MATCHED_WAIT_ZERO_COMM",
+    "J_MATCHED_WAIT_MESSAGE_PLACEBO"
+  ],
+  "delays": [
+    0,
+    15,
+    30,
+    120
+  ],
+  "matched_bytes": 55364.75,
+  "locked_final_used": false
+}

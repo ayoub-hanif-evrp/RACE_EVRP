@@ -41,7 +41,10 @@ class EpisodeMetrics:
     mean_message_delay_s: float = 0.0
     mean_info_age_s: float = 0.0
     mean_decision_runtime_s: float = 0.0
+    p50_decision_runtime_s: float = 0.0
+    p95_decision_runtime_s: float = 0.0
     n_decisions: int = 0
+    n_strandings: int = 0
     energy_changed_dispatch: int = 0
     notes: list[str] = field(default_factory=list)
     config: dict = field(default_factory=dict)

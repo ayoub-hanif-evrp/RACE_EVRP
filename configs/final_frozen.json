@@ -1,0 +1,78 @@
+{
+  "freeze_name": "RACE-COMM Selective CSC-lite",
+  "prompt1_sha": "a725992ab58b70c44d7faaff380dcfd47618b027",
+  "prompt2_freeze_pending_sha": "PENDING_GIT_PUSH",
+  "experiment_counts": {
+    "primary_ok": 2100,
+    "ablation_ok": 1440,
+    "scale_ok": 180,
+    "primary_fail": 0
+  },
+  "locked_final_used_in_prompt2": false,
+  "architecture": "partially_decentralized_registry_assisted",
+  "method": {
+    "class": "RaceCooperativePolicy",
+    "parameters": {
+      "comm_mode": "selective",
+      "claim_mode": "csc",
+      "send_claim_signals": false,
+      "assign_wait_mode": "deadline_energy",
+      "peer_trust_mode": "ttl_commitment",
+      "wait_authority": "decentralized_signal",
+      "fair_physical_decisions": true,
+      "max_assign_wait_s": 60.0,
+      "urgency_slack_s": 180.0,
+      "bid_ttl_s": 180.0,
+      "enable_readiness_charge": true,
+      "charge_target_soc": 0.70,
+      "ignore_peer_bids": false,
+      "force_peer_wait_schedule": false,
+      "delay_aware_trust": false,
+      "rng_seed": 7
+    }
+  },
+  "mechanisms": {
+    "assignment_timing": "deadline_latency_aware_using_TW_delay_roster_local_bids_coverage_NOT_cross_fleet_energy_travel_probe",
+    "physical_claim_gate": "conservative_insertion_check_at_claim_time",
+    "ownership": "central_TaskRegistry_atomic_exclusive",
+    "csc_rule": "under_positive_delay_defer_only_to_claim_intent_or_owned_offers_rank_at_zero_delay",
+    "confirmation_signals": "rejected_send_claim_signals_false"
+  },
+  "primary_metric": {
+    "name": "on_time_rate_all",
+    "definition": "n_on_time / n_requests",
+    "comparison_unit": "scenario_episode"
+  },
+  "communication_primary_cost": {
+    "name": "n_bid_attempted_bytes",
+    "definition": "recipient_fanout_serialized_bytes_including_network_drops",
+    "legacy_scheduled_bytes": "n_bid_bytes / n_bid_scheduled_bytes"
+  },
+  "energy_fields": ["energy_consumed_kwh", "energy_delivered_kwh", "charge_duration_s", "n_charges"],
+  "runtime_fields": ["mean_decision_runtime_s", "p50_decision_runtime_s", "p95_decision_runtime_s", "n_decisions"],
+  "baselines": [
+    "A_NONE_NOW",
+    "B_FULL_COMM",
+    "C_PERIODIC_COMM",
+    "D_RANDOM_BYTE_MATCHED",
+    "E_EVENT_TRIGGERED",
+    "F_SELECTIVE_LEGACY",
+    "G_SELECTIVE_VALID_PEER",
+    "I_MATCHED_WAIT_ZERO_COMM",
+    "J_MATCHED_WAIT_MESSAGE_PLACEBO"
+  ],
+  "development_ensemble": "data/casablanca/evaluation_v1/default",
+  "locked_final_ensemble": "data/casablanca/evaluation_v1/locked_final",
+  "noninferiority_margin_ot_absolute": 0.02,
+  "noninferiority_margin_history": "Recorded in closeout/dev scripts before Prompt 2; exploratory exposure to development data — must be re-declared before locked_final and not treated as preregistered without disclosure.",
+  "statistical_plan": {
+    "paired_bootstrap_reps": 2000,
+    "seed": 0,
+    "report": ["mean_delta_ot_pp", "ci95", "wins_ties_losses", "owner_hamming", "attempted_bytes"]
+  },
+  "notes": [
+    "Prompt 1 6-scenario pilot is training-side development evidence.",
+    "60-scenario default ensemble has influenced prior research decisions — development evidence only.",
+    "Synthetic parcel requests are not observed Casablanca courier records."
+  ]
+}

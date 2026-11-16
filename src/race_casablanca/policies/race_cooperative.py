@@ -78,6 +78,7 @@ class RaceCooperativePolicy:
         claim_mode: str = "legacy",
         send_claim_signals: bool = True,
         wait_authority: str = "decentralized_signal",
+        strip_peer_energy_fields: bool = False,
     ):
         """comm_mode includes none|periodic|full|random|selective|event_triggered|matched*.
 
@@ -129,6 +130,7 @@ class RaceCooperativePolicy:
         self.claim_mode = str(claim_mode)
         self.send_claim_signals = bool(send_claim_signals)
         self.wait_authority = str(wait_authority)
+        self.strip_peer_energy_fields = bool(strip_peer_energy_fields)
         self._matched = (
             MatchedBudgetController(
                 budget=int(matched_message_budget),
@@ -355,6 +357,14 @@ class RaceCooperativePolicy:
                 bid = TaskBid.from_payload(payload)
             except (KeyError, TypeError, ValueError):
                 continue
+            if self.strip_peer_energy_fields:
+                # Ablation E: keep travel/feasibility; zero energy message fields.
+                bid = replace(
+                    bid,
+                    marginal_energy_kwh=0.0,
+                    energy_flex_kwh=0.0,
+                    charge_burden_s=0.0,
+                )
             if bid.is_fresh(obs.now_s):
                 out.append(bid)
         return out

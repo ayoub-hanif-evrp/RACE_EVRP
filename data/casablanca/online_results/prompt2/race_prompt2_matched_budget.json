@@ -1,0 +1,15 @@
+{
+  "matched_attempted_bytes_mean_train": 55364.75,
+  "calibrated_on": [
+    "baseline_seed1",
+    "baseline_seed4",
+    "baseline_seed7",
+    "peak_stress_seed2",
+    "peak_stress_seed5",
+    "peak_stress_seed8",
+    "tight_windows_seed3",
+    "tight_windows_seed6"
+  ],
+  "delay_s": 0.0,
+  "note": "Budget from selective CSC-lite attempted bytes; declared before primary runs."
+}
