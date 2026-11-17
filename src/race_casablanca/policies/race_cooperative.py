@@ -469,6 +469,12 @@ class RaceCooperativePolicy:
         if owned:
             self.n_owned_announcements += 1
 
+    @staticmethod
+    def _serialized_payload_bytes(payload: dict) -> int:
+        import json
+
+        return len(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
+
     def _maybe_communicate(
         self,
         obs: RestrictedObservation,
@@ -487,8 +493,24 @@ class RaceCooperativePolicy:
                 send = True
                 kind = "full"
             elif self.comm_mode == "periodic":
-                send = reason == "periodic_broadcast"
-                kind = "periodic"
+                # Task-bid periodic: initial announcement when first eligible, then
+                # 300s-timer refreshes for still-open feasible tasks (SimConfig.periodic_broadcast_s).
+                if reason == "periodic_broadcast" and bool(own.feasible):
+                    send = True
+                    kind = "periodic"
+                elif mem is None and bool(own.feasible) and reason in {
+                    "bid_exchange",
+                    "request_release",
+                    "vehicle_idle",
+                    "charge_end",
+                    "service_end",
+                    "epoch",
+                }:
+                    send = True
+                    kind = "periodic_initial"
+                else:
+                    send = False
+                    kind = "none"
             elif self.comm_mode == "random":
                 send = self.rng.random() < self.random_p_send
                 kind = "random"
@@ -499,22 +521,29 @@ class RaceCooperativePolicy:
                     send = self._matched.allow(self.rng, len(candidates))
                 kind = "random_matched"
             elif self.comm_mode == "random_matched_bytes":
-                if self._matched_bytes is None:
-                    send = False
-                else:
-                    send = self._matched_bytes.allow(self.rng, len(candidates))
                 kind = "random_matched_bytes"
+                send = False  # decided after measuring actual payload size
             elif self.comm_mode == "selective":
                 send, kind = selective_should_send(own, peers, mem, now_s=obs.now_s)
             elif self.comm_mode == "event_triggered":
                 send, kind = event_triggered_should_send(own, peers, mem, now_s=obs.now_s)
 
-            if not send:
-                continue
             payload = own.to_payload()
             if kind == "withdraw":
                 payload["feasible"] = False
                 payload["withdrawn"] = True
+            if self.comm_mode == "random_matched_bytes":
+                if self._matched_bytes is None:
+                    continue
+                nbytes_est = self._serialized_payload_bytes(payload)
+                if not self._matched_bytes.allow(
+                    self.rng, len(candidates), payload_bytes=float(nbytes_est)
+                ):
+                    continue
+                send = True
+            if not send:
+                continue
+            if kind == "withdraw":
                 self.n_withdrawals += 1
             nbytes = actions.broadcast_task_bid(obs.vehicle_id, payload)
             self.n_messages_sent_by_policy += 1
@@ -543,11 +572,15 @@ class RaceCooperativePolicy:
             if self.comm_mode == "random_matched" and self._matched is not None:
                 if not self._matched.allow(self.rng, n_candidates=1):
                     continue
+            payload = bid.to_payload()
             if self.comm_mode == "random_matched_bytes" and self._matched_bytes is not None:
-                if not self._matched_bytes.allow(self.rng, n_candidates=1):
+                nbytes_est = self._serialized_payload_bytes(payload)
+                if not self._matched_bytes.allow(
+                    self.rng, n_candidates=1, payload_bytes=float(nbytes_est)
+                ):
                     continue
             # Only refresh if we previously advertised interest
-            nbytes = actions.broadcast_task_bid(obs.vehicle_id, bid.to_payload())
+            nbytes = actions.broadcast_task_bid(obs.vehicle_id, payload)
             self.n_messages_sent_by_policy += 1
             self.n_bid_bytes_sent += int(nbytes)
             self._sent[key] = BidMemory(bid=bid, send_s=obs.now_s)

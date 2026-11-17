@@ -1,0 +1,109 @@
+{
+  "name": "final_locked_manifest",
+  "implementation_sha": "deb750af7edebdc8868eed2af6fa389e77765136",
+  "repository_sha_at_manifest": "3e25c5458cb4799f521b63c537950eb702619084",
+  "csc_lite": {
+    "comm_mode": "selective",
+    "claim_mode": "csc",
+    "send_claim_signals": false,
+    "assign_wait_mode": "deadline_energy",
+    "peer_trust_mode": "ttl_commitment",
+    "wait_authority": "decentralized_signal",
+    "fair_physical_decisions": true,
+    "max_assign_wait_s": 60.0,
+    "urgency_slack_s": 180.0,
+    "bid_ttl_s": 180.0,
+    "enable_readiness_charge": true,
+    "charge_target_soc": 0.7,
+    "ignore_peer_bids": false,
+    "force_peer_wait_schedule": false,
+    "delay_aware_trust": false
+  },
+  "periodic_broadcast_s": 300.0,
+  "periodic_state_broadcast": false,
+  "random_matched_budget_attempted_bytes": 55364.75,
+  "random_calibration": {
+    "train_scenarios": [
+      "baseline_seed1",
+      "baseline_seed4",
+      "baseline_seed7",
+      "peak_stress_seed2",
+      "peak_stress_seed5",
+      "peak_stress_seed8",
+      "tight_windows_seed3",
+      "tight_windows_seed6"
+    ],
+    "csc_lite_mean_attempted_bytes": 55364.75,
+    "random_matched_budget": 55364.75,
+    "random_matched_mean_attempted_bytes": 49712.75,
+    "random_matched_ratio_to_csc": 0.8979133835156846,
+    "periodic_broadcast_s": 300.0,
+    "periodic_mean_attempted_bytes": 48090.25,
+    "periodic_n_positive_byte_episodes": 8
+  },
+  "primary_delays_s": [
+    0,
+    30,
+    120
+  ],
+  "zero_delay_treatments": [
+    "A_NONE_NOW",
+    "B_FULL_COMM",
+    "C_PERIODIC_COMM",
+    "D_RANDOM_BYTE_MATCHED",
+    "E_EVENT_TRIGGERED",
+    "F_SELECTIVE_LEGACY",
+    "G_SELECTIVE_VALID_PEER",
+    "H_CSC_LITE",
+    "I_MATCHED_WAIT_ZERO_COMM",
+    "J_MATCHED_WAIT_MESSAGE_PLACEBO"
+  ],
+  "delay_treatments": [
+    "A_NONE_NOW",
+    "B_FULL_COMM",
+    "F_SELECTIVE_LEGACY",
+    "G_SELECTIVE_VALID_PEER",
+    "H_CSC_LITE",
+    "I_MATCHED_WAIT_ZERO_COMM",
+    "J_MATCHED_WAIT_MESSAGE_PLACEBO"
+  ],
+  "n_vehicles": 3,
+  "initial_soc": 0.35,
+  "packet_loss_p_primary": 0.0,
+  "expected_jobs": 720,
+  "expected_breakdown": {
+    "delay0": 300,
+    "delay30": 210,
+    "delay120": 210
+  },
+  "primary_metric": "on_time_rate_all",
+  "communication_primary_cost": "n_bid_attempted_bytes",
+  "bootstrap_reps": 2000,
+  "bootstrap_seed": 0,
+  "noninferiority_margin_ot_absolute": 0.02,
+  "noninferiority_margin_history": "Recorded in closeout/dev before Prompt 2; exploratory exposure to development data disclosed.",
+  "no_retuning_after_locked_outcomes": true,
+  "locked_final_path": "data/casablanca/evaluation_v1/locked_final",
+  "content_hashes": {
+    "src/race_casablanca/policies/race_cooperative.py": "3b7a4ca454d6d16cd08be20fc1303b219b8385fe4bdc40878c036355ea3422eb",
+    "src/race_casablanca/coordination/race_csc.py": "42187e744bc8b096a4dc040ade25146022d33e75ff810f66e374864e7c8e3a2e",
+    "src/race_casablanca/coordination/selective_protocol.py": "d977a5e4b3333258858abd083e5aeabb754ec82aceffcdc2c13eac2a25fdeb2d",
+    "src/race_casablanca/sim/environment.py": "ca8f674dc585f4c1b96dbfed5463aa9f9df008676ba53c0086e09433ffc7b160",
+    "configs/final_frozen.json": "4a4ab38b3947ab0ea6d427ccd6321e85274e4fa6dcda8e2f5ad5e52de4b2798e"
+  },
+  "locked_execution": {
+    "declared_jobs": 720,
+    "completed_ok": 720,
+    "failures": 0,
+    "source_sha_at_run": "3e25c5458cb4799f521b63c537950eb702619084",
+    "results_dir": "data/casablanca/online_results/final_locked"
+  },
+  "primary_comparisons": [
+    "H vs B @0 (service + bytes + noninferiority)",
+    "H vs A @0",
+    "H vs I @30",
+    "H vs G @30",
+    "H vs I @120",
+    "H vs E @0"
+  ]
+}

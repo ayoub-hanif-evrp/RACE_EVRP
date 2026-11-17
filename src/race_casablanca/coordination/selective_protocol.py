@@ -138,23 +138,48 @@ class MatchedBudgetController:
 
 @dataclass
 class MatchedByteBudgetController:
-    """Random sends until a fixed serialized-byte budget is exhausted."""
+    """Random sends until a fixed *attempted recipient-byte* budget is exhausted.
+
+    Cost is always ``actual_serialized_payload_bytes * n_recipients`` (fan-out),
+    matching ``OnlineSimulator.broadcast_task_bid`` attempted-byte accounting.
+
+    ``typical_payload_bytes`` is retained only as a fallback estimate when the
+    caller cannot supply a measured payload size (legacy); prefer passing
+    ``payload_bytes=``.
+    """
 
     budget_bytes: float
     used_bytes: float = 0.0
     typical_payload_bytes: float = 400.0
     n_recipients: int = 1
 
-    def allow(self, rng: random.Random, n_candidates: int) -> bool:
-        if self.used_bytes >= self.budget_bytes or n_candidates <= 0:
+    def fanout_cost(self, payload_bytes: float) -> float:
+        return max(1.0, float(payload_bytes)) * max(1, int(self.n_recipients))
+
+    def allow(
+        self,
+        rng: random.Random,
+        n_candidates: int,
+        *,
+        payload_bytes: float | None = None,
+    ) -> bool:
+        if self.used_bytes >= self.budget_bytes - 1e-12 or n_candidates <= 0:
             return False
-        cost = max(1.0, float(self.typical_payload_bytes) * max(1, int(self.n_recipients)))
-        if self.used_bytes + cost > self.budget_bytes:
+        unit = (
+            float(payload_bytes)
+            if payload_bytes is not None and float(payload_bytes) > 0
+            else float(self.typical_payload_bytes)
+        )
+        cost = self.fanout_cost(unit)
+        if self.used_bytes + cost > self.budget_bytes + 1e-9:
             return False
-        remaining_slots = max(1, n_candidates)
+        remaining_slots = max(1, int(n_candidates))
         remaining_units = max(1.0, (self.budget_bytes - self.used_bytes) / cost)
         p = min(1.0, remaining_units / float(remaining_slots))
         if rng.random() < p:
             self.used_bytes += cost
             return True
         return False
+
+    def remaining_bytes(self) -> float:
+        return max(0.0, float(self.budget_bytes) - float(self.used_bytes))
