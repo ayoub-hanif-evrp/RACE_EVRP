@@ -1,7 +1,10 @@
 """Casablanca scenario factories for RACE-MARL training / evaluation.
 
-Uses frozen geographical inputs and existing train/validation scenario files.
-Does not touch locked_final / Stage-6 tuning sets for hyperparameter search.
+Primary training path: on-the-fly procedural episodes from the frozen demand
+generator (see ``episode_sampler`` + ``configs/marl_training_protocol.json``).
+
+Legacy path: reshuffle/jitter the 8 release train files (insufficient alone for
+serious MARL). Does not touch locked_final for training or hyperparameter search.
 """
 
 from __future__ import annotations
@@ -21,6 +24,7 @@ from race_casablanca.sim.scenario_loader import (
 from race_casablanca.sim.types import Request, RequestStatus
 
 
+# Legacy on-disk release diagnostics (not the MARL training corpus).
 TRAIN_SCENARIOS = [
     "baseline_seed1",
     "baseline_seed4",
@@ -187,3 +191,39 @@ def resolve_eval_dirs() -> list[Path]:
             if p.exists():
                 paths.append(p)
     return paths
+
+
+def make_training_factory(
+    *,
+    source: str = "procedural",
+    master_seed: int = 0,
+    n_vehicles: int = 3,
+    curriculum: str = "round_robin",
+    procedural_jitter: bool = True,
+) -> Callable[..., dict]:
+    """Preferred MARL training factory.
+
+    ``source='procedural'`` regenerates synthetic requests each episode from the
+    frozen Casablanca generator (scientifically sized training stream).
+
+    ``source='fixed_pool'`` keeps the legacy 8-file pool + optional jitter
+    (diagnostic / backward compatible only).
+    """
+    if source == "procedural":
+        from race_casablanca.marl.episode_sampler import make_procedural_train_factory
+
+        _gen, factory = make_procedural_train_factory(
+            master_seed=master_seed,
+            n_vehicles=n_vehicles,
+            curriculum=curriculum,
+            load_network=True,
+        )
+        return factory
+    if source == "fixed_pool":
+        pool = load_casablanca_pool(split="train")
+        return make_pool_factory(
+            pool,
+            n_vehicles=n_vehicles,
+            procedural_jitter=procedural_jitter,
+        )
+    raise ValueError(f"Unknown training source {source!r}")

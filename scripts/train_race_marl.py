@@ -47,6 +47,17 @@ def main() -> int:
     parser.add_argument("--freeze-comm", action="store_true")
     parser.add_argument("--stage", default="8.2")
     parser.add_argument(
+        "--episode-source",
+        choices=["procedural", "fixed_pool"],
+        default="procedural",
+        help="procedural = on-the-fly generator episodes (required for serious MARL training)",
+    )
+    parser.add_argument(
+        "--curriculum",
+        choices=["round_robin", "baseline_only", "peak_only", "tight_only"],
+        default="round_robin",
+    )
+    parser.add_argument(
         "--out",
         default="data/casablanca/online_results/marl_checkpoints/smoke.pt",
     )
@@ -70,10 +81,15 @@ def main() -> int:
         soc = 1.0
         max_dec = 40
     else:
-        from race_casablanca.marl.scenarios import load_casablanca_pool, make_pool_factory
+        from race_casablanca.marl.scenarios import make_training_factory
 
-        pool = load_casablanca_pool(split="train")
-        factory = make_pool_factory(pool, n_vehicles=args.n_vehicles, procedural_jitter=True)
+        factory = make_training_factory(
+            source=args.episode_source,
+            master_seed=args.seed,
+            n_vehicles=args.n_vehicles,
+            curriculum=args.curriculum,
+            procedural_jitter=True,
+        )
         n_veh = args.n_vehicles
         soc = args.soc
         max_dec = args.max_decisions
@@ -137,7 +153,9 @@ def main() -> int:
 
     print(
         f"train mode={args.mode} ablation={args.ablation} seed={args.seed} "
-        f"iters={args.iters} steps={args.steps} nv={n_veh} delay={args.delay} stage={args.stage}",
+        f"iters={args.iters} steps={args.steps} nv={n_veh} delay={args.delay} "
+        f"stage={args.stage} episode_source={getattr(args, 'episode_source', 'n/a')} "
+        f"curriculum={getattr(args, 'curriculum', 'n/a')}",
         flush=True,
     )
     logs = trainer.train(
@@ -173,10 +191,17 @@ def main() -> int:
         "n_op": env.n_op,
         "n_comm": env.n_comm,
         "stage": args.stage,
+        "episode_source": getattr(args, "episode_source", None),
+        "curriculum": getattr(args, "curriculum", None),
+        "training_protocol": "configs/marl_training_protocol.json",
         "note": (
             "Stage smoke MAPPO on toy scenario."
             if args.mode == "smoke"
-            else "Stage 8.2 MAPPO with cooperative BC init; bid-before-commit env."
+            else (
+                "Casablanca MAPPO training. Default episode_source=procedural uses "
+                "on-the-fly synthetic generator episodes in seed range 10M–20M; "
+                "locked_final is never used for training."
+            )
         ),
     }
     meta_path = out.with_suffix(".json")

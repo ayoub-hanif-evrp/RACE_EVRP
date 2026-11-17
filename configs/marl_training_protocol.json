@@ -1,0 +1,74 @@
+{
+  "name": "casablanca_marl_training_protocol_v1",
+  "purpose": "Make Casablanca synthetic demand large enough for MARL training without contaminating locked_final.",
+  "geography": {
+    "network": "data/casablanca/roads/casablanca_drive.graphml",
+    "candidates": "data/casablanca/pickup_candidates/pickup_candidates.csv",
+    "zone_weights": "data/casablanca/zones/demand_zone_weights.csv",
+    "traffic": "data/casablanca/traffic/",
+    "depot": "data/casablanca/fleet/depot.json",
+    "demand_config": "configs/demand_default.yaml",
+    "generator_version_required": "0.3.1"
+  },
+  "claim": "Training episodes are synthetic geographically grounded requests. Not observed Casablanca courier orders.",
+  "splits": {
+    "train": {
+      "source": "on_the_fly_generator",
+      "seed_range": [10000000, 19999999],
+      "regimes": ["baseline", "peak_stress", "tight_windows"],
+      "curriculum": "round_robin_baseline_peak_tight",
+      "recommended_episodes": 5000,
+      "minimum_scientific_episodes": 2000,
+      "note": "Each episode draws a fresh seed in the train range; requests are regenerated from frozen configs."
+    },
+    "validation": {
+      "source": "data/casablanca/evaluation_v1/default",
+      "seed_banks": {
+        "baseline": [1101, 1120],
+        "peak_stress": [1201, 1220],
+        "tight_windows": [1301, 1320]
+      },
+      "role": "checkpoint selection and early stopping only"
+    },
+    "release_diagnostic": {
+      "source": "data/casablanca/scenarios/{train,validation,test}",
+      "train_seeds": [1, 2, 3, 4, 5, 6, 7, 8],
+      "validation_seeds": [101, 102],
+      "test_seeds": [201, 202, 203],
+      "role": "small release diagnostics only; insufficient alone for MARL training"
+    },
+    "locked_final": {
+      "source": "data/casablanca/evaluation_v1/locked_final",
+      "seed_banks": {
+        "baseline": [2101, 2110],
+        "peak_stress": [2201, 2210],
+        "tight_windows": [2301, 2310]
+      },
+      "role": "final untouched evaluation only",
+      "policy_tuning_forbidden": true,
+      "training_forbidden": true
+    }
+  },
+  "forbidden_overlap_seeds": {
+    "release_train": [1, 2, 3, 4, 5, 6, 7, 8],
+    "release_validation": [101, 102],
+    "release_test": [201, 202, 203],
+    "eval_default_baseline": {"start": 1101, "end": 1120},
+    "eval_default_peak": {"start": 1201, "end": 1220},
+    "eval_default_tight": {"start": 1301, "end": 1320},
+    "locked_baseline": {"start": 2101, "end": 2130},
+    "locked_peak": {"start": 2201, "end": 2230},
+    "locked_tight": {"start": 2301, "end": 2330}
+  },
+  "reward_priority": [
+    "on_time_service_time_window_respect",
+    "missed_or_late_penalty",
+    "energy_and_distance_secondary",
+    "optional_communication_cost"
+  ],
+  "fleet_primary": {
+    "n_vehicles": 3,
+    "initial_soc": 0.35
+  },
+  "no_retune_on_locked_final": true
+}
