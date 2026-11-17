@@ -63,4 +63,4 @@ Reproduced development CSC-lite OT under frozen config; max |ΔOT| vs Prompt 2 H
 |---|---|
 | Immutable CSC-lite implementation | `deb750af7edebdc8868eed2af6fa389e77765136` |
 | Prompt 2 freeze metadata commit | `3e25c5458cb4799f521b63c537950eb702619084` |
-| Prompt 3 evaluation commit | *(this push; see FINAL_PROMPT3_HANDOFF)* |
+| Prompt 3 evaluation commit | `812839e963878700f54d9aa242ea8b21bbc2dda2` |

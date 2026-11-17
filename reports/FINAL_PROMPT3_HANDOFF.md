@@ -14,7 +14,7 @@
 |---|---|
 | CSC-lite implementation | `deb750af7edebdc8868eed2af6fa389e77765136` |
 | Prompt 2 freeze metadata | `3e25c5458cb4799f521b63c537950eb702619084` |
-| Prompt 3 push (this work) | *(git HEAD after push; see response SHA)* |
+| Prompt 3 push (this work) | `812839e963878700f54d9aa242ea8b21bbc2dda2` |
 | Content hashes | `configs/final_locked_manifest.json` → `content_hashes` |
 
 ## Locked evaluation
