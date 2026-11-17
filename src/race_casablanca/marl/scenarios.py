@@ -203,12 +203,14 @@ def make_training_factory(
 ) -> Callable[..., dict]:
     """Preferred MARL training factory.
 
-    ``source='procedural'`` regenerates synthetic requests each episode from the
-    frozen Casablanca generator (scientifically sized training stream).
-
-    ``source='fixed_pool'`` keeps the legacy 8-file pool + optional jitter
-    (diagnostic / backward compatible only).
+    ``source='solomon_style'`` — C/R/RC × series × sizes 15/30/45 (recommended).
+    ``source='procedural'`` — legacy regimes baseline/peak/tight.
+    ``source='fixed_pool'`` — 8 on-disk release files + jitter (diagnostics only).
     """
+    if source == "solomon_style":
+        from race_casablanca.marl.episode_sampler import make_solomon_style_train_factory
+
+        return make_solomon_style_train_factory(master_seed=master_seed, load_network=True)
     if source == "procedural":
         from race_casablanca.marl.episode_sampler import make_procedural_train_factory
 

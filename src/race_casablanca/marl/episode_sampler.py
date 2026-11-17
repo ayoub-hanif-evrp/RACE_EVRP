@@ -24,16 +24,23 @@ import pandas as pd
 
 from race_casablanca.demand.generator import (
     generate_requests,
+    generate_solomon_style_requests,
     load_demand_config,
     load_demand_zone_weights,
     zone_sampling_weights_from_table,
 )
 from race_casablanca.marl.seed_banks import (
     REGIME_ORDER,
+    SOLOMON_CLASS_ORDER,
+    SOLOMON_SIZES,
+    SOLOMON_TRAIN_SEED_RANGE,
     TRAIN_SEED_RANGE,
     assert_train_seed_allowed,
     curriculum_regime,
+    curriculum_solomon_class,
+    curriculum_solomon_size,
     episode_train_seed,
+    solomon_train_seed,
 )
 from race_casablanca.paths import (
     candidates_dir,
@@ -251,3 +258,66 @@ def make_procedural_train_factory(
         n_vehicles=n_vehicles,
         curriculum=curriculum,
     )
+
+
+def make_solomon_style_train_factory(
+    *,
+    master_seed: int = 0,
+    load_network: bool = True,
+) -> Callable[..., dict]:
+    """On-the-fly Solomon-style episodes: classes C/R/RC × sizes 15/30/45."""
+    base = ProceduralEpisodeGenerator.from_release(load_network=load_network)
+    solomon = load_demand_config(config_dir() / "demand_solomon_style.yaml")
+    fleet_nv = {int(k): int(v) for k, v in (solomon.get("fleet_default_n_vehicles") or {}).items()}
+
+    def factory(seed: int = 0, n_vehicles: int | None = None) -> dict:
+        ep = int(seed)
+        class_name = curriculum_solomon_class(ep, SOLOMON_CLASS_ORDER)
+        n_cust = curriculum_solomon_size(ep, SOLOMON_SIZES)
+        train_seed = solomon_train_seed(master_seed, ep)
+        req_df = generate_solomon_style_requests(
+            base.candidates,
+            base.zone_weights,
+            class_name,
+            n_cust,
+            solomon,
+            train_seed,
+        )
+        requests = _requests_from_frame(req_df)
+        nv = int(n_vehicles if n_vehicles is not None else fleet_nv.get(n_cust, 3))
+        fleet = dict(base.fleet)
+        fleet["n_vehicles"] = nv
+        series = str(solomon["classes"][class_name]["series"])
+        series_cfg = solomon["series"][series]
+        start_h = float(series_cfg["start_hour"])
+        horizon_h = float(series_cfg["horizon_hours"])
+        return {
+            "scenario_id": f"solomon_train/{class_name}_n{n_cust}_seed{train_seed}/ep{ep}",
+            "graph": base.graph,
+            "model": base.model,
+            "requests": requests,
+            "fleet": fleet,
+            "depot_node": int(base.depot["snap_node"]),
+            "shift_start_s": start_h * 3600.0,
+            "shift_end_s": (start_h + horizon_h) * 3600.0,
+            "day": "Monday",
+            "metadata": {
+                "split": "solomon_style_train",
+                "instance_class": class_name,
+                "n_customers": n_cust,
+                "seed": train_seed,
+                "master_seed": master_seed,
+                "episode_index": ep,
+                "generator_version": solomon.get("generator_version"),
+                "benchmark_version": solomon.get("benchmark_version"),
+                "n_requests": len(requests),
+                "train_seed_range": list(SOLOMON_TRAIN_SEED_RANGE),
+                "is_observed_order": False,
+                "claim": (
+                    "Solomon-style Casablanca synthetic training episode. "
+                    "Not Euclidean Solomon. Not locked_final."
+                ),
+            },
+        }
+
+    return factory

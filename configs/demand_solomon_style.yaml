@@ -1,0 +1,89 @@
+# Solomon-style Casablanca EV pickup instance family (synthetic demand on real OSM).
+# Not a copy of Euclidean Solomon files. Not observed courier orders.
+generator_version: "0.4.0"
+benchmark_version: "casablanca_solomon_style_v1"
+parent_release: "casablanca_release_v1"
+claim: >
+  Solomon-inspired instance classes (C/R/RC, series 1/2, sizes 15/30/45)
+  generated on the frozen Casablanca road network and zone/candidate assets.
+
+sizes: [15, 30, 45]
+size_note: "Casablanca small/medium ladder (15/30/45), analogous to Solomon 25/50/100 but scaled to a 3–8 EV urban pickup study."
+
+# Geographic pattern (Solomon C / R / RC analogue on communes)
+spatial_patterns:
+  C:
+    name: clustered
+    n_cluster_zones: 3
+    note: "Customers sampled from a small set of high-weight communes (clustered)."
+  R:
+    name: random_dispersed
+    note: "Customers sampled nearly uniformly across eligible communes (dispersed)."
+  RC:
+    name: random_clustered_mix
+    cluster_fraction: 0.5
+    n_cluster_zones: 3
+    note: "Half clustered communes, half dispersed (mixed)."
+
+# Temporal / window series (Solomon 1 = tight, 2 = wide)
+series:
+  "1":
+    name: tight
+    horizon_hours: 6
+    start_hour: 8
+    time_window_hours: 1.0
+    window_jitter_hours: 0.2
+    service_duration_min: 10
+    package_weight_kg: 25.0
+    urgency: high
+    intensity_profile: morning_peak
+  "2":
+    name: wide
+    horizon_hours: 8
+    start_hour: 8
+    time_window_hours: 3.0
+    window_jitter_hours: 0.5
+    service_duration_min: 8
+    package_weight_kg: 15.0
+    urgency: normal
+    intensity_profile: daytime_peak
+
+# Instance classes = pattern × series (Solomon naming)
+classes:
+  C1: {pattern: C, series: "1"}
+  C2: {pattern: C, series: "2"}
+  R1: {pattern: R, series: "1"}
+  R2: {pattern: R, series: "2"}
+  RC1: {pattern: RC, series: "1"}
+  RC2: {pattern: RC, series: "2"}
+
+shared:
+  weight_jitter: 0.35
+  service_jitter_min: 3.0
+  release_lead_min: 0
+  attempt_feasible_certificate: false
+
+# Seed banks (disjoint from locked_final 21xx and eval 11xx/12xx/13xx)
+seeds:
+  # 5 instances per (class × size) for organized evaluation = 6*3*5 = 90
+  eval_base: 3001
+  eval_per_class_size: 5
+  # Procedural MARL training uses 20_000_000+ (see seed_banks / protocol)
+  train_seed_range: [20000000, 29999999]
+
+fleet_default_n_vehicles:
+  15: 3
+  30: 5
+  45: 6
+
+intensity_profiles:
+  daytime_peak:
+    weights: [0,0,0,0,0,0,0.2,0.6,1.0,1.0,0.8,0.7,0.6,0.7,0.8,0.9,1.0,0.8,0.4,0.2,0.1,0,0,0]
+  morning_peak:
+    weights: [0,0,0,0,0,0,0.4,1.0,1.0,0.9,0.6,0.4,0.3,0.3,0.4,0.5,0.6,0.4,0.2,0.1,0,0,0,0]
+
+spatial:
+  population_weight: 0.6
+  commercial_weight: 0.4
+  max_snap_distance_m: 150
+  note: "Zone base weights still from demand_zone_weights.csv; class pattern reshapes sampling."

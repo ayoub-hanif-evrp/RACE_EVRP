@@ -48,9 +48,9 @@ def main() -> int:
     parser.add_argument("--stage", default="8.2")
     parser.add_argument(
         "--episode-source",
-        choices=["procedural", "fixed_pool"],
-        default="procedural",
-        help="procedural = on-the-fly generator episodes (required for serious MARL training)",
+        choices=["solomon_style", "procedural", "fixed_pool"],
+        default="solomon_style",
+        help="solomon_style = C/R/RC × 15/30/45 (recommended); procedural = legacy regimes",
     )
     parser.add_argument(
         "--curriculum",

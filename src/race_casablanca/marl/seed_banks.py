@@ -34,7 +34,16 @@ FORBIDDEN_TRAIN_SEEDS = (
 # Inclusive procedural train range for on-the-fly generator episodes.
 TRAIN_SEED_RANGE = (10_000_000, 19_999_999)
 
+# Solomon-style procedural train seeds (C/R/RC × sizes); disjoint from above.
+SOLOMON_TRAIN_SEED_RANGE = (20_000_000, 29_999_999)
+
+# Organized solomon_style eval seeds live around 3001+ (see generate script).
+SOLOMON_EVAL_SEED_MIN = 3001
+SOLOMON_EVAL_SEED_MAX = 9999
+
 REGIME_ORDER = ("baseline", "peak_stress", "tight_windows")
+SOLOMON_CLASS_ORDER = ("C1", "C2", "R1", "R2", "RC1", "RC2")
+SOLOMON_SIZES = (15, 30, 45)
 
 
 def is_forbidden_train_seed(seed: int) -> bool:
@@ -63,6 +72,26 @@ def episode_train_seed(master_seed: int, episode_index: int) -> int:
     return assert_train_seed_allowed(lo + mixed)
 
 
+def solomon_train_seed(master_seed: int, episode_index: int) -> int:
+    lo, hi = SOLOMON_TRAIN_SEED_RANGE
+    span = hi - lo + 1
+    mixed = (int(master_seed) * 1_000_003 + int(episode_index) * 97_421 + 17) % span
+    s = lo + mixed
+    if s in FORBIDDEN_TRAIN_SEEDS or SOLOMON_EVAL_SEED_MIN <= s <= SOLOMON_EVAL_SEED_MAX:
+        raise ValueError(f"Solomon train seed {s} illegal")
+    return s
+
+
 def curriculum_regime(episode_index: int, order: Iterable[str] = REGIME_ORDER) -> str:
     regimes = tuple(order)
     return regimes[int(episode_index) % len(regimes)]
+
+
+def curriculum_solomon_class(episode_index: int, order: Iterable[str] = SOLOMON_CLASS_ORDER) -> str:
+    classes = tuple(order)
+    return classes[int(episode_index) % len(classes)]
+
+
+def curriculum_solomon_size(episode_index: int, sizes: Iterable[int] = SOLOMON_SIZES) -> int:
+    sz = tuple(int(x) for x in sizes)
+    return sz[(int(episode_index) // len(SOLOMON_CLASS_ORDER)) % len(sz)]

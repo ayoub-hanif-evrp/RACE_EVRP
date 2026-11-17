@@ -107,6 +107,68 @@ def fixed_count_hourly_arrivals(
 _nhpp_arrivals = fixed_count_hourly_arrivals
 
 
+def _eligible_zones_and_probs(
+    candidates: pd.DataFrame,
+    zone_weights: pd.Series,
+) -> tuple[list[str], np.ndarray]:
+    eligible_zones: list[str] = []
+    eligible_probs: list[float] = []
+    for zone, prob in zone_weights.items():
+        pool = candidates[(candidates["commune"] == zone) & (candidates["accessible"] == True)]  # noqa: E712
+        if not pool.empty and float(prob) > 0:
+            eligible_zones.append(str(zone))
+            eligible_probs.append(float(prob))
+    if not eligible_zones:
+        raise RuntimeError(
+            "No demand zones have accessible candidates; refuse silent citywide fallback"
+        )
+    probs = np.asarray(eligible_probs, dtype=float)
+    probs = probs / probs.sum()
+    return eligible_zones, probs
+
+
+def _sample_zones_solomon_style(
+    eligible_zones: list[str],
+    eligible_probs: np.ndarray,
+    n: int,
+    spatial_pattern: str | None,
+    rng: np.random.Generator,
+    *,
+    n_cluster_zones: int = 3,
+    cluster_fraction: float = 0.5,
+) -> np.ndarray:
+    """Solomon-inspired C / R / RC zone assignment on Casablanca communes."""
+    pattern = (spatial_pattern or "weighted").upper()
+    if pattern in {"", "WEIGHTED", "LEGACY", "NONE"}:
+        return rng.choice(eligible_zones, size=n, replace=True, p=eligible_probs)
+
+    k = max(1, min(int(n_cluster_zones), len(eligible_zones)))
+    # Prefer high-weight communes as cluster cores.
+    cluster_idx = rng.choice(len(eligible_zones), size=k, replace=False, p=eligible_probs)
+    cluster_zones = [eligible_zones[i] for i in cluster_idx]
+    cluster_probs = eligible_probs[list(cluster_idx)]
+    cluster_probs = cluster_probs / cluster_probs.sum()
+    uniform = np.full(len(eligible_zones), 1.0 / len(eligible_zones))
+
+    if pattern == "C":
+        return rng.choice(cluster_zones, size=n, replace=True, p=cluster_probs)
+    if pattern == "R":
+        return rng.choice(eligible_zones, size=n, replace=True, p=uniform)
+    if pattern == "RC":
+        n_c = int(round(n * float(cluster_fraction)))
+        n_c = min(max(n_c, 0), n)
+        n_r = n - n_c
+        parts = []
+        if n_c:
+            parts.append(rng.choice(cluster_zones, size=n_c, replace=True, p=cluster_probs))
+        if n_r:
+            parts.append(rng.choice(eligible_zones, size=n_r, replace=True, p=uniform))
+        out = np.concatenate(parts) if parts else np.array([], dtype=object)
+        rng.shuffle(out)
+        return out
+    raise ValueError(f"Unknown spatial_pattern {spatial_pattern!r}; expected C, R, RC, or weighted")
+
+
 def generate_requests(
     candidates: pd.DataFrame,
     zone_weights: pd.Series,
@@ -120,28 +182,23 @@ def generate_requests(
     profile = config["intensity_profiles"][regime["intensity_profile"]]["weights"]
     release_min = fixed_count_hourly_arrivals(n, regime["start_hour"], regime["horizon_hours"], profile, rng)
 
-    # Restrict to zones that currently have accessible candidates; renormalize.
-    eligible_zones = []
-    eligible_probs = []
-    for zone, prob in zone_weights.items():
-        pool = candidates[(candidates["commune"] == zone) & (candidates["accessible"] == True)]  # noqa: E712
-        if not pool.empty and float(prob) > 0:
-            eligible_zones.append(zone)
-            eligible_probs.append(float(prob))
-    if not eligible_zones:
-        raise RuntimeError(
-            "No demand zones have accessible candidates; refuse silent citywide fallback"
-        )
-    eligible_probs = np.asarray(eligible_probs, dtype=float)
-    eligible_probs = eligible_probs / eligible_probs.sum()
-
-    chosen_zones = rng.choice(eligible_zones, size=n, replace=True, p=eligible_probs)
+    eligible_zones, eligible_probs = _eligible_zones_and_probs(candidates, zone_weights)
+    spatial_pattern = regime.get("spatial_pattern")
+    chosen_zones = _sample_zones_solomon_style(
+        eligible_zones,
+        eligible_probs,
+        n,
+        spatial_pattern,
+        rng,
+        n_cluster_zones=int(regime.get("n_cluster_zones", 3)),
+        cluster_fraction=float(regime.get("cluster_fraction", 0.5)),
+    )
     weight_jitter = float(regime.get("weight_jitter", 0.0))
     service_jitter = float(regime.get("service_jitter_min", 0.0))
     window_jitter = float(regime.get("window_jitter_hours", 0.0))
     rows = []
     for i in range(n):
-        zone = chosen_zones[i]
+        zone = str(chosen_zones[i])
         pool = candidates[(candidates["commune"] == zone) & (candidates["accessible"] == True)]  # noqa: E712
         if pool.empty:
             raise RuntimeError(
@@ -165,6 +222,9 @@ def generate_requests(
             {
                 "request_id": f"{regime_name}-{seed}-{i:04d}",
                 "regime": regime_name,
+                "instance_class": str(regime.get("instance_class") or regime_name),
+                "spatial_pattern": str(spatial_pattern or "weighted"),
+                "n_customers": n,
                 "seed": seed,
                 "commune": str(zone),
                 "declared_zone_id": str(zone),
@@ -186,3 +246,54 @@ def generate_requests(
             }
         )
     return pd.DataFrame(rows)
+
+
+def build_solomon_style_regime(
+    class_name: str,
+    n_customers: int,
+    solomon_config: dict,
+) -> dict:
+    """Compose a regime dict for class ∈ {C1,C2,R1,R2,RC1,RC2} and size ∈ {15,30,45}."""
+    classes = solomon_config["classes"]
+    if class_name not in classes:
+        raise KeyError(f"Unknown Solomon-style class {class_name}")
+    spec = classes[class_name]
+    pattern = str(spec["pattern"]).upper()
+    series = str(spec["series"])
+    series_cfg = dict(solomon_config["series"][series])
+    pattern_cfg = dict(solomon_config["spatial_patterns"][pattern])
+    shared = dict(solomon_config.get("shared") or {})
+    regime = {
+        **shared,
+        **series_cfg,
+        "n_customers": int(n_customers),
+        "spatial_pattern": pattern,
+        "instance_class": class_name,
+        "n_cluster_zones": int(pattern_cfg.get("n_cluster_zones", 3)),
+        "cluster_fraction": float(pattern_cfg.get("cluster_fraction", 0.5)),
+        "label": f"solomon_style_{class_name}_n{n_customers}",
+        "label_note": (
+            "Solomon-inspired Casablanca synthetic class; not Euclidean Solomon coordinates."
+        ),
+    }
+    return regime
+
+
+def generate_solomon_style_requests(
+    candidates: pd.DataFrame,
+    zone_weights: pd.Series,
+    class_name: str,
+    n_customers: int,
+    solomon_config: dict,
+    seed: int,
+) -> pd.DataFrame:
+    regime = build_solomon_style_regime(class_name, n_customers, solomon_config)
+    # Intensity profiles live on the solomon config itself.
+    return generate_requests(
+        candidates,
+        zone_weights,
+        regime_name=f"{class_name}_n{n_customers}",
+        regime=regime,
+        config=solomon_config,
+        seed=seed,
+    )

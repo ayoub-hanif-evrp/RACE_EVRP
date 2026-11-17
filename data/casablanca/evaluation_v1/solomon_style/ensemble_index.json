@@ -1,0 +1,746 @@
+{
+  "benchmark_version": "casablanca_solomon_style_v1",
+  "generator_version": "0.4.0",
+  "parent_release": "casablanca_release_v1",
+  "claim": "Solomon-inspired instance classes (C/R/RC, series 1/2, sizes 15/30/45) generated on the frozen Casablanca road network and zone/candidate assets.\n",
+  "sizes": [
+    15,
+    30,
+    45
+  ],
+  "classes": [
+    "C1",
+    "C2",
+    "R1",
+    "R2",
+    "RC1",
+    "RC2"
+  ],
+  "per_class_size": 5,
+  "n_expected": 90,
+  "locked_final_untouched": true,
+  "generated_at_utc": "2026-11-17T21:00:25+00:00",
+  "layout": "{class}_n{size}_seed{seed}/",
+  "scenarios": [
+    {
+      "instance_class": "C1",
+      "n_customers": 15,
+      "seed": 3001,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n15/C1_n15_seed3001",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 15,
+      "seed": 3002,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n15/C1_n15_seed3002",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 15,
+      "seed": 3003,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n15/C1_n15_seed3003",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 15,
+      "seed": 3004,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n15/C1_n15_seed3004",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 15,
+      "seed": 3005,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n15/C1_n15_seed3005",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 30,
+      "seed": 3101,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n30/C1_n30_seed3101",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 30,
+      "seed": 3102,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n30/C1_n30_seed3102",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 30,
+      "seed": 3103,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n30/C1_n30_seed3103",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 30,
+      "seed": 3104,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n30/C1_n30_seed3104",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 30,
+      "seed": 3105,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n30/C1_n30_seed3105",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 45,
+      "seed": 3201,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n45/C1_n45_seed3201",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 45,
+      "seed": 3202,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n45/C1_n45_seed3202",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 45,
+      "seed": 3203,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n45/C1_n45_seed3203",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 45,
+      "seed": 3204,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n45/C1_n45_seed3204",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "C1",
+      "n_customers": 45,
+      "seed": 3205,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C1/n45/C1_n45_seed3205",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 15,
+      "seed": 4001,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n15/C2_n15_seed4001",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 15,
+      "seed": 4002,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n15/C2_n15_seed4002",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 15,
+      "seed": 4003,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n15/C2_n15_seed4003",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 15,
+      "seed": 4004,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n15/C2_n15_seed4004",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 15,
+      "seed": 4005,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n15/C2_n15_seed4005",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 30,
+      "seed": 4101,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n30/C2_n30_seed4101",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 30,
+      "seed": 4102,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n30/C2_n30_seed4102",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 30,
+      "seed": 4103,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n30/C2_n30_seed4103",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 30,
+      "seed": 4104,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n30/C2_n30_seed4104",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 30,
+      "seed": 4105,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n30/C2_n30_seed4105",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 45,
+      "seed": 4201,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n45/C2_n45_seed4201",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 45,
+      "seed": 4202,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n45/C2_n45_seed4202",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 45,
+      "seed": 4203,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n45/C2_n45_seed4203",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 45,
+      "seed": 4204,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n45/C2_n45_seed4204",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "C2",
+      "n_customers": 45,
+      "seed": 4205,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/C2/n45/C2_n45_seed4205",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 15,
+      "seed": 5001,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n15/R1_n15_seed5001",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 15,
+      "seed": 5002,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n15/R1_n15_seed5002",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 15,
+      "seed": 5003,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n15/R1_n15_seed5003",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 15,
+      "seed": 5004,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n15/R1_n15_seed5004",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 15,
+      "seed": 5005,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n15/R1_n15_seed5005",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 30,
+      "seed": 5101,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n30/R1_n30_seed5101",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 30,
+      "seed": 5102,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n30/R1_n30_seed5102",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 30,
+      "seed": 5103,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n30/R1_n30_seed5103",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 30,
+      "seed": 5104,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n30/R1_n30_seed5104",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 30,
+      "seed": 5105,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n30/R1_n30_seed5105",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 45,
+      "seed": 5201,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n45/R1_n45_seed5201",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 45,
+      "seed": 5202,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n45/R1_n45_seed5202",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 45,
+      "seed": 5203,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n45/R1_n45_seed5203",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 45,
+      "seed": 5204,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n45/R1_n45_seed5204",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "R1",
+      "n_customers": 45,
+      "seed": 5205,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R1/n45/R1_n45_seed5205",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 15,
+      "seed": 6001,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n15/R2_n15_seed6001",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 15,
+      "seed": 6002,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n15/R2_n15_seed6002",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 15,
+      "seed": 6003,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n15/R2_n15_seed6003",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 15,
+      "seed": 6004,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n15/R2_n15_seed6004",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 15,
+      "seed": 6005,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n15/R2_n15_seed6005",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 30,
+      "seed": 6101,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n30/R2_n30_seed6101",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 30,
+      "seed": 6102,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n30/R2_n30_seed6102",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 30,
+      "seed": 6103,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n30/R2_n30_seed6103",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 30,
+      "seed": 6104,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n30/R2_n30_seed6104",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 30,
+      "seed": 6105,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n30/R2_n30_seed6105",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 45,
+      "seed": 6201,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n45/R2_n45_seed6201",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 45,
+      "seed": 6202,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n45/R2_n45_seed6202",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 45,
+      "seed": 6203,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n45/R2_n45_seed6203",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 45,
+      "seed": 6204,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n45/R2_n45_seed6204",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "R2",
+      "n_customers": 45,
+      "seed": 6205,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/R2/n45/R2_n45_seed6205",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 15,
+      "seed": 7001,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n15/RC1_n15_seed7001",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 15,
+      "seed": 7002,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n15/RC1_n15_seed7002",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 15,
+      "seed": 7003,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n15/RC1_n15_seed7003",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 15,
+      "seed": 7004,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n15/RC1_n15_seed7004",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 15,
+      "seed": 7005,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n15/RC1_n15_seed7005",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 30,
+      "seed": 7101,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n30/RC1_n30_seed7101",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 30,
+      "seed": 7102,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n30/RC1_n30_seed7102",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 30,
+      "seed": 7103,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n30/RC1_n30_seed7103",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 30,
+      "seed": 7104,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n30/RC1_n30_seed7104",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 30,
+      "seed": 7105,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n30/RC1_n30_seed7105",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 45,
+      "seed": 7201,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n45/RC1_n45_seed7201",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 45,
+      "seed": 7202,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n45/RC1_n45_seed7202",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 45,
+      "seed": 7203,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n45/RC1_n45_seed7203",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 45,
+      "seed": 7204,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n45/RC1_n45_seed7204",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "RC1",
+      "n_customers": 45,
+      "seed": 7205,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC1/n45/RC1_n45_seed7205",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 15,
+      "seed": 8001,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n15/RC2_n15_seed8001",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 15,
+      "seed": 8002,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n15/RC2_n15_seed8002",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 15,
+      "seed": 8003,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n15/RC2_n15_seed8003",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 15,
+      "seed": 8004,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n15/RC2_n15_seed8004",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 15,
+      "seed": 8005,
+      "n_vehicles": 3,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n15/RC2_n15_seed8005",
+      "n_requests": 15
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 30,
+      "seed": 8101,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n30/RC2_n30_seed8101",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 30,
+      "seed": 8102,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n30/RC2_n30_seed8102",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 30,
+      "seed": 8103,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n30/RC2_n30_seed8103",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 30,
+      "seed": 8104,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n30/RC2_n30_seed8104",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 30,
+      "seed": 8105,
+      "n_vehicles": 5,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n30/RC2_n30_seed8105",
+      "n_requests": 30
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 45,
+      "seed": 8201,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n45/RC2_n45_seed8201",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 45,
+      "seed": 8202,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n45/RC2_n45_seed8202",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 45,
+      "seed": 8203,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n45/RC2_n45_seed8203",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 45,
+      "seed": 8204,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n45/RC2_n45_seed8204",
+      "n_requests": 45
+    },
+    {
+      "instance_class": "RC2",
+      "n_customers": 45,
+      "seed": 8205,
+      "n_vehicles": 6,
+      "path": "data/casablanca/evaluation_v1/solomon_style/RC2/n45/RC2_n45_seed8205",
+      "n_requests": 45
+    }
+  ]
+}

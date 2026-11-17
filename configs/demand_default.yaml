@@ -1,5 +1,7 @@
 generator_version: "0.3.1"
 benchmark_version: "casablanca_release_v1"
+# Legacy release/eval regimes (12/30/40). Prefer Solomon-style organized family for
+# new experiments: configs/demand_solomon_style.yaml (C/R/RC × 15/30/45).
 # Spatial probabilities come ONLY from data/casablanca/zones/demand_zone_weights.csv
 # Active release scenarios are exactly the seeds below (no legacy seed42).
 random_seed_base: 42

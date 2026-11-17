@@ -1,6 +1,14 @@
 {
   "name": "casablanca_marl_training_protocol_v1",
   "purpose": "Make Casablanca synthetic demand large enough for MARL training without contaminating locked_final.",
+  "preferred_episode_source": "solomon_style",
+  "solomon_style": {
+    "config": "configs/demand_solomon_style.yaml",
+    "classes": ["C1", "C2", "R1", "R2", "RC1", "RC2"],
+    "sizes": [15, 30, 45],
+    "eval_root": "data/casablanca/evaluation_v1/solomon_style",
+    "train_seed_range": [20000000, 29999999]
+  },
   "geography": {
     "network": "data/casablanca/roads/casablanca_drive.graphml",
     "candidates": "data/casablanca/pickup_candidates/pickup_candidates.csv",
