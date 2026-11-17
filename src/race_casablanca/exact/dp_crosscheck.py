@@ -54,7 +54,7 @@ def _energy_for(inst: ChargeCommitInstance) -> EnergyModel:
         uncertainty_delta=0.0,
         battery_kwh_max=inst.bmax,
         reserve_soc=inst.reserve_kwh / inst.bmax if inst.bmax > 0 else 0.15,
-        charge_power_kw=inst.charge_kw,
+        peak_charge_power_kw=float(inst.charge_kw),
     )
 
 

@@ -51,10 +51,19 @@ class ChargeCommitInstance:
     initial_soc: float = 0.35
     shift_end: float = 1e6
 
-    def charge_time(self, delta_kwh: float) -> float:
-        if delta_kwh <= 1e-12:
+    def charge_time(self, bat_from: float, bat_to: float) -> float:
+        """Non-linear charge duration using the shared EnergyModel curve."""
+        from race_casablanca.sim.energy import EnergyModel
+
+        if bat_to <= bat_from + 1e-12:
             return 0.0
-        return 3600.0 * delta_kwh / self.charge_kw
+        e = EnergyModel(
+            consumption_kwh_per_km=1.0,
+            battery_kwh_max=self.bmax,
+            reserve_soc=self.reserve_kwh / self.bmax if self.bmax > 0 else 0.15,
+            peak_charge_power_kw=float(self.charge_kw),
+        )
+        return e.charge_duration_kwh(kwh_from=float(bat_from), kwh_to=float(bat_to))
 
 
 @dataclass
@@ -100,8 +109,7 @@ def _simulate_plan(
                 loc = inst.depot
                 log.append({"op": "return_depot", "t": t, "bat": bat})
             target = min(inst.bmax, max(bat, tgt_soc * inst.bmax))
-            need = target - bat
-            dur = inst.charge_time(need)
+            dur = inst.charge_time(bat, target)
             t += dur
             bat = target
             log.append({"op": "charge", "target_soc": tgt_soc, "t": t, "bat": bat, "dur": dur})
@@ -227,10 +235,9 @@ def _simple_online(inst: ChargeCommitInstance, *, mode: str) -> int:
             t += ts
             loc = inst.depot
         target = min(inst.bmax, max(bat, target_soc * inst.bmax))
-        need = target - bat
-        if need <= 1e-12:
+        if target <= bat + 1e-12:
             return False
-        t += inst.charge_time(need)
+        t += inst.charge_time(bat, target)
         bat = target
         return True
 

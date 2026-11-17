@@ -107,14 +107,10 @@ class OnlineSimulator:
         n_veh = int(config.n_vehicles if config.n_vehicles is not None else fleet.get("n_vehicles", 1))
         bat_max = float(fleet["usable_battery_kwh"])
         init_soc = float(config.initial_soc if config.initial_soc is not None else fleet.get("initial_soc", 1.0))
-        cons_wh = float(fleet.get("consumption_wh_per_km", 200.0))
         self.payload_max = float(fleet["payload_kg"])
-        self.energy = EnergyModel(
-            consumption_kwh_per_km=cons_wh / 1000.0,
+        self.energy = EnergyModel.from_fleet(
+            fleet,
             uncertainty_delta=float(config.energy_uncertainty_delta),
-            battery_kwh_max=bat_max,
-            reserve_soc=float(fleet.get("min_reserve_soc", 0.15)),
-            charge_power_kw=float(fleet.get("charge_power_kw", 22.0)),
             realization_mode=str(config.realization_mode),
             scenario_seed=int(config.seed),
         )
@@ -290,11 +286,13 @@ class OnlineSimulator:
         best_suffix = None
         best_cost = None
         nom_energy = EnergyModel(
-            self.energy.consumption_kwh_per_km,
-            0.0,
-            self.energy.battery_kwh_max,
-            self.energy.reserve_soc,
-            self.energy.charge_power_kw,
+            consumption_kwh_per_km=self.energy.consumption_kwh_per_km,
+            uncertainty_delta=0.0,
+            battery_kwh_max=self.energy.battery_kwh_max,
+            reserve_soc=self.energy.reserve_soc,
+            charge_soc_breakpoints=self.energy.charge_soc_breakpoints,
+            charge_cumulative_hours=self.energy.charge_cumulative_hours,
+            peak_charge_power_kw=self.energy.peak_charge_power_kw,
             realization_mode=self.energy.realization_mode,
             scenario_seed=self.energy.scenario_seed,
         )
@@ -842,7 +840,9 @@ class OnlineSimulator:
                 target = bmax
             target = min(bmax, max(float(v.battery_kwh), target))
             need = max(0.0, target - float(v.battery_kwh))
-            dur = self.energy.charge_time_s(need)
+            dur = self.energy.charge_duration_kwh(
+                kwh_from=float(v.battery_kwh), kwh_to=target
+            )
             if dur > 0:
                 v.n_charges += 1
                 v.mode = VehicleMode.CHARGING
@@ -942,8 +942,10 @@ class OnlineSimulator:
         if duration_s > 0:
             v.charge_duration_s += duration_s
         else:
-            # Reconstruct from charge model if payload omitted
-            v.charge_duration_s += self.energy.charge_time_s(delivered)
+            # Reconstruct from non-linear charge model if payload omitted
+            v.charge_duration_s += self.energy.charge_duration_kwh(
+                kwh_from=before, kwh_to=float(v.battery_kwh)
+            )
         v.ready_s = self.now_s
         if v.plan and v.plan[0].kind.startswith("depot"):
             v.plan.pop(0)

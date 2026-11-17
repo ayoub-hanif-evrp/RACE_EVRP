@@ -35,7 +35,7 @@ def apply_depot_charge(
         raw = bmax
     target = min(bmax, max(bat, raw))
     need = max(0.0, target - bat)
-    dur = energy.charge_time_s(need)
+    dur = energy.charge_duration_kwh(kwh_from=bat, kwh_to=target)
     return target, float(ready_s) + dur, need
 
 
@@ -147,7 +147,7 @@ def projected_state_after_lock(
             target = float(energy.battery_kwh_max)
         target = min(float(energy.battery_kwh_max), max(bat0, target))
         need = max(0.0, target - bat0)
-        full_dur = energy.charge_time_s(need)
+        full_dur = energy.charge_duration_kwh(kwh_from=bat0, kwh_to=target)
         ready = max(float(now_s), charge_start + full_dur)
         return ProjectedState(
             node=int(depot_node),

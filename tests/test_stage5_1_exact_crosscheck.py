@@ -74,7 +74,7 @@ def test_readiness_enables_later_pickup_when_idle_undercharged():
         )
     ]
     # High consumption so soc 0.25 cannot round-trip without charge
-    fleet = {**base["fleet"], "initial_soc": 0.25, "consumption_wh_per_km": 2000.0, "charge_power_kw": 22.0}
+    fleet = {**base["fleet"], "initial_soc": 0.25, "consumption_wh_per_km": 2000.0, "peak_charge_power_kw": 22.0}
 
     def run(with_readiness: bool) -> int:
         sim = OnlineSimulator(

@@ -27,7 +27,7 @@ def _line_sim(requests, *, soc=1.0, n_vehicles=1):
         "initial_soc": soc,
         "min_reserve_soc": 0.15,
         "consumption_wh_per_km": 200.0,
-        "charge_power_kw": 22.0,
+        "peak_charge_power_kw": 22.0,
         "n_vehicles": n_vehicles,
     }
     return OnlineSimulator(

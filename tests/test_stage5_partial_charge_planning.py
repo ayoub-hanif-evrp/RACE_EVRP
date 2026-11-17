@@ -13,8 +13,14 @@ from race_casablanca.sim.synthetic import make_two_request_scenario
 from race_casablanca.sim.types import ProjectedState, Request, RequestStatus, Stop, VehicleMode
 
 
-def _energy(bmax: float = 40.0, charge_kw: float = 22.0) -> EnergyModel:
-    return EnergyModel(0.2, 0.0, bmax, 0.15, charge_kw)
+def _energy(bmax: float = 40.0, peak_kw: float = 22.0) -> EnergyModel:
+    return EnergyModel(
+        consumption_kwh_per_km=0.2,
+        uncertainty_delta=0.0,
+        battery_kwh_max=bmax,
+        reserve_soc=0.15,
+        peak_charge_power_kw=peak_kw,
+    )
 
 
 def test_apply_depot_charge_targets():
@@ -24,7 +30,8 @@ def test_apply_depot_charge_targets():
         bat, ready, need = apply_depot_charge(14.0, 100.0, e, stop)
         assert abs(bat - expect) < 1e-9
         assert abs(need - (expect - 14.0)) < 1e-9
-        assert abs(ready - (100.0 + e.charge_time_s(need))) < 1e-9
+        dur = e.charge_duration_kwh(kwh_from=14.0, kwh_to=expect)
+        assert abs(ready - (100.0 + dur)) < 1e-9
 
 
 def test_simulate_plan_respects_partial_target():
@@ -48,9 +55,13 @@ def test_full_charge_enables_far_trip_partial_does_not():
 
     base = make_two_request_scenario()
     router = RouteCache(base["graph"], base["model"], day="Monday")
-    # Inflate consumption so 0→3→0 needs more than 20 kWh after reserve
-    e = EnergyModel(consumption_kwh_per_km=4.0, uncertainty_delta=0.0, battery_kwh_max=40.0, reserve_soc=0.15, charge_power_kw=22.0)
-    # Round trip 6 km * 4 = 24 kWh; reserve 6 → need bat >= 30 at start of trip
+    e = EnergyModel(
+        consumption_kwh_per_km=4.0,
+        uncertainty_delta=0.0,
+        battery_kwh_max=40.0,
+        reserve_soc=0.15,
+        peak_charge_power_kw=22.0,
+    )
     req = Request("R1", 3, 0.0, 0.0, 50000.0, 60.0, 10.0, status=RequestStatus.AVAILABLE)
     origin = ProjectedState(node=0, ready_s=0.0, battery_kwh=14.0, load_kg=0.0)
     plan50 = [
@@ -68,17 +79,21 @@ def test_full_charge_enables_far_trip_partial_does_not():
 
 
 def test_partial_charge_beats_full_on_tight_deadline():
-    """50% charge finishes in time; full charge duration misses tw_end."""
+    """Partial charge finishes in time; full charge duration misses tw_end (non-linear)."""
     from race_casablanca.sim.router import RouteCache
 
     base = make_two_request_scenario()
     router = RouteCache(base["graph"], base["model"], day="Monday")
-    e = EnergyModel(0.2, 0.0, 40.0, 0.15, charge_power_kw=5.0)  # slow charger
-    # From 14 kWh: to 20 needs 6 kWh → 4320s at 5kW; to 40 needs 26 → 18720s
-    # Travel 180 + service 60; tw_end = 5000 → partial OK, full miss
-    req = Request("R1", 3, 0.0, 0.0, 5000.0, 60.0, 10.0, status=RequestStatus.AVAILABLE)
+    e = EnergyModel(
+        consumption_kwh_per_km=0.2,
+        uncertainty_delta=0.0,
+        battery_kwh_max=40.0,
+        reserve_soc=0.15,
+        peak_charge_power_kw=22.0,
+    )
+    # 14→20 ≈ 983s; 14→40 ≈ 6347s under NL curve at 22 kW peak
+    req = Request("R1", 3, 0.0, 0.0, 4000.0, 60.0, 10.0, status=RequestStatus.AVAILABLE)
     origin = ProjectedState(node=0, ready_s=0.0, battery_kwh=14.0, load_kg=0.0)
-    # Low energy need: default 0.2 kWh/km is fine from either target
     plan50 = [Stop("depot_charge", None, 0, target_kwh=20.0), Stop("pickup", "R1", 3)]
     plan100 = [Stop("depot_charge", None, 0, target_kwh=40.0), Stop("pickup", "R1", 3)]
     chk50 = simulate_plan_conservative(origin, plan50, {"R1": req}, router, e, 0, 600.0, 1e9)
@@ -118,7 +133,6 @@ def test_projected_lock_uses_partial_target():
     v.departed_s = 0.0
     proj = projected_state_after_lock(v, {}, router, e, 0, 0.0)
     assert abs(proj.battery_kwh - 28.0) < 1e-6
-    # Full would be 40
     assert proj.battery_kwh < 39.0
 
 
@@ -148,7 +162,7 @@ def test_plan_sim_matches_physical_charge_metrics():
     before = sim.vehicles["V1"].battery_kwh
     target_soc = 0.70
     planned_need = max(0.0, target_soc * bmax - before)
-    planned_dur = sim.energy.charge_time_s(planned_need)
+    planned_dur = sim.energy.charge_duration_kwh(kwh_from=before, kwh_to=target_soc * bmax)
     sim.request_return_depot("V1", charge=True, target_soc=target_soc)
     import heapq
     from race_casablanca.sim.types import EventType
@@ -159,13 +173,13 @@ def test_plan_sim_matches_physical_charge_metrics():
         if ev.type == EventType.CHARGE_END:
             sim._on_charge_end(
                 ev.payload["vehicle_id"],
-                ev.payload["target_kwh"],
+                float(ev.payload["target_kwh"]),
                 energy_delivered=float(ev.payload.get("energy_to_deliver_kwh", 0.0)),
                 duration_s=float(ev.payload.get("duration_s", 0.0)),
             )
-        elif ev.type == EventType.VEHICLE_ARRIVAL:
+            break
+        if ev.type == EventType.VEHICLE_ARRIVAL:
             sim._on_arrival(ev.payload["vehicle_id"])
-    v = sim.vehicles["V1"]
-    assert abs(v.energy_delivered_kwh - planned_need) < 1e-6
-    assert abs(v.charge_duration_s - planned_dur) < 1e-6
-    assert abs(v.battery_kwh - target_soc * bmax) < 1e-6
+    after = sim.vehicles["V1"].battery_kwh
+    assert abs((after - before) - planned_need) < 1e-6
+    assert abs(sim.vehicles["V1"].charge_duration_s - planned_dur) < 1e-6

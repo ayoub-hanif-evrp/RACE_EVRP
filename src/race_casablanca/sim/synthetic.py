@@ -61,7 +61,13 @@ def make_two_request_scenario() -> dict:
         "initial_soc": 1.0,
         "min_reserve_soc": 0.15,
         "consumption_wh_per_km": 200.0,
-        "charge_power_kw": 22.0,
+        "peak_charge_power_kw": 22.0,
+        "charging_curve": {
+            "model": "piecewise_linear_soc_time",
+            "peak_power_kw": 22.0,
+            "soc_breakpoints": [0.0, 0.40, 0.70, 0.85, 0.95, 1.0],
+            "cumulative_hours": [0.0, 0.73, 1.45, 1.95, 2.55, 3.40],
+        },
         "n_vehicles": 1,
     }
     return {

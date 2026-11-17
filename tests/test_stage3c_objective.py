@@ -47,7 +47,7 @@ def _make_sim(n_vehicles: int = 2) -> OnlineSimulator:
         "initial_soc": 1.0,
         "min_reserve_soc": 0.15,
         "consumption_wh_per_km": 200.0,
-        "charge_power_kw": 22.0,
+        "peak_charge_power_kw": 22.0,
         "n_vehicles": n_vehicles,
     }
     return OnlineSimulator(

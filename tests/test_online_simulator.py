@@ -16,7 +16,7 @@ def test_synthetic_route_and_energy_exact():
     rt = router.route(0, 3, 0.0)
     assert rt.length_m == 3000.0
     assert abs(rt.duration_s - 180.0) < 1e-6
-    energy = EnergyModel(0.2, 0.0, 40.0, 0.15, 22.0)
+    energy = EnergyModel(consumption_kwh_per_km=0.2, uncertainty_delta=0.0, battery_kwh_max=40.0, reserve_soc=0.15)
     assert abs(energy.nominal_kwh(3000.0) - 0.6) < 1e-12
 
 

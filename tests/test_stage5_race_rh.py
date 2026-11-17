@@ -21,7 +21,7 @@ from race_casablanca.sim.types import ProjectedState, Request, RequestStatus, St
 def test_dp_rejects_energy_infeasible_without_charge():
     base = make_two_request_scenario()
     router = RouteCache(base["graph"], base["model"], day="Monday")
-    e = EnergyModel(4.0, 0.0, 40.0, 0.15, 22.0)
+    e = EnergyModel(consumption_kwh_per_km=4.0, uncertainty_delta=0.0, battery_kwh_max=40.0, reserve_soc=0.15)
     req = Request("R1", 3, 0.0, 0.0, 50000.0, 60.0, 10.0, status=RequestStatus.AVAILABLE)
     origin = ProjectedState(0, 0.0, 14.0, 0.0)
     # No charges allowed
@@ -42,7 +42,13 @@ def test_dp_prefers_partial_when_full_misses_deadline():
     # Round-trip 12 kWh + reserve 6 → need ≥18; bat=14 needs charge.
     # 0.50 target (20 kWh): +6 kWh @11kW ≈ 1964s fits tw_end=5000.
     # Full (40): +26 kWh ≈ 8509s misses.
-    e = EnergyModel(2.0, 0.0, 40.0, 0.15, 11.0)
+    e = EnergyModel(
+        consumption_kwh_per_km=2.0,
+        uncertainty_delta=0.0,
+        battery_kwh_max=40.0,
+        reserve_soc=0.15,
+        peak_charge_power_kw=11.0,
+    )
     req = Request("R1", 3, 0.0, 0.0, 5000.0, 60.0, 10.0, status=RequestStatus.AVAILABLE)
     origin = ProjectedState(0, 0.0, 14.0, 0.0)
     res = optimize_charge_schedule(origin, ["R1"], {"R1": req}, router, e, 0, 600.0, 1e9)

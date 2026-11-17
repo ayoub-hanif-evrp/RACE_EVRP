@@ -196,9 +196,10 @@ def _try_charge_at_depot(
         plan[-1] = stop
     else:
         plan.append(stop)
+    bat_pre = float(bat)
     bat, t, need = apply_depot_charge(bat, t, energy, stop)
     delivered += need
-    charge_s += energy.charge_time_s(need)
+    charge_s += energy.charge_duration_kwh(kwh_from=bat_pre, kwh_to=float(bat))
     return _Label(lab.pos, t, bat, load, node, travel, delivered, charge_s, plan, lab.served)
 
 
