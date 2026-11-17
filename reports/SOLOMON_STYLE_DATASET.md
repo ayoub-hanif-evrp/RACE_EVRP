@@ -1,44 +1,40 @@
-# Solomon-style Casablanca dataset organization
+# Casablanca C / R / RC dataset (realistic OSM buildings)
 
-## Why
+## Classes (no numbered series)
 
-Legacy regimes used **12 / 30 / 40** customers. Reviewers can fairly ask “why 12?”.  
-This family reorganizes synthetic Casablanca demand into **Solomon-inspired classes** with sizes **15 / 30 / 45**.
+| Class | Meaning |
+|---|---|
+| **C** | Clustered customers (few communes) |
+| **R** | Dispersed customers |
+| **RC** | Mixed clustered + dispersed |
 
-## Design
+Sizes: **15 / 30 / 45** customers.
 
-| Axis | Values | Meaning |
-|---|---|---|
-| Class pattern | **C / R / RC** | Clustered / dispersed / mixed communes |
-| Series | **1 / 2** | Tight windows / wide windows |
-| Size | **15 / 30 / 45** | Customers per instance |
-| Named classes | **C1, C2, R1, R2, RC1, RC2** | pattern × series |
+## Realism rules
 
-Fleet defaults: 15→3 EVs, 30→5, 45→6.
+1. Customer locations come from **`pickup_candidates_realistic.csv`**.
+2. Frame includes **typed OSM buildings** (`house`, `apartments`, `commercial`, `office`, …), **shops**, **offices**, and service **amenities**.
+3. **Excluded:** generic `building=yes`, parking, fuel, benches, etc.
+4. **`lat` / `lon`** = OSM feature point or building-polygon **centroid** (the place).
+5. **`snap_node`** = nearest drive-graph node for **routing access only** — not a random customer projection.
 
 ## Layout
 
 ```text
 data/casablanca/evaluation_v1/solomon_style/
-  C1/n15/C1_n15_seed..../
-  C1/n30/...
-  ...
-  RC2/n45/...
+  C/n15/...
+  C/n30/...
+  C/n45/...
+  R/n15/...
+  RC/n45/...
   ensemble_index.json
 ```
 
-Manifest: `data/casablanca/manifests/casablanca_solomon_style_v1.json`  
-Config: `configs/demand_solomon_style.yaml`
-
-## Honesty
-
-- Real OSM Casablanca geography + synthetic orders  
-- **Not** Euclidean Solomon coordinate files  
-- **Does not replace** `locked_final` (legacy Prompt-3 holdout stays untouched)
-
-## Generate / train
+## Commands
 
 ```bash
-python scripts/generate_solomon_style_ensemble.py --per-class-size 5
-python scripts/train_race_marl.py --mode casablanca --episode-source solomon_style ...
+python scripts/build_realistic_pickup_frame.py
+python scripts/generate_solomon_style_ensemble.py --replace --per-class-size 5
 ```
+
+`locked_final` remains untouched (legacy Prompt-3 holdout).

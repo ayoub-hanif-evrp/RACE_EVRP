@@ -42,7 +42,7 @@ SOLOMON_EVAL_SEED_MIN = 3001
 SOLOMON_EVAL_SEED_MAX = 9999
 
 REGIME_ORDER = ("baseline", "peak_stress", "tight_windows")
-SOLOMON_CLASS_ORDER = ("C1", "C2", "R1", "R2", "RC1", "RC2")
+SOLOMON_CLASS_ORDER = ("C", "R", "RC")
 SOLOMON_SIZES = (15, 30, 45)
 
 

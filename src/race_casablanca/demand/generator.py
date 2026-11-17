@@ -253,27 +253,35 @@ def build_solomon_style_regime(
     n_customers: int,
     solomon_config: dict,
 ) -> dict:
-    """Compose a regime dict for class ∈ {C1,C2,R1,R2,RC1,RC2} and size ∈ {15,30,45}."""
+    """Compose a regime dict for class ∈ {C, R, RC} and size ∈ {15, 30, 45}."""
     classes = solomon_config["classes"]
     if class_name not in classes:
-        raise KeyError(f"Unknown Solomon-style class {class_name}")
+        raise KeyError(f"Unknown Solomon-style class {class_name}; expected C, R, or RC")
     spec = classes[class_name]
-    pattern = str(spec["pattern"]).upper()
-    series = str(spec["series"])
-    series_cfg = dict(solomon_config["series"][series])
-    pattern_cfg = dict(solomon_config["spatial_patterns"][pattern])
-    shared = dict(solomon_config.get("shared") or {})
+    pattern = str(spec.get("pattern") or class_name).upper()
+    # v2: single operational profile; v1 fallback: series/spatial_patterns blocks.
+    if "operational" in solomon_config:
+        op = dict(solomon_config["operational"])
+        n_cluster = int(spec.get("n_cluster_zones", 3))
+        cluster_fraction = float(spec.get("cluster_fraction", 0.5))
+    else:
+        series = str(spec["series"])
+        op = dict(solomon_config["series"][series])
+        pattern_cfg = dict(solomon_config["spatial_patterns"][pattern])
+        n_cluster = int(pattern_cfg.get("n_cluster_zones", 3))
+        cluster_fraction = float(pattern_cfg.get("cluster_fraction", 0.5))
+        op.update(dict(solomon_config.get("shared") or {}))
     regime = {
-        **shared,
-        **series_cfg,
+        **op,
         "n_customers": int(n_customers),
         "spatial_pattern": pattern,
         "instance_class": class_name,
-        "n_cluster_zones": int(pattern_cfg.get("n_cluster_zones", 3)),
-        "cluster_fraction": float(pattern_cfg.get("cluster_fraction", 0.5)),
+        "n_cluster_zones": n_cluster,
+        "cluster_fraction": cluster_fraction,
         "label": f"solomon_style_{class_name}_n{n_customers}",
         "label_note": (
-            "Solomon-inspired Casablanca synthetic class; not Euclidean Solomon coordinates."
+            "Solomon-inspired Casablanca class (C/R/RC) on real OSM buildings/POIs; "
+            "not Euclidean Solomon coordinates."
         ),
     }
     return regime

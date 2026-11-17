@@ -43,7 +43,7 @@ from race_casablanca.marl.seed_banks import (
     solomon_train_seed,
 )
 from race_casablanca.paths import (
-    candidates_dir,
+    candidates_dir,  # used by solomon-style realistic frame
     config_dir,
     fleet_dir,
     project_root,
@@ -269,6 +269,20 @@ def make_solomon_style_train_factory(
     base = ProceduralEpisodeGenerator.from_release(load_network=load_network)
     solomon = load_demand_config(config_dir() / "demand_solomon_style.yaml")
     fleet_nv = {int(k): int(v) for k, v in (solomon.get("fleet_default_n_vehicles") or {}).items()}
+    # Prefer realistic OSM building/POI frame when available.
+    realistic_path = candidates_dir() / "pickup_candidates_realistic.csv"
+    if realistic_path.exists():
+        from race_casablanca.demand.realistic_frame import filter_realistic_pickup_candidates
+
+        cand = pd.read_csv(realistic_path)
+        if "category" in cand.columns and (cand["category"] == "building=yes").any():
+            cand = filter_realistic_pickup_candidates(cand)
+        candidates = cand
+    else:
+        from race_casablanca.demand.realistic_frame import filter_realistic_pickup_candidates
+
+        candidates = filter_realistic_pickup_candidates(base.candidates)
+    op = solomon.get("operational") or {}
 
     def factory(seed: int = 0, n_vehicles: int | None = None) -> dict:
         ep = int(seed)
@@ -276,7 +290,7 @@ def make_solomon_style_train_factory(
         n_cust = curriculum_solomon_size(ep, SOLOMON_SIZES)
         train_seed = solomon_train_seed(master_seed, ep)
         req_df = generate_solomon_style_requests(
-            base.candidates,
+            candidates,
             base.zone_weights,
             class_name,
             n_cust,
@@ -287,10 +301,8 @@ def make_solomon_style_train_factory(
         nv = int(n_vehicles if n_vehicles is not None else fleet_nv.get(n_cust, 3))
         fleet = dict(base.fleet)
         fleet["n_vehicles"] = nv
-        series = str(solomon["classes"][class_name]["series"])
-        series_cfg = solomon["series"][series]
-        start_h = float(series_cfg["start_hour"])
-        horizon_h = float(series_cfg["horizon_hours"])
+        start_h = float(op.get("start_hour", 8))
+        horizon_h = float(op.get("horizon_hours", 8))
         return {
             "scenario_id": f"solomon_train/{class_name}_n{n_cust}_seed{train_seed}/ep{ep}",
             "graph": base.graph,
@@ -312,9 +324,10 @@ def make_solomon_style_train_factory(
                 "benchmark_version": solomon.get("benchmark_version"),
                 "n_requests": len(requests),
                 "train_seed_range": list(SOLOMON_TRAIN_SEED_RANGE),
+                "pickup_frame": "pickup_candidates_realistic",
                 "is_observed_order": False,
                 "claim": (
-                    "Solomon-style Casablanca synthetic training episode. "
+                    "C/R/RC Casablanca synthetic training episode on real OSM buildings/POIs. "
                     "Not Euclidean Solomon. Not locked_final."
                 ),
             },
