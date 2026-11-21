@@ -48,11 +48,11 @@ def test_native_bridge_intent_competitive_on_peak():
         max_decisions=2000,
         initial_soc=0.35,
     )
-    teacher = NativeBridgeTeacher(mode="intent")
+    teacher = NativeBridgeTeacher(mode="intent_matched")
     steps = env.reset(seed=0)
     while True:
         steps = env.step(teacher.actions(env))
         if list(steps.values())[0].done:
             break
     ot = float(env.final_metrics().get("on_time_rate_all", 0.0))
-    assert ot >= 0.70, f"intent bridge OT too low: {ot}"
+    assert ot >= 0.70, f"intent_matched bridge OT too low: {ot}"

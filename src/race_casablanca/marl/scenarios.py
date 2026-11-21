@@ -200,11 +200,12 @@ def make_training_factory(
     n_vehicles: int = 3,
     curriculum: str = "round_robin",
     procedural_jitter: bool = True,
+    energy_binding: bool = False,
 ) -> Callable[..., dict]:
     """Preferred MARL training factory.
 
     ``source='solomon_style'`` — C/R/RC × series × sizes 15/30/45 (recommended).
-    ``source='procedural'`` — legacy regimes baseline/peak/tight.
+    ``source='procedural'`` — regimes baseline/peak/tight/conflict_dense.
     ``source='fixed_pool'`` — 8 on-disk release files + jitter (diagnostics only).
     """
     if source == "solomon_style":
@@ -219,6 +220,7 @@ def make_training_factory(
             n_vehicles=n_vehicles,
             curriculum=curriculum,
             load_network=True,
+            energy_binding=energy_binding,
         )
         return factory
     if source == "fixed_pool":

@@ -179,8 +179,17 @@ def generate_requests(
 ) -> pd.DataFrame:
     rng = np.random.default_rng(seed)
     n = int(regime["n_customers"])
-    profile = config["intensity_profiles"][regime["intensity_profile"]]["weights"]
-    release_min = fixed_count_hourly_arrivals(n, regime["start_hour"], regime["horizon_hours"], profile, rng)
+    release_mode = str(regime.get("release_mode") or "hourly_intensity")
+    if release_mode == "sync_burst":
+        # Concentrate releases in a short burst so many agents contest the same window.
+        burst_h = float(regime.get("burst_hours", 0.5))
+        start_min = float(regime["start_hour"]) * 60.0
+        release_min = np.sort(start_min + rng.uniform(0.0, max(1e-6, burst_h * 60.0), size=n))
+    else:
+        profile = config["intensity_profiles"][regime["intensity_profile"]]["weights"]
+        release_min = fixed_count_hourly_arrivals(
+            n, regime["start_hour"], regime["horizon_hours"], profile, rng
+        )
 
     eligible_zones, eligible_probs = _eligible_zones_and_probs(candidates, zone_weights)
     spatial_pattern = regime.get("spatial_pattern")

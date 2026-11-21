@@ -1,0 +1,279 @@
+{
+  "regime": "conflict_dense",
+  "energy_binding": true,
+  "partial_soc": 0.7,
+  "full_soc": 1.0,
+  "comm_mode": "full",
+  "episodes_per_seed": 4,
+  "summary": {
+    "gate": "G5",
+    "n_seeds": 3,
+    "n_hard_pass": 2,
+    "n_soft_pass": 3,
+    "mean_delta_ot": 0.01388888888888889,
+    "exact": {
+      "instance": "C_partial_better",
+      "best_on_time": 1,
+      "always_full_on_time": 0,
+      "gap": 1,
+      "pass": true
+    },
+    "nl_taper": {
+      "soc_from": 0.28,
+      "partial_to_0_70_s": 2761.4399999999987,
+      "full_to_1_00_s": 6805.44,
+      "taper_0_70_to_1_00_s": 4044.0000000000005,
+      "full_over_partial": 2.4644533286980717
+    },
+    "aggregate_hard_pass": true,
+    "aggregate_soft_pass": true
+  },
+  "seeds": [
+    {
+      "master_seed": 0,
+      "summary": {
+        "n_episodes": 4,
+        "mean_partial_ot": 0.16666666666666666,
+        "mean_full_ot": 0.14583333333333331,
+        "mean_delta_ot": 0.020833333333333336,
+        "mean_partial_charge_s": 9651.542742270485,
+        "mean_full_charge_s": 21680.896543728042,
+        "n_episodes_partial_better": 1,
+        "exact": {
+          "instance": "C_partial_better",
+          "best_on_time": 1,
+          "always_full_on_time": 0,
+          "gap": 1,
+          "pass": true
+        },
+        "nl_taper": {
+          "soc_from": 0.28,
+          "partial_to_0_70_s": 2761.4399999999987,
+          "full_to_1_00_s": 6805.44,
+          "taper_0_70_to_1_00_s": 4044.0000000000005,
+          "full_over_partial": 2.4644533286980717
+        },
+        "hard_pass": true,
+        "soft_pass": true
+      },
+      "episodes": [
+        {
+          "episode_index": 0,
+          "seed": 11631017,
+          "partial_ot": 0.16666666666666666,
+          "full_ot": 0.16666666666666666,
+          "delta_ot": 0.0,
+          "partial_charge_s": 9808.290502814996,
+          "full_charge_s": 21940.290502814998,
+          "partial_energy_kwh": 59.703849223534796,
+          "full_energy_kwh": 95.7038492235348,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        },
+        {
+          "episode_index": 1,
+          "seed": 11728438,
+          "partial_ot": 0.125,
+          "full_ot": 0.125,
+          "delta_ot": 0.0,
+          "partial_charge_s": 9352.675583680237,
+          "full_charge_s": 21484.67558368024,
+          "partial_energy_kwh": 56.92231736068523,
+          "full_energy_kwh": 92.92231736068523,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        },
+        {
+          "episode_index": 2,
+          "seed": 11825859,
+          "partial_ot": 0.25,
+          "full_ot": 0.16666666666666666,
+          "delta_ot": 0.08333333333333334,
+          "partial_charge_s": 9437.648430218575,
+          "full_charge_s": 21159.063636048806,
+          "partial_energy_kwh": 57.42284712447041,
+          "full_energy_kwh": 90.93445443253242,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        },
+        {
+          "episode_index": 3,
+          "seed": 11923280,
+          "partial_ot": 0.125,
+          "full_ot": 0.125,
+          "delta_ot": 0.0,
+          "partial_charge_s": 10007.556452368131,
+          "full_charge_s": 22139.55645236813,
+          "partial_energy_kwh": 60.920369062076524,
+          "full_energy_kwh": 96.92036906207653,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        }
+      ]
+    },
+    {
+      "master_seed": 1,
+      "summary": {
+        "n_episodes": 4,
+        "mean_partial_ot": 0.17708333333333331,
+        "mean_full_ot": 0.17708333333333331,
+        "mean_delta_ot": 0.0,
+        "mean_partial_charge_s": 9622.752849049313,
+        "mean_full_charge_s": 21754.752849049313,
+        "n_episodes_partial_better": 0,
+        "exact": {
+          "instance": "C_partial_better",
+          "best_on_time": 1,
+          "always_full_on_time": 0,
+          "gap": 1,
+          "pass": true
+        },
+        "nl_taper": {
+          "soc_from": 0.28,
+          "partial_to_0_70_s": 2761.4399999999987,
+          "full_to_1_00_s": 6805.44,
+          "taper_0_70_to_1_00_s": 4044.0000000000005,
+          "full_over_partial": 2.4644533286980717
+        },
+        "hard_pass": false,
+        "soft_pass": true
+      },
+      "episodes": [
+        {
+          "episode_index": 0,
+          "seed": 12631020,
+          "partial_ot": 0.16666666666666666,
+          "full_ot": 0.16666666666666666,
+          "delta_ot": 0.0,
+          "partial_charge_s": 9953.521930180708,
+          "full_charge_s": 22085.521930180712,
+          "partial_energy_kwh": 60.59048797424123,
+          "full_energy_kwh": 96.59048797424123,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        },
+        {
+          "episode_index": 1,
+          "seed": 12728441,
+          "partial_ot": 0.20833333333333334,
+          "full_ot": 0.20833333333333334,
+          "delta_ot": 0.0,
+          "partial_charge_s": 9753.800871446054,
+          "full_charge_s": 21885.800871446056,
+          "partial_energy_kwh": 59.37118969136786,
+          "full_energy_kwh": 95.37118969136787,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        },
+        {
+          "episode_index": 2,
+          "seed": 12825862,
+          "partial_ot": 0.16666666666666666,
+          "full_ot": 0.16666666666666666,
+          "delta_ot": 0.0,
+          "partial_charge_s": 9794.581636670495,
+          "full_charge_s": 21926.581636670497,
+          "partial_energy_kwh": 59.62015651202991,
+          "full_energy_kwh": 95.62015651202991,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        },
+        {
+          "episode_index": 3,
+          "seed": 12923283,
+          "partial_ot": 0.16666666666666666,
+          "full_ot": 0.16666666666666666,
+          "delta_ot": 0.0,
+          "partial_charge_s": 8989.106957899996,
+          "full_charge_s": 21121.106957899996,
+          "partial_energy_kwh": 54.70272868070818,
+          "full_energy_kwh": 90.70272868070818,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        }
+      ]
+    },
+    {
+      "master_seed": 2,
+      "summary": {
+        "n_episodes": 4,
+        "mean_partial_ot": 0.19791666666666666,
+        "mean_full_ot": 0.17708333333333331,
+        "mean_delta_ot": 0.020833333333333336,
+        "mean_partial_charge_s": 9008.447644296146,
+        "mean_full_charge_s": 21091.255020382436,
+        "n_episodes_partial_better": 2,
+        "exact": {
+          "instance": "C_partial_better",
+          "best_on_time": 1,
+          "always_full_on_time": 0,
+          "gap": 1,
+          "pass": true
+        },
+        "nl_taper": {
+          "soc_from": 0.28,
+          "partial_to_0_70_s": 2761.4399999999987,
+          "full_to_1_00_s": 6805.44,
+          "taper_0_70_to_1_00_s": 4044.0000000000005,
+          "full_over_partial": 2.4644533286980717
+        },
+        "hard_pass": true,
+        "soft_pass": true
+      },
+      "episodes": [
+        {
+          "episode_index": 0,
+          "seed": 13631023,
+          "partial_ot": 0.16666666666666666,
+          "full_ot": 0.16666666666666666,
+          "delta_ot": 0.0,
+          "partial_charge_s": 9304.81856158912,
+          "full_charge_s": 21436.81856158912,
+          "partial_energy_kwh": 56.63014994865154,
+          "full_energy_kwh": 92.63014994865154,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        },
+        {
+          "episode_index": 1,
+          "seed": 13728444,
+          "partial_ot": 0.20833333333333334,
+          "full_ot": 0.16666666666666666,
+          "delta_ot": 0.041666666666666685,
+          "partial_charge_s": 8958.01120783912,
+          "full_charge_s": 21006.669407521877,
+          "partial_energy_kwh": 54.509188557112324,
+          "full_energy_kwh": 90.00408673700781,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        },
+        {
+          "episode_index": 2,
+          "seed": 13825865,
+          "partial_ot": 0.16666666666666666,
+          "full_ot": 0.16666666666666666,
+          "delta_ot": 0.0,
+          "partial_charge_s": 8946.29269205237,
+          "full_charge_s": 21078.29269205237,
+          "partial_energy_kwh": 54.44134732632706,
+          "full_energy_kwh": 90.44134732632706,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        },
+        {
+          "episode_index": 3,
+          "seed": 13923286,
+          "partial_ot": 0.25,
+          "full_ot": 0.20833333333333334,
+          "delta_ot": 0.04166666666666666,
+          "partial_charge_s": 8824.668115703975,
+          "full_charge_s": 20843.23942036638,
+          "partial_energy_kwh": 53.69379230609209,
+          "full_energy_kwh": 89.00634566768242,
+          "partial_n_charges": 3.0,
+          "full_n_charges": 3.0
+        }
+      ]
+    }
+  ]
+}

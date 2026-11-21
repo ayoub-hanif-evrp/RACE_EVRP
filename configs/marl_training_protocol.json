@@ -24,11 +24,18 @@
     "train": {
       "source": "on_the_fly_generator",
       "seed_range": [10000000, 19999999],
-      "regimes": ["baseline", "peak_stress", "tight_windows"],
-      "curriculum": "round_robin_baseline_peak_tight",
+      "regimes": ["baseline", "peak_stress", "tight_windows", "conflict_dense"],
+      "curriculum": "round_robin",
+      "energy_binding_alternate": true,
       "recommended_episodes": 5000,
       "minimum_scientific_episodes": 2000,
-      "note": "Each episode draws a fresh seed in the train range; requests are regenerated from frozen configs."
+      "note": "Each episode draws a fresh seed in the train range; requests are regenerated from frozen configs. conflict_dense = sync burst + clustered spatial for comm-value stress."
+    },
+    "phase2_stress": {
+      "regime": "conflict_dense",
+      "peer_bids": "delivered_only",
+      "ablation_A_strips_peer_bid_features": true,
+      "g3_gate": "mean(full_ot - none_ot) >= 0.08 on conflict_dense native rollouts"
     },
     "validation": {
       "source": "data/casablanca/evaluation_v1/default",
@@ -71,10 +78,19 @@
   },
   "reward_priority": [
     "on_time_service_time_window_respect",
-    "missed_or_late_penalty",
-    "energy_and_distance_secondary",
-    "optional_communication_cost"
+    "missed_feasible_pickup_penalty",
+    "communication_message_and_byte_cost",
+    "charge_action_cost",
+    "served_late_secondary"
   ],
+  "phase3_reward_defaults": {
+    "ot_reward": 1.0,
+    "served_late_reward": 0.1,
+    "msg_cost": 0.001,
+    "byte_cost": 1e-5,
+    "missed_feasible_cost": 0.05,
+    "charge_cost": 0.02
+  },
   "fleet_primary": {
     "n_vehicles": 3,
     "initial_soc": 0.35

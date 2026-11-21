@@ -1,0 +1,51 @@
+{
+  "gate": "G4",
+  "slice": "phase4_energy_binding_bytes",
+  "checkpoint": "data/casablanca/online_results/top_tier/marl_checkpoints/phase3_F_conflict_g4mask_seed0_best.pt",
+  "regime": "conflict_dense",
+  "fix": "fleet_cap2 + no flex-alone second opener; pending-only fleet bypass",
+  "results": {
+    "energy_binding_false": [
+      {
+        "seed": 0,
+        "F_ot": 0.438,
+        "br": 0.6,
+        "hard": true
+      },
+      {
+        "seed": 1,
+        "F_ot": 0.375,
+        "br": 0.624,
+        "hard": true
+      },
+      {
+        "seed": 2,
+        "F_ot": 0.375,
+        "br": 0.687,
+        "hard": true
+      }
+    ],
+    "energy_binding_true": [
+      {
+        "seed": 0,
+        "F_ot": 0.385,
+        "br": 0.591,
+        "hard": true
+      },
+      {
+        "seed": 1,
+        "F_ot": 0.354,
+        "br": 0.603,
+        "hard": true
+      },
+      {
+        "seed": 2,
+        "F_ot": 0.302,
+        "br": 0.694,
+        "hard": true
+      }
+    ]
+  },
+  "n_hard_pass": 6,
+  "n_cells": 6
+}

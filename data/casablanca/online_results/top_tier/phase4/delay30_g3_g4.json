@@ -1,0 +1,56 @@
+{
+  "gate": [
+    "G3",
+    "G4"
+  ],
+  "slice": "phase4_delay30_assign_wait",
+  "checkpoint": "data/casablanca/online_results/top_tier/marl_checkpoints/phase3_F_conflict_g4mask_seed0_best.pt",
+  "regime": "conflict_dense",
+  "message_delay_s": 30.0,
+  "fix": "MARL mirrors native bid_exchange\u2192assign_wait\u2192bid_assign; claims blocked while request in _pending_assign_requests",
+  "seeds": [
+    {
+      "seed": 0,
+      "A": 0.354,
+      "B": 0.438,
+      "F": 0.438,
+      "B_minus_A": 0.083,
+      "F_minus_A": 0.083,
+      "F_minus_B": 0.0,
+      "br": 0.528,
+      "hard": true
+    },
+    {
+      "seed": 1,
+      "A": 0.292,
+      "B": 0.385,
+      "F": 0.375,
+      "B_minus_A": 0.094,
+      "F_minus_A": 0.083,
+      "F_minus_B": -0.01,
+      "br": 0.534,
+      "hard": true
+    },
+    {
+      "seed": 2,
+      "A": 0.323,
+      "B": 0.354,
+      "F": 0.333,
+      "B_minus_A": 0.031,
+      "F_minus_A": 0.01,
+      "F_minus_B": -0.021,
+      "br": 0.558,
+      "hard": false,
+      "soft": true
+    }
+  ],
+  "n_hard_pass": 2,
+  "n_soft_pass": 3,
+  "delay0_seed0_sanity": {
+    "A": 0.354,
+    "B": 0.438,
+    "F": 0.438,
+    "br": 0.6,
+    "hard": true
+  }
+}

@@ -41,7 +41,8 @@ SOLOMON_TRAIN_SEED_RANGE = (20_000_000, 29_999_999)
 SOLOMON_EVAL_SEED_MIN = 3001
 SOLOMON_EVAL_SEED_MAX = 9999
 
-REGIME_ORDER = ("baseline", "peak_stress", "tight_windows")
+# conflict_dense: Phase-2 stress regime (sync burst + clustered spatial).
+REGIME_ORDER = ("baseline", "peak_stress", "tight_windows", "conflict_dense")
 SOLOMON_CLASS_ORDER = ("C", "R", "RC")
 SOLOMON_SIZES = (15, 30, 45)
 

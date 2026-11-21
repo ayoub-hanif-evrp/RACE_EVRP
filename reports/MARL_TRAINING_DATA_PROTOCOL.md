@@ -1,5 +1,7 @@
 # MARL Training Data Protocol (Casablanca)
 
+**Top-tier method roadmap:** see [`TOP_TIER_MARL_PLAN.md`](TOP_TIER_MARL_PLAN.md) (implement phase-by-phase with hard gates).
+
 ## Problem
 
 The on-disk release has only **8 train scenarios**. That is enough for diagnostics, **not** for serious multi-agent RL training.
@@ -35,8 +37,9 @@ Violations raise errors in `assert_train_seed_allowed`.
 
 ## Curriculum
 
-Default `round_robin`: baseline → peak_stress → tight_windows → …  
-This exposes the policy to easy and hard time-window regimes.
+Default `round_robin`: baseline → peak_stress → tight_windows → **conflict_dense** → …  
+`conflict_dense` = clustered spatial + sync release burst (Phase 2 / G3).  
+Optional `--energy-binding` alternates mid/low SOC (0.28).
 
 ## How to train
 

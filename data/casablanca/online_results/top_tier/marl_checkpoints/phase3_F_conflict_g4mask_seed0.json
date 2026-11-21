@@ -1,0 +1,206 @@
+{
+  "mode": "casablanca",
+  "ablation": "F_race_marl",
+  "seed": 0,
+  "n_vehicles": 3,
+  "initial_soc": 0.35,
+  "message_delay_s": 0.0,
+  "packet_loss_p": 0.0,
+  "matched_send_p": 0.5,
+  "params_changed": true,
+  "n_updates": 16,
+  "logs": [
+    {
+      "loss": 4.857769966125488,
+      "policy_loss": 1.3659398057086491e-08,
+      "value_loss": 9.715539932250977,
+      "entropy": 3.0056668265388e-09,
+      "comm_learnable_frac": 0.96875,
+      "comm_grad_norm": 1.4959010701150188e-11,
+      "iter": 0
+    },
+    {
+      "loss": 3.967602014541626,
+      "policy_loss": -8.333163714269176e-05,
+      "value_loss": 7.93572998046875,
+      "entropy": 0.017950046807527542,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.0021082919411128387,
+      "iter": 1
+    },
+    {
+      "loss": 3.3767600059509277,
+      "policy_loss": 2.7318796114172983e-08,
+      "value_loss": 6.7535200119018555,
+      "entropy": 1.8301565818390486e-09,
+      "comm_learnable_frac": 0.984375,
+      "comm_grad_norm": 1.3374686449497963e-11,
+      "iter": 2
+    },
+    {
+      "loss": 3.883235454559326,
+      "policy_loss": -0.00047571895993314683,
+      "value_loss": 7.7677764892578125,
+      "entropy": 0.017720120027661324,
+      "comm_learnable_frac": 0.984375,
+      "comm_grad_norm": 0.012906272313557565,
+      "iter": 3,
+      "eval": {
+        "mean_return": 7.79779,
+        "mean_ot": 0.3333333333333333,
+        "n": 2
+      },
+      "is_best": true
+    },
+    {
+      "loss": 3.1189944744110107,
+      "policy_loss": 4.967053879312289e-09,
+      "value_loss": 6.2379889488220215,
+      "entropy": 1.396241011697441e-09,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 1.5951470179464966e-11,
+      "iter": 4
+    },
+    {
+      "loss": 3.193594455718994,
+      "policy_loss": -3.073364496231079e-08,
+      "value_loss": 6.387188911437988,
+      "entropy": 1.290549889176873e-09,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 1.4832490053892644e-11,
+      "iter": 5
+    },
+    {
+      "loss": 3.302420139312744,
+      "policy_loss": 2.5428831577301025e-05,
+      "value_loss": 6.605066776275635,
+      "entropy": 0.013879441656172276,
+      "comm_learnable_frac": 0.953125,
+      "comm_grad_norm": 0.007243676518555731,
+      "iter": 6
+    },
+    {
+      "loss": 5.158415794372559,
+      "policy_loss": -7.927728438517079e-05,
+      "value_loss": 10.317408561706543,
+      "entropy": 0.02091752551496029,
+      "comm_learnable_frac": 0.9375,
+      "comm_grad_norm": 0.003632630774518475,
+      "iter": 7,
+      "eval": {
+        "mean_return": 11.722080000000002,
+        "mean_ot": 0.5,
+        "n": 2
+      },
+      "is_best": true
+    },
+    {
+      "loss": 4.272716999053955,
+      "policy_loss": 3.6011140736036396e-08,
+      "value_loss": 8.54543399810791,
+      "entropy": 2.9051487882014726e-09,
+      "comm_learnable_frac": 0.953125,
+      "comm_grad_norm": 1.617571430533732e-11,
+      "iter": 8
+    },
+    {
+      "loss": 2.9089438915252686,
+      "policy_loss": -1.695007085800171e-07,
+      "value_loss": 5.817888259887695,
+      "entropy": 1.6938427327417571e-09,
+      "comm_learnable_frac": 0.984375,
+      "comm_grad_norm": 1.1926944620734709e-12,
+      "iter": 9
+    },
+    {
+      "loss": 2.9217653274536133,
+      "policy_loss": 3.3527612686157227e-08,
+      "value_loss": 5.843530654907227,
+      "entropy": 1.6490447896089222e-09,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 2.8454542866894472e-12,
+      "iter": 10
+    },
+    {
+      "loss": 3.3323001861572266,
+      "policy_loss": -2.5717541575431824e-05,
+      "value_loss": 6.665144920349121,
+      "entropy": 0.024657076224684715,
+      "comm_learnable_frac": 0.984375,
+      "comm_grad_norm": 0.004420426179422066,
+      "iter": 11,
+      "eval": {
+        "mean_return": 9.78406,
+        "mean_ot": 0.4166666666666667,
+        "n": 2
+      }
+    },
+    {
+      "loss": 3.1297736167907715,
+      "policy_loss": 1.8040029317489825e-05,
+      "value_loss": 6.259792327880859,
+      "entropy": 0.014062095433473587,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.0024562580656493083,
+      "iter": 12
+    },
+    {
+      "loss": 3.592463731765747,
+      "policy_loss": -8.431573519374069e-07,
+      "value_loss": 7.185140609741211,
+      "entropy": 0.010550972074270248,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.00038427518666139804,
+      "iter": 13
+    },
+    {
+      "loss": 2.311227321624756,
+      "policy_loss": -6.297355139395222e-05,
+      "value_loss": 4.6227216720581055,
+      "entropy": 0.007050789892673492,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.004258908360498026,
+      "iter": 14
+    },
+    {
+      "loss": 2.870755672454834,
+      "policy_loss": -3.26478220813442e-05,
+      "value_loss": 5.7417893409729,
+      "entropy": 0.010624207556247711,
+      "comm_learnable_frac": 1.0,
+      "comm_grad_norm": 0.0011675098940031603,
+      "iter": 15,
+      "eval": {
+        "mean_return": 9.729669999999999,
+        "mean_ot": 0.41666666666666663,
+        "n": 2
+      }
+    }
+  ],
+  "eval": {
+    "mean_return": 8.305520000000001,
+    "mean_ot": 0.35416666666666663,
+    "n": 2
+  },
+  "bc": {
+    "op_accuracy": 0.90234375,
+    "comm_accuracy": 0.9557291865348816,
+    "charge_accuracy": NaN,
+    "n": 3840.0,
+    "teacher": "native_execute_dagger",
+    "final_loss": NaN
+  },
+  "checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/top_tier/marl_checkpoints/phase3_F_conflict_g4mask_seed0.pt",
+  "best_checkpoint": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/data/casablanca/online_results/top_tier/marl_checkpoints/phase3_F_conflict_g4mask_seed0_best.pt",
+  "torch": "2.15.0+cpu",
+  "device": "cpu",
+  "wall_time_s": 971.99,
+  "obs_dim": 86,
+  "n_op": 7,
+  "n_comm": 6,
+  "stage": "phase3",
+  "episode_source": "procedural",
+  "curriculum": "conflict_only",
+  "training_protocol": "configs/marl_training_protocol.json",
+  "note": "Casablanca MAPPO training. Default episode_source=procedural uses on-the-fly synthetic generator episodes in seed range 10M\u201320M; locked_final is never used for training."
+}

@@ -1,9 +1,12 @@
-"""Multi-agent adapter over OnlineSimulator for CTDE MAPPO (Stage 8.2).
+"""Multi-agent adapter over OnlineSimulator for CTDE MAPPO (Stage 8.2 / top-tier Phase 1).
 
 Decision epoch protocol (bid-before-commit):
   1. Agents propose operational + communication actions from current local obs.
   2. Communication (task bids) executes first; zero-delay deliveries ingest immediately.
-  3. Contested claims are resolved in a batched, vehicle-order-invariant way.
+  3. Claims resolve via ``claim_resolve_mode``:
+       - ``sequential_native`` (default): vehicle-order commits like RaceCooperativePolicy
+         bid_assign / on_decision (fixes simultaneous duplicate-op wrong winners).
+       - ``batched_legacy``: old vehicle-order-invariant batch ranking (Stage 8.3 ceiling).
   4. Fresh feasibility is checked at commitment; physics advances afterward.
 
 F_race_marl vs D_selective:
@@ -28,7 +31,13 @@ from typing import Any
 
 import numpy as np
 
-from race_casablanca.coordination.task_bids import TaskBid, compute_self_bid, self_should_claim
+from race_casablanca.coordination.task_bids import (
+    TaskAnnouncement,
+    TaskBid,
+    assignment_wait_s,
+    compute_self_bid,
+    self_should_claim,
+)
 from race_casablanca.sim.environment import OnlineSimulator, SimConfig
 from race_casablanca.sim.policy_api import ActionInterface, RestrictedObservation, build_restricted_observation
 from race_casablanca.sim.types import EventType, RequestStatus, VehicleMode
@@ -55,12 +64,17 @@ ABLATION_E = "E_selective_no_energy"
 ABLATION_F = "F_race_marl"
 
 MSG_COST = 0.001
+BYTE_COST = 1e-5
+MISSED_FEASIBLE_COST = 0.05
+CHARGE_COST = 0.02
+OT_REWARD = 1.0
+SERVED_LATE_REWARD = 0.1
 COMM_COOLDOWN_S = 30.0
 MAX_SENDS_PER_TASK = 2
 # F: energy certificate is decision-relevant below this residual flex (kWh)
-ENERGY_CERT_THRESHOLD_KWH = 8.0
+ENERGY_CERT_THRESHOLD_KWH = 12.0
 # F: tight deadline slack also counts as contested (seconds)
-CONTEST_DEADLINE_SLACK_S = 300.0
+CONTEST_DEADLINE_SLACK_S = 450.0
 
 
 @dataclass
@@ -99,6 +113,12 @@ class RaceMultiAgentEnv:
         dt_ref_s: float = 60.0,
         message_triggers_decision: bool = False,
         energy_cert_threshold_kwh: float = ENERGY_CERT_THRESHOLD_KWH,
+        claim_resolve_mode: str = "sequential_native",
+        byte_cost: float = BYTE_COST,
+        missed_feasible_cost: float = MISSED_FEASIBLE_COST,
+        charge_cost: float = CHARGE_COST,
+        ot_reward: float = OT_REWARD,
+        served_late_reward: float = SERVED_LATE_REWARD,
     ):
         self.scenario_factory = scenario_factory
         self.n_vehicles = int(n_vehicles)
@@ -109,10 +129,21 @@ class RaceMultiAgentEnv:
         self.comm_enabled = bool(comm_enabled) and self.ablation != ABLATION_A
         self.seed = int(seed)
         self.max_decisions = int(max_decisions)
+        mode = str(claim_resolve_mode or "sequential_native").strip().lower()
+        if mode not in ("sequential_native", "batched_legacy"):
+            raise ValueError(
+                f"claim_resolve_mode must be sequential_native|batched_legacy, got {claim_resolve_mode!r}"
+            )
+        self.claim_resolve_mode = mode
         # C: matched-budget random uses predeclared p (from selective calibration), not post-hoc.
         self.random_send_p = float(random_send_p if matched_send_p is None else matched_send_p)
         self.matched_send_p = float(self.random_send_p)
         self.msg_cost = float(msg_cost)
+        self.byte_cost = float(byte_cost)
+        self.missed_feasible_cost = float(missed_feasible_cost)
+        self.charge_cost = float(charge_cost)
+        self.ot_reward = float(ot_reward)
+        self.served_late_reward = float(served_late_reward)
         self.dt_ref_s = float(dt_ref_s)
         self.message_triggers_decision = bool(message_triggers_decision)
         self.energy_cert_threshold_kwh = float(energy_cert_threshold_kwh)
@@ -135,6 +166,14 @@ class RaceMultiAgentEnv:
         self._n_claim_defers_to_peer = 0
         self._send_cooldown: dict[tuple[str, str], float] = {}
         self._send_counts: dict[tuple[str, str], int] = {}
+        # Fleet-wide open counts frozen at step start (F cert filter).
+        self._opens_at_step_start: dict[str, int] = {}
+        # Same-step opening-wave cap (per request): opener + limited echoes.
+        self._step_open_count: dict[str, int] = {}
+        # Feasible-agent count per request at step start (contested opening).
+        self._step_feasible_count: dict[str, int] = {}
+        # Best-travel feasible vehicle per request (free-opener priority).
+        self._step_best_opener: dict[str, str] = {}
         self._decision_t0 = 0.0
         self._last_executed_comm: dict[str, int] = {}
         self._last_comm_learnable: dict[str, bool] = {}
@@ -144,6 +183,9 @@ class RaceMultiAgentEnv:
         self._n_decision_vehicle_idle = 0
         self._n_decision_charge_end = 0
         self._n_decision_release = 0
+        self._n_decision_bid_assign = 0
+        self._n_assign_windows = 0
+        self._n_claim_held_for_assign = 0
         self._n_second_choice_claims = 0
         self._n_idle_with_pending = 0
         self._n_missed_feasible_pickup = 0
@@ -155,6 +197,9 @@ class RaceMultiAgentEnv:
         self.n_actions = N_OP  # legacy
         # Charge-to target matches non-learning readiness charge
         self.charge_target_soc = 0.70
+        # Set by NativeBridgeTeacher when native decisions were already applied.
+        self._comm_preflight_done = False
+        self._ops_preflight_done = False
 
     @property
     def comm_externally_controlled(self) -> bool:
@@ -166,19 +211,22 @@ class RaceMultiAgentEnv:
             self.seed = int(seed)
         self._rng = random.Random(self.seed)
         sc = self.scenario_factory(seed=self.seed, n_vehicles=self.n_vehicles)
+        fleet = {**sc["fleet"], "n_vehicles": self.n_vehicles}
+        # Episode may override SOC (Phase-2 energy-binding tier).
+        soc = float(fleet.get("initial_soc", self.initial_soc))
         self.sim = OnlineSimulator(
             scenario_id=sc["scenario_id"],
             graph=sc["graph"],
             model=sc["model"],
             requests=sc["requests"],
-            fleet={**sc["fleet"], "n_vehicles": self.n_vehicles},
+            fleet=fleet,
             depot_node=sc["depot_node"],
             shift_start_s=sc["shift_start_s"],
             shift_end_s=sc["shift_end_s"],
             config=SimConfig(
                 info_mode="restricted",
                 seed=self.seed,
-                initial_soc=self.initial_soc,
+                initial_soc=soc,
                 n_vehicles=self.n_vehicles,
                 message_delay_s=self.message_delay_s,
                 packet_loss_p=self.packet_loss_p,
@@ -189,10 +237,18 @@ class RaceMultiAgentEnv:
             ),
             policy=None,
         )
+        # Break depot symmetry on conflict stress so peer bids can change owners (G3/G4).
+        spread = bool(sc.get("spread_vehicles"))
+        if not spread:
+            meta = sc.get("metadata") or {}
+            spread = str(meta.get("regime", "")) == "conflict_dense"
+        if spread:
+            self._spread_vehicles_near_requests()
         self._agent_ids = list(self.sim.vehicles.keys())
         self._last_served = 0
         self._last_on_time = 0
         self._last_bid_msgs = 0
+        self._last_bid_bytes = int(getattr(self.sim, "n_bid_bytes", 0) or 0)
         self._n_decisions = 0
         self._n_send_actions = 0
         self._n_op_claims = 0
@@ -205,6 +261,10 @@ class RaceMultiAgentEnv:
         self._n_claim_defers_to_peer = 0
         self._send_cooldown = {}
         self._send_counts = {}
+        self._opens_at_step_start = {}
+        self._step_open_count = {}
+        self._step_feasible_count = {}
+        self._step_best_opener = {}
         self._last_executed_comm = {}
         self._last_comm_learnable = {}
         self._pending_autoleg = set()
@@ -213,14 +273,35 @@ class RaceMultiAgentEnv:
         self._n_decision_vehicle_idle = 0
         self._n_decision_charge_end = 0
         self._n_decision_release = 0
+        self._n_decision_bid_assign = 0
+        self._n_assign_windows = 0
+        self._n_claim_held_for_assign = 0
         self._n_second_choice_claims = 0
         self._n_idle_with_pending = 0
         self._n_missed_feasible_pickup = 0
         self._n_claim_attempts = 0
         self._n_duplicate_task_proposals = 0
+        self._comm_preflight_done = False
+        self._ops_preflight_done = False
         self._advance_to_decision()
         self._decision_t0 = float(self.sim.now_s)
         return self._observe_all(reward=0.0, done=False)
+
+    def _spread_vehicles_near_requests(self) -> None:
+        """Place vehicles near distinct request snaps (depot-symmetry break)."""
+        assert self.sim is not None
+        snaps = [
+            int(r.snap_node)
+            for r in self.sim.requests.values()
+            if r.snap_node is not None
+        ]
+        if not snaps:
+            return
+        for i, vid in enumerate(self.sim.vehicles.keys()):
+            node = snaps[i % len(snaps)]
+            v = self.sim.vehicles[vid]
+            v.node = int(node)
+            v.ready_s = float(self.sim.now_s)
 
     def _suppress_autoleg(self):
         """Context: run native event handlers without immediately starting next legs.
@@ -280,6 +361,9 @@ class RaceMultiAgentEnv:
                 req = sim.requests[rid]
                 if req.status == RequestStatus.UNRELEASED:
                     req.status = RequestStatus.AVAILABLE
+                    # Native two-phase under delay: bid_exchange now, claim after
+                    # assign window so delayed peer bids can affect ownership (G3).
+                    self._maybe_schedule_assign_window(rid)
                     self._last_decision_reason = "request_release"
                     self._n_decision_release += 1
                     return False
@@ -333,7 +417,11 @@ class RaceMultiAgentEnv:
                     self._last_decision_reason = "message"
                     return False
             elif ev.type == EventType.BID_ASSIGN_WINDOW:
+                rid = str(ev.payload.get("request_id", ""))
+                if rid and rid in sim._pending_assign_requests:
+                    sim._pending_assign_requests.discard(rid)
                 self._last_decision_reason = "bid_assign"
+                self._n_decision_bid_assign += 1
                 return False
             elif ev.type == EventType.SHIFT_END:
                 sim._expire_open_requests()
@@ -341,9 +429,56 @@ class RaceMultiAgentEnv:
                 return True
         return True
 
+    def _maybe_schedule_assign_window(self, request_id: str) -> None:
+        """Schedule native-style assign wait when delayed bids can change owners."""
+        assert self.sim is not None
+        if not self.comm_enabled or float(self.message_delay_s) <= 1e-12:
+            return
+        req = self.sim.requests.get(request_id)
+        if req is None:
+            return
+        task = TaskAnnouncement(
+            req.request_id,
+            req.snap_node,
+            req.tw_start_s,
+            req.tw_end_s,
+            req.service_s,
+            req.weight_kg,
+        )
+        wait = float(
+            assignment_wait_s(
+                task,
+                now_s=float(self.sim.now_s),
+                message_delay_s=float(self.message_delay_s),
+                max_wait_s=120.0,
+                urgency_slack_s=180.0,
+            )
+        )
+        self._n_assign_windows += 1
+        if wait <= 1e-12:
+            return
+        self.sim._pending_assign_requests.add(request_id)
+        self.sim._schedule(
+            float(self.sim.now_s) + wait,
+            EventType.BID_ASSIGN_WINDOW,
+            {"request_id": request_id},
+        )
+
+    def _claim_blocked_pending_assign(self, request_id: str) -> bool:
+        """True while native assign window is open (bids still in flight)."""
+        if self.sim is None:
+            return False
+        return request_id in getattr(self.sim, "_pending_assign_requests", set())
+
+    def _peer_bids_for_encode(self, obs: RestrictedObservation) -> dict:
+        """Phase-2 PO: peer bids only from delivered local table; none under ablation A."""
+        if not self.comm_enabled or self.ablation == ABLATION_A:
+            return {}
+        return dict(obs.peer_bids or {})
+
     def _peer_task_feats(self, obs: RestrictedObservation, request_id: str, now_s: float) -> list[float]:
         """Compact delivered peer-bid summary for one task (legal local info only)."""
-        senders = (obs.peer_bids or {}).get(request_id, {}) or {}
+        senders = (self._peer_bids_for_encode(obs)).get(request_id, {}) or {}
         best_travel = 0.0
         best_energy = 0.0
         best_slack = 0.0
@@ -397,7 +532,7 @@ class RaceMultiAgentEnv:
             float(obs.now_s) / 28800.0,
             shift_left,
             float(len(obs.announced)) / 40.0,
-            float(len(obs.peer_bids)) / 40.0,
+            float(len(self._peer_bids_for_encode(obs))) / 40.0,
             1.0 if self.comm_enabled else 0.0,
             float(self.message_delay_s) / 120.0,
             float(self.packet_loss_p),
@@ -443,13 +578,12 @@ class RaceMultiAgentEnv:
                 if self.comm_enabled and chk.feasible:
                     key = (obs.vehicle_id, t.request_id)
                     cool_ok = float(obs.now_s) >= self._send_cooldown.get(key, -1e18)
-                    count_ok = self._send_counts.get(key, 0) < MAX_SENDS_PER_TASK
+                    count_ok = self._send_counts.get(key, 0) < self._max_sends_per_task()
                     if cool_ok and count_ok:
-                        if self.ablation == ABLATION_F:
-                            if self._task_needs_energy_cert(obs, t, chk):
-                                comm_mask[i] = 1.0
-                        else:
-                            comm_mask[i] = 1.0
+                        # F/D/E: any feasible send is mask-legal; energy-cert is
+                        # payload content (_send_bid), not a gate (G4: cert-only
+                        # mask blocked first bids → chicken-and-egg vs B).
+                        comm_mask[i] = 1.0
             else:
                 task_feats.extend([0.0] * TASK_FEAT)
         if not self.comm_enabled:
@@ -459,19 +593,77 @@ class RaceMultiAgentEnv:
         assert vec.shape[0] == self.obs_dim
         return vec, op_mask, comm_mask, tasks
 
-    def _task_needs_energy_cert(self, obs: RestrictedObservation, task, chk) -> bool:
-        peer_senders = (obs.peer_bids or {}).get(task.request_id, {}) or {}
-        if peer_senders:
-            return True
-        flex = float(chk.energy_flex_kwh or 0.0)
-        if flex < self.energy_cert_threshold_kwh:
-            return True
+    def _deadline_or_pending(self, chk, rid: str) -> bool:
         slack = float(chk.min_deadline_slack_s or 0.0)
         if slack < CONTEST_DEADLINE_SLACK_S:
             return True
-        if self.sim is not None and task.request_id in getattr(self.sim, "_pending_assign_requests", set()):
+        if self.sim is not None and rid in getattr(self.sim, "_pending_assign_requests", set()):
             return True
         return False
+
+    def _energy_flex_binding(self, chk) -> bool:
+        return float(chk.energy_flex_kwh or 0.0) < self.energy_cert_threshold_kwh
+
+    def _energy_or_deadline_binding(self, chk, rid: str) -> bool:
+        return self._energy_flex_binding(chk) or self._deadline_or_pending(chk, rid)
+
+    def _fleet_sends_for(self, rid: str) -> int:
+        return int(sum(c for (vid, r), c in self._send_counts.items() if r == rid))
+
+    def _max_sends_per_task(self) -> int:
+        # F: single cert per (vehicle, request) — cuts resend bytes while opening
+        # wave still coordinates via a second agent (multi-seed G4).
+        if self.ablation == ABLATION_F:
+            return 1
+        return int(MAX_SENDS_PER_TASK)
+
+    def _task_needs_energy_cert(self, obs: RestrictedObservation, task, chk) -> bool:
+        """F execute filter: send when coordination/energy is decision-relevant.
+
+        Opening wave (contested): best-travel free opener + one peer echo (cap 2).
+        Fleet-wide ≤2 certs per request (energy-binding used to flood because low
+        flex made every agent "binding"). Deadline/pending may exceed that cap.
+        """
+        rid = task.request_id
+        n_step = int(self._step_open_count.get(rid, 0))
+        opens_prior = int(self._opens_at_step_start.get(rid, 0))
+        peer_senders = (obs.peer_bids or {}).get(rid, {}) or {}
+        contested = int(self._step_feasible_count.get(rid, 0)) >= 2
+        is_best = self._step_best_opener.get(rid) in (None, obs.vehicle_id)
+        urgent = self._deadline_or_pending(chk, rid)
+        flex_bind = self._energy_flex_binding(chk)
+        opening_cap = 2 if contested else 1
+        fleet = self._fleet_sends_for(rid)
+        pending = bool(
+            self.sim is not None
+            and rid in getattr(self.sim, "_pending_assign_requests", set())
+        )
+
+        # Fleet-wide ≤2 certs/request. Deadline slack must NOT bypass this under
+        # energy_binding (low SOC makes slack look "urgent" for everyone → br≈0.88).
+        # Only an in-flight pending assign may exceed the budget.
+        if fleet >= 2 and not pending:
+            return False
+
+        if opens_prior == 0:
+            if n_step >= opening_cap:
+                return False
+            if n_step < 1:
+                if is_best:
+                    return True
+                # Non-best opener: deadline/pending only — low flex is universal
+                # under energy_binding and would always open a second slot.
+                return bool(contested and urgent)
+            # Second slot: peer echo, urgent, or best catching up — not flex alone.
+            return bool(peer_senders or urgent or is_best)
+
+        if peer_senders and fleet < 2:
+            return True
+        if pending:
+            return True
+        if urgent and fleet < 2:
+            return True
+        return bool(flex_bind and is_best and fleet < 2)
 
     def _charge_action_legal(self, obs: RestrictedObservation) -> bool:
         """Charge only when idle, not already charging/en-route, and SOC needs it.
@@ -512,7 +704,7 @@ class RaceMultiAgentEnv:
 
     def _can_send(self, vid: str, request_id: str, now_s: float) -> bool:
         key = (vid, request_id)
-        if self._send_counts.get(key, 0) >= MAX_SENDS_PER_TASK:
+        if self._send_counts.get(key, 0) >= self._max_sends_per_task():
             return False
         if now_s < self._send_cooldown.get(key, -1e18):
             return False
@@ -545,6 +737,7 @@ class RaceMultiAgentEnv:
         act.broadcast_task_bid(vid, payload)
         key = (vid, task.request_id)
         self._send_counts[key] = self._send_counts.get(key, 0) + 1
+        self._step_open_count[task.request_id] = int(self._step_open_count.get(task.request_id, 0)) + 1
         self._send_cooldown[key] = float(obs.now_s) + COMM_COOLDOWN_S
         self._n_send_actions += 1
         return True
@@ -571,9 +764,105 @@ class RaceMultiAgentEnv:
                         return i, False
             return COMM_SUPPRESS, False
         if 0 <= comm_a < K_TASKS and comm_a < len(tasks):
+            # F: energy-cert / contest is an *execution* filter (not mask gate).
+            # Mask stays open so the policy can learn; non-cert sends → suppress.
+            if self.ablation == ABLATION_F:
+                t = tasks[comm_a]
+                act = ActionInterface(self.sim, actor_vehicle_id=vid)
+                chk = act.check_insertion(vid, t.request_id)
+                if not self._task_needs_energy_cert(obs, t, chk):
+                    self._n_comm_suppress += 1
+                    return COMM_SUPPRESS, True
             return int(comm_a), True
         self._n_comm_suppress += 1
         return COMM_SUPPRESS, True
+
+    def _peer_bids_list(self, obs: RestrictedObservation, rid: str, vid: str) -> list[TaskBid]:
+        peers: list[TaskBid] = []
+        for sid, payload in ((obs.peer_bids or {}).get(rid, {}) or {}).items():
+            if sid == vid or not payload:
+                continue
+            try:
+                peers.append(TaskBid.from_payload(payload))
+            except (KeyError, TypeError, ValueError):
+                continue
+        return peers
+
+    def _sequential_native_resolve_claims(self, proposals: dict[str, dict[str, Any]]) -> None:
+        """Commit claims in simulator vehicle order (native-aligned).
+
+        Simultaneous duplicate proposals for the same request are *not* re-ranked
+        into a global batch winner. Each vehicle refreshes local info after earlier
+        vehicles have committed, matching ``RaceCooperativePolicy`` sequential
+        ``bid_assign`` / ``on_decision`` loops (Stage 8.3 divergence fix).
+        """
+        assert self.sim is not None
+        # Diagnostic: how often multiple agents proposed the same rid this epoch.
+        proposed_rids: dict[str, int] = {}
+        for prop in proposals.values():
+            op_a = int(prop["op"])
+            tasks = prop["tasks"]
+            if 0 <= op_a < K_TASKS and op_a < len(tasks):
+                rid = tasks[op_a].request_id
+                proposed_rids[rid] = proposed_rids.get(rid, 0) + 1
+        for c in proposed_rids.values():
+            if c > 1:
+                self._n_batched_conflicts += 1
+
+        awarded_rids: set[str] = set()
+        for vid in list(self.sim.vehicles.keys()):
+            if vid not in proposals:
+                continue
+            prop = proposals[vid]
+            op_a = int(prop["op"])
+            tasks = prop["tasks"]
+            obs = build_restricted_observation(self.sim, vid)
+            act = ActionInterface(self.sim, actor_vehicle_id=vid)
+
+            if op_a == OP_CHARGE:
+                if self._charge_action_legal(obs):
+                    act.request_return_depot(vid, charge=True, target_soc=self.charge_target_soc)
+                    self._n_op_charge += 1
+                else:
+                    self._n_op_defer += 1
+                continue
+
+            if not (0 <= op_a < K_TASKS and op_a < len(tasks)):
+                self._n_op_defer += 1
+                continue
+
+            preferred = tasks[op_a]
+            ordered = [preferred]
+            for t in sorted(obs.announced, key=lambda x: x.tw_end_s):
+                if t.request_id != preferred.request_id:
+                    ordered.append(t)
+
+            claimed = False
+            for j, task in enumerate(ordered):
+                rid = task.request_id
+                if rid in awarded_rids:
+                    continue
+                if self._claim_blocked_pending_assign(rid):
+                    self._n_claim_held_for_assign += 1
+                    continue
+                obs = build_restricted_observation(self.sim, vid)
+                chk = act.check_insertion(vid, rid)
+                if not chk.feasible:
+                    continue
+                own = compute_self_bid(obs, act, task)
+                peers = self._peer_bids_list(obs, rid, vid)
+                if peers and not self_should_claim(own, peers, now_s=float(obs.now_s)):
+                    self._n_claim_defers_to_peer += 1
+                    continue
+                if act.claim_task(vid, rid):
+                    self._n_op_claims += 1
+                    if j > 0:
+                        self._n_second_choice_claims += 1
+                    awarded_rids.add(rid)
+                    claimed = True
+                    break
+            if not claimed:
+                self._n_op_defer += 1
 
     def _batched_resolve_claims(self, proposals: dict[str, dict[str, Any]]) -> None:
         assert self.sim is not None
@@ -590,20 +879,16 @@ class RaceMultiAgentEnv:
             if op_a < K_TASKS and op_a < len(tasks):
                 task = tasks[op_a]
                 rid = task.request_id
+                if self._claim_blocked_pending_assign(rid):
+                    self._n_claim_held_for_assign += 1
+                    defer_vids.append(vid)
+                    continue
                 chk = act.check_insertion(vid, rid)
                 if not chk.feasible:
                     defer_vids.append(vid)
                     continue
                 own = compute_self_bid(obs, act, task)
-                peers_raw = (obs.peer_bids or {}).get(rid, {}) or {}
-                peers: list[TaskBid] = []
-                for sid, payload in peers_raw.items():
-                    if sid == vid or not payload:
-                        continue
-                    try:
-                        peers.append(TaskBid.from_payload(payload))
-                    except (KeyError, TypeError, ValueError):
-                        continue
+                peers = self._peer_bids_list(obs, rid, vid)
                 if peers and not self_should_claim(own, peers, now_s=float(obs.now_s)):
                     self._n_claim_defers_to_peer += 1
                     defer_vids.append(vid)
@@ -657,15 +942,7 @@ class RaceMultiAgentEnv:
                 if not chk.feasible:
                     continue
                 own = compute_self_bid(obs, act, task)
-                peers_raw = (obs.peer_bids or {}).get(rid, {}) or {}
-                peers = []
-                for sid, payload in peers_raw.items():
-                    if sid == vid or not payload:
-                        continue
-                    try:
-                        peers.append(TaskBid.from_payload(payload))
-                    except (KeyError, TypeError, ValueError):
-                        continue
+                peers = self._peer_bids_list(obs, rid, vid)
                 if peers and not self_should_claim(own, peers, now_s=float(obs.now_s)):
                     continue
                 if act.claim_task(vid, rid):
@@ -693,8 +970,34 @@ class RaceMultiAgentEnv:
     def step(self, actions: dict[str, tuple[int, int] | int]) -> dict[str, AgentStep]:
         assert self.sim is not None
         self._n_decisions += 1
+        # Freeze fleet-wide open counts for F cert filter (same-step peers).
+        opens: dict[str, int] = {}
+        for (_vid, rid), c in self._send_counts.items():
+            opens[rid] = opens.get(rid, 0) + int(c)
+        self._opens_at_step_start = opens
+        self._step_open_count = {}
+        # Contested map + best-travel opener per request (free-opener priority).
+        feas: dict[str, int] = {}
+        best_travel: dict[str, tuple[float, str]] = {}
+        for vid, obs0 in self._pending_obs.items():
+            act0 = ActionInterface(self.sim, actor_vehicle_id=vid)
+            for t0 in obs0.announced:
+                chk0 = act0.check_insertion(vid, t0.request_id)
+                if not chk0.feasible:
+                    continue
+                rid0 = t0.request_id
+                feas[rid0] = feas.get(rid0, 0) + 1
+                tr0 = float(chk0.marginal_travel_s if chk0.marginal_travel_s is not None else 1e18)
+                prev = best_travel.get(rid0)
+                if prev is None or tr0 < prev[0] or (tr0 == prev[0] and vid < prev[1]):
+                    best_travel[rid0] = (tr0, vid)
+        self._step_feasible_count = feas
+        self._step_best_opener = {rid0: vid for rid0, (_tr, vid) in best_travel.items()}
         t_before = float(self.sim.now_s)
         msgs_before = int(self.sim.n_bid_messages)
+        bytes_before = int(getattr(self.sim, "n_bid_bytes", 0) or 0)
+        missed_before = int(self._n_missed_feasible_pickup)
+        charge_before = int(self._n_op_charge)
         proposals: dict[str, dict[str, Any]] = {}
         pending_available = [
             r
@@ -735,22 +1038,51 @@ class RaceMultiAgentEnv:
         self._n_duplicate_task_proposals += sum(1 for c in claimed_idxs.values() if c > 1)
         self._last_executed_comm = {}
         self._last_comm_learnable = {}
-        for vid in sorted(proposals.keys()):
-            prop = proposals[vid]
-            exec_comm, learnable = self._resolve_comm_action(
-                vid, prop["comm_proposed"], prop["tasks"], prop["obs"]
-            )
-            self._last_executed_comm[vid] = exec_comm
-            self._last_comm_learnable[vid] = learnable
-            if 0 <= exec_comm < K_TASKS and exec_comm < len(prop["tasks"]):
-                self._send_bid(vid, prop["obs"], prop["tasks"][exec_comm])
-        # Two-phase parity with native RaceCooperativePolicy: deliver zero-delay
-        # bids before ownership resolution so peer certificates are visible.
-        flush = getattr(self.sim, "_flush_zero_delay_task_bids", None)
-        if callable(flush):
-            flush()
-        self._n_msgs_before_commit += max(0, int(self.sim.n_bid_messages) - msgs_before)
-        self._batched_resolve_claims(proposals)
+        preflight_comm = bool(self._comm_preflight_done)
+        preflight_ops = bool(self._ops_preflight_done)
+        self._comm_preflight_done = False
+        self._ops_preflight_done = False
+        if preflight_comm or preflight_ops:
+            for vid, prop in proposals.items():
+                self._last_executed_comm[vid] = int(prop["comm_proposed"])
+                self._last_comm_learnable[vid] = False
+        else:
+            # Best-travel agents first so the free opener slot is not consumed by
+            # a lex-earlier weak bidder (multi-seed G4).
+            def _comm_sort_key(vid: str) -> tuple[float, str]:
+                prop = proposals[vid]
+                ca = int(prop["comm_proposed"])
+                tasks = prop["tasks"]
+                if 0 <= ca < len(tasks):
+                    rid = tasks[ca].request_id
+                    if self._step_best_opener.get(rid) == vid:
+                        return (0.0, vid)
+                    act = ActionInterface(self.sim, actor_vehicle_id=vid)
+                    chk = act.check_insertion(vid, rid)
+                    tr = float(chk.marginal_travel_s if chk.marginal_travel_s is not None else 1e18)
+                    return (tr, vid)
+                return (1e18, vid)
+
+            for vid in sorted(proposals.keys(), key=_comm_sort_key):
+                prop = proposals[vid]
+                exec_comm, learnable = self._resolve_comm_action(
+                    vid, prop["comm_proposed"], prop["tasks"], prop["obs"]
+                )
+                self._last_executed_comm[vid] = exec_comm
+                self._last_comm_learnable[vid] = learnable
+                if 0 <= exec_comm < K_TASKS and exec_comm < len(prop["tasks"]):
+                    self._send_bid(vid, prop["obs"], prop["tasks"][exec_comm])
+            # Two-phase parity with native RaceCooperativePolicy: deliver zero-delay
+            # bids before ownership resolution so peer certificates are visible.
+            flush = getattr(self.sim, "_flush_zero_delay_task_bids", None)
+            if callable(flush):
+                flush()
+            self._n_msgs_before_commit += max(0, int(self.sim.n_bid_messages) - msgs_before)
+        if not preflight_ops:
+            if self.claim_resolve_mode == "sequential_native":
+                self._sequential_native_resolve_claims(proposals)
+            else:
+                self._batched_resolve_claims(proposals)
         # After claims/charges, start deferred next legs (native post-decide timing).
         self._flush_autoleg()
         done = self._advance_to_decision()
@@ -772,13 +1104,26 @@ class RaceMultiAgentEnv:
             if r.status == RequestStatus.COMPLETED and r.on_time
         )
         bid_msgs = int(self.sim.n_bid_messages)
+        bid_bytes = int(getattr(self.sim, "n_bid_bytes", 0) or 0)
         delta_ot = float(on_time - self._last_on_time)
         delta_served = float(served - self._last_served)
         delta_msgs = float(bid_msgs - self._last_bid_msgs)
-        team_r = 1.0 * delta_ot + 0.1 * max(0.0, delta_served - delta_ot) - self.msg_cost * delta_msgs
+        delta_bytes = float(bid_bytes - bytes_before)
+        delta_missed = float(max(0, self._n_missed_feasible_pickup - missed_before))
+        delta_charge = float(max(0, self._n_op_charge - charge_before))
+        # Phase-3 multi-objective: service first, then bandwidth / missed / charge.
+        team_r = (
+            self.ot_reward * delta_ot
+            + self.served_late_reward * max(0.0, delta_served - delta_ot)
+            - self.msg_cost * delta_msgs
+            - self.byte_cost * delta_bytes
+            - self.missed_feasible_cost * delta_missed
+            - self.charge_cost * delta_charge
+        )
         self._last_served = served
         self._last_on_time = on_time
         self._last_bid_msgs = bid_msgs
+        self._last_bid_bytes = bid_bytes
         elapsed = max(0.0, float(self.sim.now_s) - t_before)
         out = self._observe_all(reward=team_r, done=done)
         for vid, st in out.items():
@@ -786,6 +1131,10 @@ class RaceMultiAgentEnv:
             st.info["truncated_budget"] = truncated_budget
             st.info["delta_on_time"] = delta_ot
             st.info["delta_messages"] = delta_msgs
+            st.info["delta_bytes"] = delta_bytes
+            st.info["delta_missed_feasible"] = delta_missed
+            st.info["delta_charge"] = delta_charge
+            st.info["team_reward"] = team_r
             st.info["executed_comm"] = int(self._last_executed_comm.get(vid, COMM_SUPPRESS))
             st.info["comm_learnable"] = bool(self._last_comm_learnable.get(vid, False))
             st.info["comm_externally_controlled"] = self.comm_externally_controlled
@@ -819,7 +1168,11 @@ class RaceMultiAgentEnv:
         m["n_decision_vehicle_idle"] = self._n_decision_vehicle_idle
         m["n_decision_charge_end"] = self._n_decision_charge_end
         m["n_decision_release"] = self._n_decision_release
+        m["n_decision_bid_assign"] = self._n_decision_bid_assign
+        m["n_assign_windows"] = self._n_assign_windows
+        m["n_claim_held_for_assign"] = self._n_claim_held_for_assign
         m["ablation"] = self.ablation
+        m["claim_resolve_mode"] = self.claim_resolve_mode
         m["obs_dim"] = self.obs_dim
         m["task_feat"] = TASK_FEAT
         m["message_triggers_decision"] = self.message_triggers_decision

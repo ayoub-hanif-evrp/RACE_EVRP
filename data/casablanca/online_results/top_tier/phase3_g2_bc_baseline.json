@@ -1,0 +1,110 @@
+{
+  "seed": 0,
+  "episodes": 4,
+  "regime": "baseline",
+  "energy_binding": false,
+  "teacher": {
+    "method": "teacher_intent_matched_ceiling",
+    "ablation": "F_race_marl",
+    "regime": "baseline",
+    "energy_binding": false,
+    "mean_ot": 0.9375,
+    "mean_bytes": 33279.5,
+    "episodes": [
+      {
+        "on_time_rate_all": 1.0,
+        "n_served": 12.0,
+        "n_bid_messages": 72.0,
+        "n_bid_bytes": 36326.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.9166666666666666,
+        "n_served": 11.0,
+        "n_bid_messages": 66.0,
+        "n_bid_bytes": 33338.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 1.0,
+        "n_served": 12.0,
+        "n_bid_messages": 68.0,
+        "n_bid_bytes": 33968.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.8333333333333334,
+        "n_served": 10.0,
+        "n_bid_messages": 58.0,
+        "n_bid_bytes": 29486.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      }
+    ],
+    "n_episodes": 4
+  },
+  "bc": {
+    "method": "bc_native_execute",
+    "ablation": "F_race_marl",
+    "regime": "baseline",
+    "energy_binding": false,
+    "mean_ot": 0.9166666666666666,
+    "g2_pass": true,
+    "g2_absolute_pass": true,
+    "g2_relative_pass": true,
+    "g2_threshold": 0.78,
+    "g2_relative_slack": 0.03,
+    "teacher_mean_ot": 0.9375,
+    "ot_gap_vs_teacher": -0.02083333333333337,
+    "mean_bytes": 0.0,
+    "bc": {
+      "op_accuracy": 0.7425130009651184,
+      "comm_accuracy": 0.6067708134651184,
+      "charge_accuracy": 1.0,
+      "n": 3072.0,
+      "teacher": "native_execute_dagger",
+      "final_loss": null
+    },
+    "episodes": [
+      {
+        "on_time_rate_all": 1.0,
+        "n_served": 12.0,
+        "n_bid_messages": 0.0,
+        "n_bid_bytes": 0.0,
+        "n_op_charge": 3.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.9166666666666666,
+        "n_served": 11.0,
+        "n_bid_messages": 0.0,
+        "n_bid_bytes": 0.0,
+        "n_op_charge": 4.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.9166666666666666,
+        "n_served": 11.0,
+        "n_bid_messages": 0.0,
+        "n_bid_bytes": 0.0,
+        "n_op_charge": 6.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.8333333333333334,
+        "n_served": 10.0,
+        "n_bid_messages": 0.0,
+        "n_bid_bytes": 0.0,
+        "n_op_charge": 2.0,
+        "n_missed_feasible_pickup": 0.0
+      }
+    ],
+    "bc_steps": 512,
+    "bc_epochs": 30,
+    "dagger_rounds": 2,
+    "n_eval_episodes": 4
+  }
+}

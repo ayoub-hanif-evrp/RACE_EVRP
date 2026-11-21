@@ -1,0 +1,106 @@
+{
+  "seed": 0,
+  "episodes": 4,
+  "energy_binding": false,
+  "teacher": {
+    "method": "teacher_intent_matched_ceiling",
+    "ablation": "F_race_marl",
+    "mean_ot": 0.4375,
+    "mean_bytes": 21806.0,
+    "episodes": [
+      {
+        "on_time_rate_all": 0.4583333333333333,
+        "n_served": 11.0,
+        "n_bid_messages": 46.0,
+        "n_bid_bytes": 22948.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.4583333333333333,
+        "n_served": 11.0,
+        "n_bid_messages": 48.0,
+        "n_bid_bytes": 24134.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.4583333333333333,
+        "n_served": 11.0,
+        "n_bid_messages": 46.0,
+        "n_bid_bytes": 22516.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.375,
+        "n_served": 9.0,
+        "n_bid_messages": 36.0,
+        "n_bid_bytes": 17626.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      }
+    ],
+    "n_episodes": 4
+  },
+  "bc": {
+    "method": "bc_native_execute",
+    "ablation": "F_race_marl",
+    "energy_binding": false,
+    "mean_ot": 0.2916666666666667,
+    "g2_pass": false,
+    "g2_absolute_pass": false,
+    "g2_relative_pass": false,
+    "g2_threshold": 0.78,
+    "g2_relative_slack": 0.03,
+    "teacher_mean_ot": 0.4375,
+    "ot_gap_vs_teacher": -0.14583333333333331,
+    "mean_bytes": 3218.5,
+    "bc": {
+      "op_accuracy": 0.9479166865348816,
+      "comm_accuracy": 0.9001736044883728,
+      "charge_accuracy": NaN,
+      "n": 1152.0,
+      "teacher": "native_execute_dagger",
+      "final_loss": null
+    },
+    "episodes": [
+      {
+        "on_time_rate_all": 0.2916666666666667,
+        "n_served": 7.0,
+        "n_bid_messages": 6.0,
+        "n_bid_bytes": 3516.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.3333333333333333,
+        "n_served": 8.0,
+        "n_bid_messages": 4.0,
+        "n_bid_bytes": 2344.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.3333333333333333,
+        "n_served": 8.0,
+        "n_bid_messages": 10.0,
+        "n_bid_bytes": 5844.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.20833333333333334,
+        "n_served": 5.0,
+        "n_bid_messages": 2.0,
+        "n_bid_bytes": 1170.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      }
+    ],
+    "bc_steps": 256,
+    "bc_epochs": 20,
+    "dagger_rounds": 1,
+    "n_eval_episodes": 4
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "gate": "G6_freeze",
+  "git_commit": "7bc662a32872fc72a8095d84af03316916cd6aa1",
+  "git_working_tree_dirty": true,
+  "checkpoint": "data/casablanca/online_results/top_tier/marl_checkpoints/phase3_F_conflict_g4mask_seed0_best.pt",
+  "checkpoint_sha256": "3aba4b5182a241c3aec781267fb8347252e28af246a8231173dc59edc9ef6fea",
+  "fleet_default_sha256": "92f36ae2807d6242ad49a142d1c6277cb61a328341f53ecef5f3e1abaf802ab0",
+  "marl_training_protocol_sha256": "70625e4431ebe468db2fee40d86fb47821adfb2730465ea3224744cbaf89b191",
+  "phase4_matrix_sha256": "c0b804f10ac7470004ebcd2228b82647238db414d8fbfdbff7e608e8d07e7989",
+  "locked_root": "data/casablanca/evaluation_v1/locked_final",
+  "ablations": [
+    "A_no_comm",
+    "B_full_comm",
+    "C_random_matched",
+    "F_race_marl"
+  ],
+  "note": "Frozen before locked_final run. Do not retune after reading locked numbers."
+}

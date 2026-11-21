@@ -1,0 +1,111 @@
+{
+  "checkpoint": "data/casablanca/online_results/top_tier/marl_checkpoints/phase3_F_conflict_g4mask_seed0_best.pt",
+  "episodes_per_seed": 4,
+  "summary": {
+    "n_seeds": 3,
+    "n_hard_pass": 3,
+    "n_soft_pass": 3,
+    "mean_F_minus_A": 0.07291666666666664,
+    "mean_F_minus_B": 0.006944444444444457,
+    "mean_bytes_F_over_B": 0.6371079142860069,
+    "aggregate_hard_pass": true
+  },
+  "seeds": [
+    {
+      "master_seed": 0,
+      "rows": {
+        "A_no_comm": {
+          "mean_ot": 0.3541666666666667,
+          "mean_bytes": 0.0,
+          "mean_msgs": 0.0
+        },
+        "B_full_comm": {
+          "mean_ot": 0.4375,
+          "mean_bytes": 22762.5,
+          "mean_msgs": 45.0
+        },
+        "C_random_matched": {
+          "mean_ot": 0.39583333333333337,
+          "mean_bytes": 8569.0,
+          "mean_msgs": 17.0
+        },
+        "F_race_marl": {
+          "mean_ot": 0.4375,
+          "mean_bytes": 13660.5,
+          "mean_msgs": 24.0
+        }
+      },
+      "criteria": {
+        "F_minus_A": 0.08333333333333331,
+        "F_minus_B": 0.0,
+        "bytes_F_over_B": 0.6001317957166392,
+        "hard_pass": true,
+        "soft_pass": true
+      }
+    },
+    {
+      "master_seed": 1,
+      "rows": {
+        "A_no_comm": {
+          "mean_ot": 0.2916666666666667,
+          "mean_bytes": 0.0,
+          "mean_msgs": 0.0
+        },
+        "B_full_comm": {
+          "mean_ot": 0.375,
+          "mean_bytes": 18706.0,
+          "mean_msgs": 37.0
+        },
+        "C_random_matched": {
+          "mean_ot": 0.3333333333333333,
+          "mean_bytes": 7045.0,
+          "mean_msgs": 14.0
+        },
+        "F_race_marl": {
+          "mean_ot": 0.375,
+          "mean_bytes": 11678.5,
+          "mean_msgs": 20.5
+        }
+      },
+      "criteria": {
+        "F_minus_A": 0.08333333333333331,
+        "F_minus_B": 0.0,
+        "bytes_F_over_B": 0.6243184005132043,
+        "hard_pass": true,
+        "soft_pass": true
+      }
+    },
+    {
+      "master_seed": 2,
+      "rows": {
+        "A_no_comm": {
+          "mean_ot": 0.3229166666666667,
+          "mean_bytes": 0.0,
+          "mean_msgs": 0.0
+        },
+        "B_full_comm": {
+          "mean_ot": 0.35416666666666663,
+          "mean_bytes": 18706.5,
+          "mean_msgs": 37.0
+        },
+        "C_random_matched": {
+          "mean_ot": 0.34375,
+          "mean_bytes": 7305.0,
+          "mean_msgs": 14.5
+        },
+        "F_race_marl": {
+          "mean_ot": 0.375,
+          "mean_bytes": 12849.0,
+          "mean_msgs": 22.5
+        }
+      },
+      "criteria": {
+        "F_minus_A": 0.052083333333333315,
+        "F_minus_B": 0.02083333333333337,
+        "bytes_F_over_B": 0.6868735466281773,
+        "hard_pass": true,
+        "soft_pass": true
+      }
+    }
+  ]
+}

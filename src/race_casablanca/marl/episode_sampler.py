@@ -162,6 +162,8 @@ class ProceduralEpisodeGenerator:
         n_vehicles: int = 3,
         master_seed: int | None = None,
         episode_index: int | None = None,
+        energy_binding: bool = False,
+        initial_soc: float | None = None,
     ) -> dict:
         seed = assert_train_seed_allowed(seed)
         regime_cfg = dict(self.config["regimes"][regime])
@@ -169,11 +171,18 @@ class ProceduralEpisodeGenerator:
         requests = _requests_from_frame(req_df)
         fleet = dict(self.fleet)
         fleet["n_vehicles"] = int(n_vehicles)
+        # Phase-2 energy-binding tier: mid/low SOC so NL partial charge can bind.
+        soc = float(initial_soc) if initial_soc is not None else None
+        if energy_binding and soc is None:
+            soc = 0.28
+        if soc is not None:
+            fleet["initial_soc"] = float(soc)
         start_h = float(regime_cfg["start_hour"])
         horizon_h = float(regime_cfg["horizon_hours"])
         sid = f"procedural_train/{regime}_seed{seed}"
         if episode_index is not None:
             sid = f"{sid}/ep{episode_index}"
+        spread = regime == "conflict_dense"
         return {
             "scenario_id": sid,
             "graph": self.graph,
@@ -184,12 +193,16 @@ class ProceduralEpisodeGenerator:
             "shift_start_s": start_h * 3600.0,
             "shift_end_s": (start_h + horizon_h) * 3600.0,
             "day": "Monday",
+            "spread_vehicles": spread,
             "metadata": {
                 "split": "procedural_train",
                 "regime": regime,
                 "seed": seed,
                 "master_seed": master_seed,
                 "episode_index": episode_index,
+                "energy_binding": bool(energy_binding or soc is not None),
+                "initial_soc": fleet.get("initial_soc"),
+                "spread_vehicles": spread,
                 "generator_version": self.config.get("generator_version"),
                 "benchmark_version": self.config.get("benchmark_version"),
                 "n_requests": len(requests),
@@ -209,6 +222,7 @@ class ProceduralEpisodeGenerator:
         n_vehicles: int = 3,
         regimes: tuple[str, ...] = REGIME_ORDER,
         curriculum: str = "round_robin",
+        energy_binding: bool = False,
     ) -> Callable[..., dict]:
         """Factory compatible with RaceMultiAgentEnv(scenario_factory=...).
 
@@ -225,16 +239,21 @@ class ProceduralEpisodeGenerator:
                 regime = "peak_stress"
             elif curriculum == "tight_only":
                 regime = "tight_windows"
+            elif curriculum == "conflict_only":
+                regime = "conflict_dense"
             else:
                 raise ValueError(f"Unknown curriculum {curriculum}")
             train_seed = episode_train_seed(master_seed, ep)
             self._episode_counter += 1
+            # Alternate energy-binding every other conflict/round-robin episode when enabled.
+            bind = bool(energy_binding) and (ep % 2 == 1 or curriculum == "conflict_only")
             return self.make_episode(
                 regime=regime,
                 seed=train_seed,
                 n_vehicles=n_vehicles,
                 master_seed=master_seed,
                 episode_index=ep,
+                energy_binding=bind,
             )
 
         return factory
@@ -251,12 +270,14 @@ def make_procedural_train_factory(
     n_vehicles: int = 3,
     curriculum: str = "round_robin",
     load_network: bool = True,
+    energy_binding: bool = False,
 ) -> tuple[ProceduralEpisodeGenerator, Callable[..., dict]]:
     gen = ProceduralEpisodeGenerator.from_release(load_network=load_network)
     return gen, gen.make_factory(
         master_seed=master_seed,
         n_vehicles=n_vehicles,
         curriculum=curriculum,
+        energy_binding=energy_binding,
     )
 
 

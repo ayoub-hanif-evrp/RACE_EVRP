@@ -1,0 +1,205 @@
+{
+  "g4_conflict_delay0_nv3": {
+    "F_minus_A": {
+      "mean": 0.07291666666666664,
+      "lo": 0.052083333333333315,
+      "hi": 0.08333333333333331,
+      "n": 3
+    },
+    "bytes_F_over_B": {
+      "mean": 0.6371079142860069,
+      "lo": 0.6001317957166392,
+      "hi": 0.6868735466281773,
+      "n": 3
+    },
+    "n_hard_pass": 3,
+    "n_seeds": 3
+  },
+  "fleet_axis": {
+    "3": {
+      "n_hard": 3,
+      "n_cells": 3,
+      "F_minus_A": {
+        "mean": 0.07291666666666664,
+        "lo": 0.052083333333333315,
+        "hi": 0.08333333333333331,
+        "n": 3
+      },
+      "B_minus_A": {
+        "mean": 0.0659722222222222,
+        "lo": 0.031249999999999944,
+        "hi": 0.08333333333333331,
+        "n": 3
+      },
+      "bytes_F_over_B": {
+        "mean": 0.6371079142860069,
+        "lo": 0.6001317957166392,
+        "hi": 0.6868735466281773,
+        "n": 3
+      }
+    },
+    "5": {
+      "n_hard": 3,
+      "n_cells": 3,
+      "F_minus_A": {
+        "mean": 0.18055555555555555,
+        "lo": 0.10416666666666657,
+        "hi": 0.2708333333333333,
+        "n": 3
+      },
+      "B_minus_A": {
+        "mean": 0.17361111111111113,
+        "lo": 0.10416666666666657,
+        "hi": 0.2604166666666667,
+        "n": 3
+      },
+      "bytes_F_over_B": {
+        "mean": 0.4746677026304796,
+        "lo": 0.44283434407915734,
+        "hi": 0.5371773730336662,
+        "n": 3
+      }
+    },
+    "8": {
+      "n_hard": 1,
+      "n_cells": 3,
+      "F_minus_A": {
+        "mean": 0.02777777777777779,
+        "lo": -1.1102230246251565e-16,
+        "hi": 0.06250000000000011,
+        "n": 3
+      },
+      "B_minus_A": {
+        "mean": 0.03125,
+        "lo": -1.1102230246251565e-16,
+        "hi": 0.07291666666666674,
+        "n": 3
+      },
+      "bytes_F_over_B": {
+        "mean": 0.3225976141269333,
+        "lo": 0.27905186143563815,
+        "hi": 0.3451141829527235,
+        "n": 3
+      }
+    }
+  },
+  "delay30": {
+    "gate": [
+      "G3",
+      "G4"
+    ],
+    "slice": "phase4_delay30_assign_wait",
+    "checkpoint": "data/casablanca/online_results/top_tier/marl_checkpoints/phase3_F_conflict_g4mask_seed0_best.pt",
+    "regime": "conflict_dense",
+    "message_delay_s": 30.0,
+    "fix": "MARL mirrors native bid_exchange\u2192assign_wait\u2192bid_assign; claims blocked while request in _pending_assign_requests",
+    "seeds": [
+      {
+        "seed": 0,
+        "A": 0.354,
+        "B": 0.438,
+        "F": 0.438,
+        "B_minus_A": 0.083,
+        "F_minus_A": 0.083,
+        "F_minus_B": 0.0,
+        "br": 0.528,
+        "hard": true
+      },
+      {
+        "seed": 1,
+        "A": 0.292,
+        "B": 0.385,
+        "F": 0.375,
+        "B_minus_A": 0.094,
+        "F_minus_A": 0.083,
+        "F_minus_B": -0.01,
+        "br": 0.534,
+        "hard": true
+      },
+      {
+        "seed": 2,
+        "A": 0.323,
+        "B": 0.354,
+        "F": 0.333,
+        "B_minus_A": 0.031,
+        "F_minus_A": 0.01,
+        "F_minus_B": -0.021,
+        "br": 0.558,
+        "hard": false,
+        "soft": true
+      }
+    ],
+    "n_hard_pass": 2,
+    "n_soft_pass": 3,
+    "delay0_seed0_sanity": {
+      "A": 0.354,
+      "B": 0.438,
+      "F": 0.438,
+      "br": 0.6,
+      "hard": true
+    }
+  },
+  "energy_binding_g4": {
+    "gate": "G4",
+    "slice": "phase4_energy_binding_bytes",
+    "checkpoint": "data/casablanca/online_results/top_tier/marl_checkpoints/phase3_F_conflict_g4mask_seed0_best.pt",
+    "regime": "conflict_dense",
+    "fix": "fleet_cap2 + no flex-alone second opener; pending-only fleet bypass",
+    "results": {
+      "energy_binding_false": [
+        {
+          "seed": 0,
+          "F_ot": 0.438,
+          "br": 0.6,
+          "hard": true
+        },
+        {
+          "seed": 1,
+          "F_ot": 0.375,
+          "br": 0.624,
+          "hard": true
+        },
+        {
+          "seed": 2,
+          "F_ot": 0.375,
+          "br": 0.687,
+          "hard": true
+        }
+      ],
+      "energy_binding_true": [
+        {
+          "seed": 0,
+          "F_ot": 0.385,
+          "br": 0.591,
+          "hard": true
+        },
+        {
+          "seed": 1,
+          "F_ot": 0.354,
+          "br": 0.603,
+          "hard": true
+        },
+        {
+          "seed": 2,
+          "F_ot": 0.302,
+          "br": 0.694,
+          "hard": true
+        }
+      ]
+    },
+    "n_hard_pass": 6,
+    "n_cells": 6
+  },
+  "g5_nl_charge": {
+    "n_hard_pass": 2,
+    "mean_delta_ot": 0.01388888888888889,
+    "exact_pass": true,
+    "nl_taper_full_over_partial": 2.4644533286980717,
+    "delta_ot_ci": {
+      "mean": 0.01388888888888889,
+      "lo": 0.0,
+      "hi": 0.020833333333333332,
+      "n": 3
+    }
+  }
+}

@@ -1,0 +1,2451 @@
+{
+  "mode": "core",
+  "checkpoint": "data/casablanca/online_results/top_tier/marl_checkpoints/phase3_F_conflict_g4mask_seed0_best.pt",
+  "config": "C:/Users/AYOUB/OneDrive - EMSI/Bureau/PHD_WORK/RACE/configs/phase4_matrix.json",
+  "n_rows": 48,
+  "summary": {
+    "n_cells": 12,
+    "n_hard_pass": 3,
+    "n_soft_pass": 7,
+    "cells": [
+      {
+        "regime": "baseline",
+        "energy_binding": false,
+        "master_seed": 0,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.9166666666666666,
+        "B_ot": 0.9375,
+        "C_ot": 0.9375,
+        "F_ot": 0.9375,
+        "criteria": {
+          "F_minus_A": 0.02083333333333337,
+          "F_minus_B": 0.0,
+          "bytes_F_over_B": 0.40648983228347685,
+          "hard_pass": false,
+          "soft_pass": true
+        }
+      },
+      {
+        "regime": "baseline",
+        "energy_binding": false,
+        "master_seed": 1,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.8541666666666667,
+        "B_ot": 0.8541666666666667,
+        "C_ot": 0.8541666666666667,
+        "F_ot": 0.8541666666666667,
+        "criteria": {
+          "F_minus_A": 0.0,
+          "F_minus_B": 0.0,
+          "bytes_F_over_B": 0.37926058934812584,
+          "hard_pass": false,
+          "soft_pass": false
+        }
+      },
+      {
+        "regime": "baseline",
+        "energy_binding": false,
+        "master_seed": 2,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.9583333333333333,
+        "B_ot": 0.9583333333333333,
+        "C_ot": 0.9583333333333333,
+        "F_ot": 0.9583333333333333,
+        "criteria": {
+          "F_minus_A": 0.0,
+          "F_minus_B": 0.0,
+          "bytes_F_over_B": 0.3818765105305559,
+          "hard_pass": false,
+          "soft_pass": false
+        }
+      },
+      {
+        "regime": "baseline",
+        "energy_binding": true,
+        "master_seed": 0,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.9375,
+        "B_ot": 0.9375,
+        "C_ot": 0.9375,
+        "F_ot": 0.9375,
+        "criteria": {
+          "F_minus_A": 0.0,
+          "F_minus_B": 0.0,
+          "bytes_F_over_B": 0.5079111863523896,
+          "hard_pass": false,
+          "soft_pass": false
+        }
+      },
+      {
+        "regime": "baseline",
+        "energy_binding": true,
+        "master_seed": 1,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.8541666666666667,
+        "B_ot": 0.8541666666666667,
+        "C_ot": 0.8541666666666667,
+        "F_ot": 0.8541666666666667,
+        "criteria": {
+          "F_minus_A": 0.0,
+          "F_minus_B": 0.0,
+          "bytes_F_over_B": 0.45905008120380497,
+          "hard_pass": false,
+          "soft_pass": false
+        }
+      },
+      {
+        "regime": "baseline",
+        "energy_binding": true,
+        "master_seed": 2,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.9583333333333333,
+        "B_ot": 0.9583333333333333,
+        "C_ot": 0.9583333333333333,
+        "F_ot": 0.9583333333333333,
+        "criteria": {
+          "F_minus_A": 0.0,
+          "F_minus_B": 0.0,
+          "bytes_F_over_B": 0.45775270306101407,
+          "hard_pass": false,
+          "soft_pass": false
+        }
+      },
+      {
+        "regime": "conflict_dense",
+        "energy_binding": false,
+        "master_seed": 0,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.3541666666666667,
+        "B_ot": 0.4375,
+        "C_ot": 0.39583333333333337,
+        "F_ot": 0.4375,
+        "criteria": {
+          "F_minus_A": 0.08333333333333331,
+          "F_minus_B": 0.0,
+          "bytes_F_over_B": 0.6001317957166392,
+          "hard_pass": true,
+          "soft_pass": true
+        }
+      },
+      {
+        "regime": "conflict_dense",
+        "energy_binding": false,
+        "master_seed": 1,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.2916666666666667,
+        "B_ot": 0.375,
+        "C_ot": 0.3333333333333333,
+        "F_ot": 0.375,
+        "criteria": {
+          "F_minus_A": 0.08333333333333331,
+          "F_minus_B": 0.0,
+          "bytes_F_over_B": 0.6243184005132043,
+          "hard_pass": true,
+          "soft_pass": true
+        }
+      },
+      {
+        "regime": "conflict_dense",
+        "energy_binding": false,
+        "master_seed": 2,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.3229166666666667,
+        "B_ot": 0.35416666666666663,
+        "C_ot": 0.34375,
+        "F_ot": 0.375,
+        "criteria": {
+          "F_minus_A": 0.052083333333333315,
+          "F_minus_B": 0.02083333333333337,
+          "bytes_F_over_B": 0.6868735466281773,
+          "hard_pass": true,
+          "soft_pass": true
+        }
+      },
+      {
+        "regime": "conflict_dense",
+        "energy_binding": true,
+        "master_seed": 0,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.3125,
+        "B_ot": 0.38541666666666663,
+        "C_ot": 0.3125,
+        "F_ot": 0.38541666666666663,
+        "criteria": {
+          "F_minus_A": 0.07291666666666663,
+          "F_minus_B": 0.0,
+          "bytes_F_over_B": 0.8871114941945951,
+          "hard_pass": false,
+          "soft_pass": true
+        }
+      },
+      {
+        "regime": "conflict_dense",
+        "energy_binding": true,
+        "master_seed": 1,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.21875,
+        "B_ot": 0.3541666666666667,
+        "C_ot": 0.29166666666666663,
+        "F_ot": 0.3541666666666667,
+        "criteria": {
+          "F_minus_A": 0.13541666666666669,
+          "F_minus_B": 0.0,
+          "bytes_F_over_B": 0.8869143316490583,
+          "hard_pass": false,
+          "soft_pass": true
+        }
+      },
+      {
+        "regime": "conflict_dense",
+        "energy_binding": true,
+        "master_seed": 2,
+        "message_delay_s": 0.0,
+        "packet_loss_p": 0.0,
+        "n_vehicles": 3,
+        "A_ot": 0.2604166666666667,
+        "B_ot": 0.28125,
+        "C_ot": 0.28125,
+        "F_ot": 0.28125,
+        "criteria": {
+          "F_minus_A": 0.020833333333333315,
+          "F_minus_B": 0.0,
+          "bytes_F_over_B": 0.8749435665914221,
+          "hard_pass": false,
+          "soft_pass": true
+        }
+      }
+    ]
+  },
+  "rows": [
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 0,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.3541666666666667,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.375,
+          "n_served": 9.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.20833333333333334,
+          "n_served": 5.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 0,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.4375,
+      "mean_bytes": 22762.5,
+      "mean_msgs": 45.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 52.0,
+          "n_bid_bytes": 26412.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 52.0,
+          "n_bid_bytes": 26354.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.5,
+          "n_served": 12.0,
+          "n_bid_messages": 46.0,
+          "n_bid_bytes": 23248.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 30.0,
+          "n_bid_bytes": 15036.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 0,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.39583333333333337,
+      "mean_bytes": 8569.0,
+      "mean_msgs": 17.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.375,
+          "n_served": 9.0,
+          "n_bid_messages": 16.0,
+          "n_bid_bytes": 8118.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 12110.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.5,
+          "n_served": 12.0,
+          "n_bid_messages": 16.0,
+          "n_bid_bytes": 8122.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 12.0,
+          "n_bid_bytes": 5926.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 0,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.4375,
+      "mean_bytes": 13660.5,
+      "mean_msgs": 24.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 12516.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 14834.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.5,
+          "n_served": 12.0,
+          "n_bid_messages": 30.0,
+          "n_bid_bytes": 17140.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 18.0,
+          "n_bid_bytes": 10152.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 1,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.2916666666666667,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.20833333333333334,
+          "n_served": 5.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 1,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.375,
+      "mean_bytes": 18706.0,
+      "mean_msgs": 37.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 44.0,
+          "n_bid_bytes": 22142.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 32.0,
+          "n_bid_bytes": 15998.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 36.0,
+          "n_bid_bytes": 18172.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 36.0,
+          "n_bid_bytes": 18512.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 1,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.3333333333333333,
+      "mean_bytes": 7045.0,
+      "mean_msgs": 14.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 14.0,
+          "n_bid_bytes": 7074.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 14.0,
+          "n_bid_bytes": 6836.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 16.0,
+          "n_bid_bytes": 8100.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 12.0,
+          "n_bid_bytes": 6170.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 1,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.375,
+      "mean_bytes": 11678.5,
+      "mean_msgs": 20.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 12478.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 18.0,
+          "n_bid_bytes": 10060.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 18.0,
+          "n_bid_bytes": 10172.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 14004.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 2,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.3229166666666667,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.25,
+          "n_served": 6.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 2,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.35416666666666663,
+      "mean_bytes": 18706.5,
+      "mean_msgs": 37.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 30.0,
+          "n_bid_bytes": 15066.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 40.0,
+          "n_bid_bytes": 20228.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 36.0,
+          "n_bid_bytes": 18146.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 42.0,
+          "n_bid_bytes": 21386.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 2,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.34375,
+      "mean_bytes": 7305.0,
+      "mean_msgs": 14.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 12.0,
+          "n_bid_bytes": 6066.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 14.0,
+          "n_bid_bytes": 6968.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 10.0,
+          "n_bid_bytes": 5016.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 11170.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": false,
+      "master_seed": 2,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.375,
+      "mean_bytes": 12849.0,
+      "mean_msgs": 22.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 12486.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 14838.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 20.0,
+          "n_bid_bytes": 11348.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 12724.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 0,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.3125,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.375,
+          "n_served": 9.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 5.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 7.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.16666666666666666,
+          "n_served": 4.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 0,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.38541666666666663,
+      "mean_bytes": 19723.0,
+      "mean_msgs": 39.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 52.0,
+          "n_bid_bytes": 26416.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 52.0,
+          "n_bid_bytes": 26356.0,
+          "n_op_charge": 6.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.375,
+          "n_served": 9.0,
+          "n_bid_messages": 34.0,
+          "n_bid_bytes": 17118.0,
+          "n_op_charge": 7.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.25,
+          "n_served": 6.0,
+          "n_bid_messages": 18.0,
+          "n_bid_bytes": 9002.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 0,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.3125,
+      "mean_bytes": 7056.0,
+      "mean_msgs": 14.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.375,
+          "n_served": 9.0,
+          "n_bid_messages": 16.0,
+          "n_bid_bytes": 8120.0,
+          "n_op_charge": 5.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 12116.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 10.0,
+          "n_bid_bytes": 5032.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.16666666666666666,
+          "n_served": 4.0,
+          "n_bid_messages": 6.0,
+          "n_bid_bytes": 2956.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 0,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.38541666666666663,
+      "mean_bytes": 17496.5,
+      "mean_msgs": 30.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 38.0,
+          "n_bid_bytes": 21878.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 38.0,
+          "n_bid_bytes": 21844.0,
+          "n_op_charge": 6.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.375,
+          "n_served": 9.0,
+          "n_bid_messages": 28.0,
+          "n_bid_bytes": 16002.0,
+          "n_op_charge": 7.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.25,
+          "n_served": 6.0,
+          "n_bid_messages": 18.0,
+          "n_bid_bytes": 10262.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 1,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.21875,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.25,
+          "n_served": 6.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.125,
+          "n_served": 3.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 5.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.20833333333333334,
+          "n_served": 5.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 1,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.3541666666666667,
+      "mean_bytes": 17416.0,
+      "mean_msgs": 34.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 44.0,
+          "n_bid_bytes": 22158.0,
+          "n_op_charge": 11.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.20833333333333334,
+          "n_served": 5.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 10848.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 36.0,
+          "n_bid_bytes": 18160.0,
+          "n_op_charge": 5.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 36.0,
+          "n_bid_bytes": 18498.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 1,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.29166666666666663,
+      "mean_bytes": 6786.0,
+      "mean_msgs": 13.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 14.0,
+          "n_bid_bytes": 7072.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.16666666666666666,
+          "n_served": 4.0,
+          "n_bid_messages": 12.0,
+          "n_bid_bytes": 5812.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 16.0,
+          "n_bid_bytes": 8092.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 12.0,
+          "n_bid_bytes": 6168.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 1,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.3541666666666667,
+      "mean_bytes": 15446.5,
+      "mean_msgs": 27.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.4583333333333333,
+          "n_served": 11.0,
+          "n_bid_messages": 34.0,
+          "n_bid_bytes": 19388.0,
+          "n_op_charge": 11.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.20833333333333334,
+          "n_served": 5.0,
+          "n_bid_messages": 16.0,
+          "n_bid_bytes": 8880.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 28.0,
+          "n_bid_bytes": 16000.0,
+          "n_op_charge": 5.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.4166666666666667,
+          "n_served": 10.0,
+          "n_bid_messages": 30.0,
+          "n_bid_bytes": 17518.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 2,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.2604166666666667,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.25,
+          "n_served": 6.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.125,
+          "n_served": 3.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.375,
+          "n_served": 9.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 7.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 2,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.28125,
+      "mean_bytes": 14397.5,
+      "mean_msgs": 28.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 30.0,
+          "n_bid_bytes": 15072.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.125,
+          "n_served": 3.0,
+          "n_bid_messages": 6.0,
+          "n_bid_bytes": 2980.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 36.0,
+          "n_bid_bytes": 18148.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 42.0,
+          "n_bid_bytes": 21390.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 2,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.28125,
+      "mean_bytes": 5797.0,
+      "mean_msgs": 11.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 12.0,
+          "n_bid_bytes": 6074.0,
+          "n_op_charge": 5.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.125,
+          "n_served": 3.0,
+          "n_bid_messages": 4.0,
+          "n_bid_bytes": 1950.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.2916666666666667,
+          "n_served": 7.0,
+          "n_bid_messages": 10.0,
+          "n_bid_bytes": 5016.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.375,
+          "n_served": 9.0,
+          "n_bid_messages": 20.0,
+          "n_bid_bytes": 10148.0,
+          "n_op_charge": 8.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "conflict_dense",
+      "energy_binding": true,
+      "master_seed": 2,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.28125,
+      "mean_bytes": 12597.0,
+      "mean_msgs": 22.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 13664.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.125,
+          "n_served": 3.0,
+          "n_bid_messages": 6.0,
+          "n_bid_bytes": 3400.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 28.0,
+          "n_bid_bytes": 16010.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.3333333333333333,
+          "n_served": 8.0,
+          "n_bid_messages": 30.0,
+          "n_bid_bytes": 17314.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 0,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.9166666666666666,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 6.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 2.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 0,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.9375,
+      "mean_bytes": 31988.5,
+      "mean_msgs": 63.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 68.0,
+          "n_bid_bytes": 34616.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 64.0,
+          "n_bid_bytes": 32464.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 62.0,
+          "n_bid_bytes": 31434.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 58.0,
+          "n_bid_bytes": 29440.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 0,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.9375,
+      "mean_bytes": 15486.0,
+      "mean_msgs": 30.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 12234.0,
+          "n_op_charge": 2.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 42.0,
+          "n_bid_bytes": 21298.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 30.0,
+          "n_bid_bytes": 15212.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 13200.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 0,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.9375,
+      "mean_bytes": 13003.0,
+      "mean_msgs": 22.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 13894.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 12712.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 13850.0,
+          "n_op_charge": 6.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 20.0,
+          "n_bid_bytes": 11556.0,
+          "n_op_charge": 2.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 1,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.8541666666666667,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 5.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 1,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.8541666666666667,
+      "mean_bytes": 31187.0,
+      "mean_msgs": 61.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 60.0,
+          "n_bid_bytes": 30410.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 60.0,
+          "n_bid_bytes": 30428.0,
+          "n_op_charge": 2.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 66.0,
+          "n_bid_bytes": 33512.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 60.0,
+          "n_bid_bytes": 30398.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 1,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.8541666666666667,
+      "mean_bytes": 15222.0,
+      "mean_msgs": 30.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 11164.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 38.0,
+          "n_bid_bytes": 19268.0,
+          "n_op_charge": 2.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 34.0,
+          "n_bid_bytes": 17254.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 13202.0,
+          "n_op_charge": 2.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 1,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.8541666666666667,
+      "mean_bytes": 11828.0,
+      "mean_msgs": 20.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 20.0,
+          "n_bid_bytes": 11530.0,
+          "n_op_charge": 5.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 20.0,
+          "n_bid_bytes": 11556.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 12690.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 20.0,
+          "n_bid_bytes": 11536.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 2,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.9583333333333333,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 5.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 2,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.9583333333333333,
+      "mean_bytes": 34756.0,
+      "mean_msgs": 68.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 66.0,
+          "n_bid_bytes": 33490.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 70.0,
+          "n_bid_bytes": 35502.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 72.0,
+          "n_bid_bytes": 36504.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 66.0,
+          "n_bid_bytes": 33528.0,
+          "n_op_charge": 1.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 2,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.9583333333333333,
+      "mean_bytes": 17505.5,
+      "mean_msgs": 34.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 13208.0,
+          "n_op_charge": 2.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 48.0,
+          "n_bid_bytes": 24344.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 36.0,
+          "n_bid_bytes": 18242.0,
+          "n_op_charge": 0.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 28.0,
+          "n_bid_bytes": 14228.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": false,
+      "master_seed": 2,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.9583333333333333,
+      "mean_bytes": 13272.5,
+      "mean_msgs": 23.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 12692.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 13856.0,
+          "n_op_charge": 4.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 13842.0,
+          "n_op_charge": 2.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 12700.0,
+          "n_op_charge": 3.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 0,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.9375,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 13.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 0,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.9375,
+      "mean_bytes": 30716.0,
+      "mean_msgs": 60.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 60.0,
+          "n_bid_bytes": 30530.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 62.0,
+          "n_bid_bytes": 31422.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 62.0,
+          "n_bid_bytes": 31436.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 58.0,
+          "n_bid_bytes": 29476.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 0,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.9375,
+      "mean_bytes": 14987.5,
+      "mean_msgs": 29.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 11214.0,
+          "n_op_charge": 13.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 40.0,
+          "n_bid_bytes": 20282.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 30.0,
+          "n_bid_bytes": 15236.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 13218.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 0,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.9375,
+      "mean_bytes": 15601.0,
+      "mean_msgs": 27.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 34.0,
+          "n_bid_bytes": 19680.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 14998.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 15008.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 12718.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 1,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.8541666666666667,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 13.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 11.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 1,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.8541666666666667,
+      "mean_bytes": 30171.0,
+      "mean_msgs": 59.5,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 58.0,
+          "n_bid_bytes": 29400.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 58.0,
+          "n_bid_bytes": 29424.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 66.0,
+          "n_bid_bytes": 33470.0,
+          "n_op_charge": 13.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 56.0,
+          "n_bid_bytes": 28390.0,
+          "n_op_charge": 11.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 1,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.8541666666666667,
+      "mean_bytes": 14209.5,
+      "mean_msgs": 28.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 20.0,
+          "n_bid_bytes": 10136.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 36.0,
+          "n_bid_bytes": 18284.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 34.0,
+          "n_bid_bytes": 17254.0,
+          "n_op_charge": 13.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 22.0,
+          "n_bid_bytes": 11164.0,
+          "n_op_charge": 11.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 1,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.8541666666666667,
+      "mean_bytes": 13850.0,
+      "mean_msgs": 24.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 13848.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 13858.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 13848.0,
+          "n_op_charge": 13.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.8333333333333334,
+          "n_served": 10.0,
+          "n_bid_messages": 24.0,
+          "n_bid_bytes": 13846.0,
+          "n_op_charge": 11.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 2,
+      "ablation": "A_no_comm",
+      "mean_ot": 0.9583333333333333,
+      "mean_bytes": 0.0,
+      "mean_msgs": 0.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 13.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 0.0,
+          "n_bid_bytes": 0.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 2,
+      "ablation": "B_full_comm",
+      "mean_ot": 0.9583333333333333,
+      "mean_bytes": 33943.0,
+      "mean_msgs": 67.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 66.0,
+          "n_bid_bytes": 33488.0,
+          "n_op_charge": 13.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 68.0,
+          "n_bid_bytes": 34370.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 72.0,
+          "n_bid_bytes": 36508.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 62.0,
+          "n_bid_bytes": 31406.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 2,
+      "ablation": "C_random_matched",
+      "mean_ot": 0.9583333333333333,
+      "mean_bytes": 17231.5,
+      "mean_msgs": 34.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 13204.0,
+          "n_op_charge": 13.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 48.0,
+          "n_bid_bytes": 24356.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 36.0,
+          "n_bid_bytes": 18246.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 13120.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    },
+    {
+      "message_delay_s": 0.0,
+      "packet_loss_p": 0.0,
+      "n_vehicles": 3,
+      "regime": "baseline",
+      "energy_binding": true,
+      "master_seed": 2,
+      "ablation": "F_race_marl",
+      "mean_ot": 0.9583333333333333,
+      "mean_bytes": 15537.5,
+      "mean_msgs": 27.0,
+      "episodes": [
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 14998.0,
+          "n_op_charge": 13.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 14902.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 1.0,
+          "n_served": 12.0,
+          "n_bid_messages": 26.0,
+          "n_bid_bytes": 14992.0,
+          "n_op_charge": 14.0,
+          "n_missed_feasible_pickup": 0.0
+        },
+        {
+          "on_time_rate_all": 0.9166666666666666,
+          "n_served": 11.0,
+          "n_bid_messages": 30.0,
+          "n_bid_bytes": 17258.0,
+          "n_op_charge": 12.0,
+          "n_missed_feasible_pickup": 0.0
+        }
+      ]
+    }
+  ]
+}

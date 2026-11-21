@@ -40,11 +40,30 @@ def main() -> int:
     parser.add_argument("--eval-episodes", type=int, default=2)
     parser.add_argument("--max-decisions", type=int, default=400)
     parser.add_argument("--matched-send-p", type=float, default=None)
-    parser.add_argument("--bc-cooperative", action="store_true")
+    parser.add_argument("--bc-cooperative", action="store_true", help="BC from cooperative adapter")
+    parser.add_argument(
+        "--bc-native",
+        action="store_true",
+        help="BC from native RaceCooperativePolicy execute teacher (Phase 1 / G1)",
+    )
     parser.add_argument("--bc-steps", type=int, default=256)
     parser.add_argument("--bc-epochs", type=int, default=25)
     parser.add_argument("--dagger-rounds", type=int, default=1)
+    parser.add_argument(
+        "--bc-comm-mode",
+        choices=["selective", "full"],
+        default="selective",
+        help="Native teacher comm_mode for BC/DAgger labels (full warms F toward B)",
+    )
     parser.add_argument("--freeze-comm", action="store_true")
+    parser.add_argument(
+        "--freeze-op",
+        action="store_true",
+        help="Freeze operational PPO head (protect BC claim policy; tune comm only)",
+    )
+    parser.add_argument("--lr", type=float, default=3e-4, help="MAPPO Adam LR")
+    parser.add_argument("--msg-cost", type=float, default=None, help="Override Phase-3 msg reward cost")
+    parser.add_argument("--byte-cost", type=float, default=None, help="Override Phase-3 byte reward cost")
     parser.add_argument("--stage", default="8.2")
     parser.add_argument(
         "--episode-source",
@@ -54,14 +73,44 @@ def main() -> int:
     )
     parser.add_argument(
         "--curriculum",
-        choices=["round_robin", "baseline_only", "peak_only", "tight_only"],
+        choices=["round_robin", "baseline_only", "peak_only", "tight_only", "conflict_only"],
         default="round_robin",
+    )
+    parser.add_argument(
+        "--energy-binding",
+        action="store_true",
+        help="Alternate mid/low SOC episodes (Phase-2 energy-binding tier)",
+    )
+    parser.add_argument(
+        "--phase3",
+        action="store_true",
+        help="Preset: casablanca procedural round_robin, bc-native, F ablation, Phase-3 reward",
     )
     parser.add_argument(
         "--out",
         default="data/casablanca/online_results/marl_checkpoints/smoke.pt",
     )
+    parser.add_argument(
+        "--resume",
+        default=None,
+        help="Load actor/critic from checkpoint before BC/MAPPO (Phase 3 fine-tune)",
+    )
+    parser.add_argument(
+        "--skip-bc",
+        action="store_true",
+        help="Skip BC/DAgger (use with --resume for on-policy fine-tune)",
+    )
     args = parser.parse_args()
+    if args.phase3:
+        args.mode = "casablanca"
+        args.episode_source = "procedural"
+        # Default curriculum is round_robin (baseline for G2 + conflict for G3/G4).
+        # Override with --curriculum conflict_only and/or --energy-binding for stress.
+        args.bc_native = True
+        args.ablation = "F_race_marl"
+        args.stage = "phase3"
+        if args.out.endswith("smoke.pt"):
+            args.out = "data/casablanca/online_results/top_tier/marl_checkpoints/phase3_F_seed0.pt"
 
     import torch
     from race_casablanca.marl.bc import (
@@ -89,11 +138,17 @@ def main() -> int:
             n_vehicles=args.n_vehicles,
             curriculum=args.curriculum,
             procedural_jitter=True,
+            energy_binding=bool(args.energy_binding),
         )
         n_veh = args.n_vehicles
         soc = args.soc
         max_dec = args.max_decisions
 
+    env_kwargs = {}
+    if args.msg_cost is not None:
+        env_kwargs["msg_cost"] = float(args.msg_cost)
+    if args.byte_cost is not None:
+        env_kwargs["byte_cost"] = float(args.byte_cost)
     env = RaceMultiAgentEnv(
         scenario_factory=factory,
         n_vehicles=n_veh,
@@ -104,23 +159,48 @@ def main() -> int:
         seed=args.seed,
         max_decisions=max_dec,
         matched_send_p=args.matched_send_p,
+        **env_kwargs,
     )
-    trainer = MAPPOTrainer(env, freeze_comm=args.freeze_comm)
+    trainer = MAPPOTrainer(
+        env,
+        lr=float(args.lr),
+        freeze_comm=args.freeze_comm,
+        freeze_op=bool(args.freeze_op),
+    )
+    if args.resume:
+        resume_path = project_root() / args.resume
+        print(f"resume from {resume_path}", flush=True)
+        trainer.load(resume_path)
     before = {k: v.detach().clone() for k, v in trainer.actor.named_parameters()}
 
     bc_meta = None
-    if args.bc_cooperative and args.mode == "casablanca":
+    bc_teacher = None
+    if args.skip_bc:
+        print("skip BC (--skip-bc)", flush=True)
+    elif args.bc_native and args.mode == "casablanca":
+        bc_teacher = "native_execute"
+    elif args.bc_cooperative and args.mode == "casablanca":
+        bc_teacher = "cooperative"
+    if bc_teacher is not None:
         print(
-            f"BC from RaceCooperative adapter: steps={args.bc_steps} epochs={args.bc_epochs}",
+            f"BC teacher={bc_teacher}: steps={args.bc_steps} epochs={args.bc_epochs}",
             flush=True,
         )
         batch = collect_bc_batch(
-            env, n_steps=args.bc_steps, seed=args.seed + 50, teacher="cooperative"
+            env,
+            n_steps=args.bc_steps,
+            seed=args.seed + 50,
+            teacher=bc_teacher,
+            teacher_comm_mode=args.bc_comm_mode,
         )
         losses = behavior_clone(
             trainer.actor, batch, epochs=args.bc_epochs, device=trainer.device
         )
         for r in range(max(0, args.dagger_rounds)):
+            # Later DAgger rounds shift to selective so F can prune vs full.
+            dagger_comm = args.bc_comm_mode
+            if args.bc_comm_mode == "full" and r >= max(1, args.dagger_rounds // 2):
+                dagger_comm = "selective"
             batch = dagger_aggregate(
                 env,
                 trainer.actor,
@@ -128,6 +208,8 @@ def main() -> int:
                 seed=args.seed + 200 + r,
                 device=trainer.device,
                 prior_batch=batch,
+                teacher=bc_teacher,
+                teacher_comm_mode=dagger_comm,
             )
             losses = behavior_clone(
                 trainer.actor, batch, epochs=max(5, args.bc_epochs // 2), device=trainer.device

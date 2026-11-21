@@ -60,3 +60,29 @@ def test_no_infinite_loop_under_delay_full_comm():
     assert env._n_decisions <= 40
     # Must not hit pathological 1500-send regime on toy scenario
     assert env._n_send_actions < 200
+
+
+def test_delay_schedules_assign_window_and_bid_assign():
+    """G3 under delay: release schedules assign wait; bid_assign decision fires."""
+    env = RaceMultiAgentEnv(
+        scenario_factory=_factory,
+        n_vehicles=2,
+        initial_soc=1.0,
+        message_delay_s=30.0,
+        ablation="B_full_comm",
+        seed=0,
+        max_decisions=20,
+    )
+    steps = env.reset(seed=0)
+    for _ in range(20):
+        actions = {}
+        for vid, st in steps.items():
+            op = next((i for i in range(5) if st.op_mask[i] > 0.5), OP_DEFER)
+            comm = next((i for i in range(5) if st.comm_mask[i] > 0.5), COMM_SUPPRESS)
+            actions[vid] = (op, comm)
+        steps = env.step(actions)
+        if list(steps.values())[0].done:
+            break
+    m = env.final_metrics()
+    assert m["n_assign_windows"] >= 1
+    assert m["n_decision_bid_assign"] >= 1

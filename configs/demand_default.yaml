@@ -68,6 +68,28 @@ regimes:
     attempt_feasible_certificate: false
     label: tight_windows_unlabeled
     label_note: "Not certified mathematically infeasible without an optimization certificate."
+  # Top-tier Phase 2: overlapping catchments + synchronized releases so peer bids matter.
+  conflict_dense:
+    n_customers: 24
+    horizon_hours: 4
+    start_hour: 8
+    service_duration_min: 10
+    package_weight_kg: 20.0
+    time_window_hours: 0.75
+    weight_jitter: 0.25
+    service_jitter_min: 2.0
+    window_jitter_hours: 0.1
+    release_lead_min: 0
+    release_mode: sync_burst
+    burst_hours: 0.5
+    spatial_pattern: C
+    n_cluster_zones: 2
+    cluster_fraction: 1.0
+    urgency: high
+    intensity_profile: morning_peak
+    attempt_feasible_certificate: false
+    label: conflict_dense_unlabeled
+    label_note: "Designed for multi-agent claim conflict / communication-value stress; not a certified infeasibility class."
 
 intensity_profiles:
   daytime_peak:

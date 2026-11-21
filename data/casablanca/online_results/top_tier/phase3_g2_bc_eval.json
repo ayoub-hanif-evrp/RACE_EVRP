@@ -1,0 +1,99 @@
+{
+  "seed": 0,
+  "episodes": 4,
+  "teacher": {
+    "method": "teacher_intent_matched_ceiling",
+    "ablation": "F_race_marl",
+    "mean_ot": 0.2604166666666667,
+    "mean_bytes": 14665.0,
+    "episodes": [
+      {
+        "on_time_rate_all": 0.25,
+        "n_served": 6.0,
+        "n_bid_messages": 30.0,
+        "n_bid_bytes": 14690.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.25,
+        "n_served": 6.0,
+        "n_bid_messages": 30.0,
+        "n_bid_bytes": 14300.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.2916666666666667,
+        "n_served": 7.0,
+        "n_bid_messages": 36.0,
+        "n_bid_bytes": 17016.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.25,
+        "n_served": 6.0,
+        "n_bid_messages": 26.0,
+        "n_bid_bytes": 12654.0,
+        "n_op_charge": 0.0,
+        "n_missed_feasible_pickup": 0.0
+      }
+    ],
+    "n_episodes": 4
+  },
+  "bc": {
+    "method": "bc_native_execute",
+    "ablation": "F_race_marl",
+    "mean_ot": 0.2916666666666667,
+    "g2_pass": false,
+    "g2_threshold": 0.78,
+    "mean_bytes": 15762.0,
+    "bc": {
+      "op_accuracy": 0.9696180820465088,
+      "comm_accuracy": 0.9878472089767456,
+      "charge_accuracy": 0.5833333134651184,
+      "n": 1152.0,
+      "teacher": "native_execute_dagger",
+      "final_loss": null
+    },
+    "episodes": [
+      {
+        "on_time_rate_all": 0.2916666666666667,
+        "n_served": 7.0,
+        "n_bid_messages": 30.0,
+        "n_bid_bytes": 17544.0,
+        "n_op_charge": 3.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.3333333333333333,
+        "n_served": 8.0,
+        "n_bid_messages": 32.0,
+        "n_bid_bytes": 18656.0,
+        "n_op_charge": 3.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.3333333333333333,
+        "n_served": 8.0,
+        "n_bid_messages": 28.0,
+        "n_bid_bytes": 16322.0,
+        "n_op_charge": 3.0,
+        "n_missed_feasible_pickup": 0.0
+      },
+      {
+        "on_time_rate_all": 0.20833333333333334,
+        "n_served": 5.0,
+        "n_bid_messages": 18.0,
+        "n_bid_bytes": 10526.0,
+        "n_op_charge": 3.0,
+        "n_missed_feasible_pickup": 0.0
+      }
+    ],
+    "bc_steps": 256,
+    "bc_epochs": 20,
+    "dagger_rounds": 1,
+    "n_eval_episodes": 4
+  }
+}

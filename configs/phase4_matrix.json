@@ -1,0 +1,54 @@
+{
+  "name": "phase4_flagship_matrix_v1",
+  "results_root": "data/casablanca/online_results/top_tier/phase4",
+  "checkpoint_default": "data/casablanca/online_results/top_tier/marl_checkpoints/phase3_F_conflict_g4mask_seed0_best.pt",
+  "ablations": ["A_no_comm", "B_full_comm", "C_random_matched", "F_race_marl"],
+  "axes": {
+    "message_delay_s": [0.0, 30.0],
+    "packet_loss_p": [0.0, 0.1],
+    "n_vehicles": [3, 5, 8],
+    "regime": ["conflict_dense", "baseline"],
+    "energy_binding": [false, true],
+    "master_seed": [0, 1, 2]
+  },
+  "smoke": {
+    "message_delay_s": [0.0],
+    "packet_loss_p": [0.0],
+    "n_vehicles": [3],
+    "regime": ["conflict_dense"],
+    "energy_binding": [false],
+    "master_seed": [0],
+    "episodes": 2
+  },
+  "core": {
+    "message_delay_s": [0.0],
+    "packet_loss_p": [0.0],
+    "n_vehicles": [3],
+    "regime": ["conflict_dense", "baseline"],
+    "energy_binding": [false, true],
+    "master_seed": [0, 1, 2],
+    "episodes": 4
+  },
+  "channel": {
+    "message_delay_s": [0.0, 30.0],
+    "packet_loss_p": [0.0, 0.1],
+    "n_vehicles": [3],
+    "regime": ["conflict_dense"],
+    "energy_binding": [false],
+    "master_seed": [0, 1, 2],
+    "episodes": 4
+  },
+  "fleet": {
+    "message_delay_s": [0.0],
+    "packet_loss_p": [0.0],
+    "n_vehicles": [3, 5, 8],
+    "regime": ["conflict_dense"],
+    "energy_binding": [false],
+    "master_seed": [0, 1, 2],
+    "episodes": 4
+  },
+  "full": {
+    "episodes": 4
+  },
+  "notes": "Expand smoke → core → channel → fleet (nv) → full. locked_final forbidden until Phase 5."
+}

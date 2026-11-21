@@ -235,12 +235,17 @@ class NativeBridgeTeacher:
     """Map real ``RaceCooperativePolicy`` decisions onto factorized MARL actions.
 
     Modes:
-    - ``intent`` (default): non-mutating labels from the shared pending state; apply via
-      ``env.step`` so BC train/eval share the batched claim protocol.
-    - ``execute``: sequential mutating native calls (oracle upper bound; do not re-step).
+    - ``execute``: mutating native calls; advance with ``_advance_without_reexec``.
+    - ``intent_matched`` (preferred step path): same as execute, then mark
+      ``env._comm_preflight_done`` / ``_ops_preflight_done`` so ``env.step`` only
+      advances time (no re-send / re-claim). Closes teacher-through-step gap safely.
+    - ``intent``: legacy soft labels for diagnostics only (known OT gap).
+
+    On ``request_release``, mirrors native two-phase ``bid_exchange`` → flush →
+    ``bid_assign`` (Stage 8.3 / top-tier Phase 1 slice 2).
     """
 
-    def __init__(self, *, comm_mode: str = "selective", rng_seed: int = 7, mode: str = "intent"):
+    def __init__(self, *, comm_mode: str = "selective", rng_seed: int = 7, mode: str = "intent_matched"):
         from race_casablanca.policies import RaceCooperativePolicy
 
         self.comm_mode = comm_mode
@@ -257,73 +262,193 @@ class NativeBridgeTeacher:
             comm_mode=self.comm_mode, enable_readiness_charge=True, rng_seed=self.rng_seed
         )
 
-    def actions(self, env: RaceMultiAgentEnv) -> dict[str, tuple[int, int]]:
-        from dataclasses import replace
+    @staticmethod
+    def _map_op_comm(
+        *,
+        tasks: list,
+        claimed_rid: str | None,
+        charged: bool,
+        sent_rid: str | None,
+        comm_enabled: bool,
+    ) -> tuple[int, int]:
+        op = OP_DEFER
+        if claimed_rid is not None:
+            for i, t in enumerate(tasks):
+                if t.request_id == claimed_rid:
+                    op = i
+                    break
+        elif charged:
+            op = OP_CHARGE
+        comm = COMM_SUPPRESS
+        if sent_rid and comm_enabled:
+            for i, t in enumerate(tasks):
+                if t.request_id == sent_rid:
+                    comm = i
+                    break
+        return op, comm
 
+    def _actions_execute(self, env: RaceMultiAgentEnv) -> dict[str, tuple[int, int]]:
         from race_casablanca.sim.policy_api import build_restricted_observation
 
         assert env.sim is not None
         reason = getattr(env, "_last_decision_reason", "epoch") or "epoch"
-        # Readiness charge in RaceCooperativePolicy is reason-gated and omits
-        # service_end / vehicle_idle. MARL event-parity returns on those events;
-        # map them to epoch so bridge charge matches native release/idle practice.
+        task_lists = {
+            vid: sorted(obs.announced, key=lambda t: t.tw_end_s)[:K_TASKS]
+            for vid, obs in env._pending_obs.items()
+        }
+        out: dict[str, tuple[int, int]] = {vid: (OP_DEFER, COMM_SUPPRESS) for vid in env._agent_ids}
+        sent: dict[str, str | None] = {vid: None for vid in env._agent_ids}
+
+        def _run(vid: str, phase: str) -> _LoggingActionInterface:
+            obs = build_restricted_observation(env.sim, vid)
+            logger = _LoggingActionInterface(env.sim, actor_vehicle_id=vid)
+            self.policy.on_decision(obs, logger, phase)
+            return logger
+
+        # Native OnlineSimulator two-phase on release (not a single request_release call).
+        if reason == "request_release":
+            for vid in list(env.sim.vehicles.keys()):
+                lg = _run(vid, "bid_exchange")
+                if lg.sent_rid:
+                    sent[vid] = lg.sent_rid
+            flush = getattr(env.sim, "_flush_zero_delay_task_bids", None)
+            if callable(flush):
+                flush()
+            for vid in list(env.sim.vehicles.keys()):
+                lg = _run(vid, "bid_assign")
+                op, comm = self._map_op_comm(
+                    tasks=task_lists.get(vid, []),
+                    claimed_rid=lg.claimed_rid,
+                    charged=lg.charged,
+                    sent_rid=lg.sent_rid or sent.get(vid),
+                    comm_enabled=env.comm_enabled,
+                )
+                out[vid] = (op, comm)
+        else:
+            for vid in list(env.sim.vehicles.keys()):
+                lg = _run(vid, reason)
+                op, comm = self._map_op_comm(
+                    tasks=task_lists.get(vid, []),
+                    claimed_rid=lg.claimed_rid,
+                    charged=lg.charged,
+                    sent_rid=lg.sent_rid,
+                    comm_enabled=env.comm_enabled,
+                )
+                out[vid] = (op, comm)
+
+        for vid in env._agent_ids:
+            env._pending_obs[vid] = build_restricted_observation(env.sim, vid)
+        return out
+
+    def _actions_intent(self, env: RaceMultiAgentEnv) -> dict[str, tuple[int, int]]:
+        from dataclasses import replace
+
+        assert env.sim is not None
+        reason = getattr(env, "_last_decision_reason", "epoch") or "epoch"
+        # Map MARL idle/service epochs to a charge-eligible native reason.
         charge_reason = reason
-        if self.mode == "intent" and reason in ("service_end", "vehicle_idle", "pickup_missed"):
+        if reason in ("service_end", "vehicle_idle", "pickup_missed"):
             charge_reason = "epoch"
-        out: dict[str, tuple[int, int]] = {}
-        # Snapshot task lists / obs before any optional execute mutations
+
         task_lists = {
             vid: sorted(obs.announced, key=lambda t: t.tw_end_s)[:K_TASKS]
             for vid, obs in env._pending_obs.items()
         }
         pending_obs = dict(env._pending_obs)
+        out: dict[str, tuple[int, int]] = {
+            vid: (OP_DEFER, COMM_SUPPRESS) for vid in env._agent_ids
+        }
         soft_claimed: set[str] = set()
-        for vid in sorted(env._agent_ids):
-            tasks = task_lists[vid]
-            if self.mode == "execute":
+        sent: dict[str, str | None] = {vid: None for vid in env._agent_ids}
+
+        if reason == "request_release":
+            from race_casablanca.sim.policy_api import build_restricted_observation
+
+            # Phase A: REAL bid_exchange (same bus state as native/execute).
+            for vid in list(env.sim.vehicles.keys()):
                 obs = build_restricted_observation(env.sim, vid)
-                logger: ActionInterface = _LoggingActionInterface(env.sim, actor_vehicle_id=vid)
-                self.policy.on_decision(obs, logger, reason)
-            else:
-                base = pending_obs[vid]
-                # Sequential soft-assign: hide tasks already intended by earlier vehicles
-                # so factorized labels approximate native within-epoch ordering.
+                lg = _LoggingActionInterface(env.sim, actor_vehicle_id=vid)
+                self.policy.on_decision(obs, lg, "bid_exchange")
+                if lg.sent_rid:
+                    sent[vid] = lg.sent_rid
+            flush = getattr(env.sim, "_flush_zero_delay_task_bids", None)
+            if callable(flush):
+                flush()
+
+            # Phase B: non-mutating bid_assign on refreshed obs + soft ownership.
+            for vid in list(env.sim.vehicles.keys()):
+                tasks = task_lists.get(vid, [])
+                base = build_restricted_observation(env.sim, vid)
                 if soft_claimed:
                     filtered = [t for t in base.announced if t.request_id not in soft_claimed]
                     obs = replace(base, announced=filtered)
                 else:
                     obs = base
                 logger = _IntentOnlyInterface(env.sim, actor_vehicle_id=vid)
-                self.policy.on_decision(obs, logger, charge_reason)
-            op = OP_DEFER
-            if logger.claimed_rid is not None:
-                for i, t in enumerate(tasks):
-                    if t.request_id == logger.claimed_rid:
-                        op = i
-                        break
-                else:
-                    op = OP_DEFER  # claimed outside top-K truncation
-                if self.mode == "intent" and op != OP_DEFER:
+                self.policy.on_decision(obs, logger, "bid_assign")
+                op, _ = self._map_op_comm(
+                    tasks=tasks,
+                    claimed_rid=logger.claimed_rid,
+                    charged=logger.charged,
+                    sent_rid=None,
+                    comm_enabled=False,
+                )
+                if op != OP_DEFER and logger.claimed_rid is not None:
                     soft_claimed.add(logger.claimed_rid)
-            elif logger.charged:
-                op = OP_CHARGE
-            elif self.mode == "intent" and env._charge_action_legal(pending_obs[vid]):
-                # Fallback when native reason-gating left a legal charge unused.
-                if not pending_obs[vid].announced or all(
-                    t.request_id in soft_claimed for t in pending_obs[vid].announced
+                elif op == OP_DEFER and env._charge_action_legal(base):
+                    if not base.announced or all(
+                        t.request_id in soft_claimed for t in base.announced
+                    ):
+                        op = OP_CHARGE
+                _, comm = self._map_op_comm(
+                    tasks=tasks,
+                    claimed_rid=None,
+                    charged=False,
+                    sent_rid=sent.get(vid),
+                    comm_enabled=env.comm_enabled,
+                )
+                out[vid] = (op, comm)
+                env._pending_obs[vid] = base
+            # env.step must not re-send; claims only.
+            env._comm_preflight_done = True
+            return out
+
+        for vid in list(env.sim.vehicles.keys()):
+            tasks = task_lists.get(vid, [])
+            base = pending_obs[vid]
+            if soft_claimed:
+                filtered = [t for t in base.announced if t.request_id not in soft_claimed]
+                obs = replace(base, announced=filtered)
+            else:
+                obs = base
+            logger = _IntentOnlyInterface(env.sim, actor_vehicle_id=vid)
+            self.policy.on_decision(obs, logger, charge_reason)
+            op, comm = self._map_op_comm(
+                tasks=tasks,
+                claimed_rid=logger.claimed_rid,
+                charged=logger.charged,
+                sent_rid=logger.sent_rid,
+                comm_enabled=env.comm_enabled,
+            )
+            if op != OP_DEFER and logger.claimed_rid is not None:
+                soft_claimed.add(logger.claimed_rid)
+            elif op == OP_DEFER and env._charge_action_legal(env._pending_obs[vid]):
+                if not env._pending_obs[vid].announced or all(
+                    t.request_id in soft_claimed for t in env._pending_obs[vid].announced
                 ):
                     op = OP_CHARGE
-            comm = COMM_SUPPRESS
-            if logger.sent_rid and env.comm_enabled:
-                for i, t in enumerate(tasks):
-                    if t.request_id == logger.sent_rid:
-                        comm = i
-                        break
             out[vid] = (op, comm)
-        if self.mode == "execute":
-            for vid in env._agent_ids:
-                env._pending_obs[vid] = build_restricted_observation(env.sim, vid)
         return out
+
+    def actions(self, env: RaceMultiAgentEnv) -> dict[str, tuple[int, int]]:
+        if self.mode in ("execute", "intent_matched"):
+            out = self._actions_execute(env)
+            if self.mode == "intent_matched":
+                # Native already applied; env.step should only flush legs + advance.
+                env._comm_preflight_done = True
+                env._ops_preflight_done = True
+            return out
+        return self._actions_intent(env)
 
 
 def native_bridge_teacher_actions(
@@ -360,14 +485,30 @@ def collect_bc_batch(
     *,
     n_steps: int = 128,
     seed: int = 0,
-    teacher: str = "cooperative",
+    teacher: str = "native_execute",
+    teacher_comm_mode: str = "selective",
 ) -> dict[str, np.ndarray]:
+    """Collect BC labels.
+
+    Preferred ``teacher='native_execute'``: real RaceCooperativePolicy mutations at
+    MARL epochs (two-phase on release), then time advance without re-stepping.
+    ``native_bridge`` = intent labels applied through ``env.step``.
+    ``teacher_comm_mode='full'`` warms F toward B-level send rate (G4).
+    """
     steps = env.reset(seed=seed)
     obs_l, op_l, comm_l, opm_l, cmm_l = [], [], [], [], []
     ep_seed = seed
     coop = CooperativeTeacherAdapter() if teacher == "cooperative" else None
-    # Intent mode: labels must be applied via env.step (batched protocol).
-    native = NativeBridgeTeacher(mode="intent") if teacher == "native_bridge" else None
+    native_mode = None
+    if teacher == "native_bridge":
+        native_mode = "intent_matched"
+    elif teacher == "native_execute":
+        native_mode = "execute"
+    native = (
+        NativeBridgeTeacher(mode=native_mode, comm_mode=str(teacher_comm_mode))
+        if native_mode
+        else None
+    )
     if coop is not None:
         coop.reset()
     if native is not None:
@@ -376,16 +517,33 @@ def collect_bc_batch(
         if teacher == "cooperative":
             labels = cooperative_teacher_actions(env, coop)
             already_executed = False
-        elif teacher == "native_bridge":
+        elif teacher in ("native_bridge", "native_execute"):
             labels = native_bridge_teacher_actions(env, native)
-            already_executed = False
+            # execute: advance without step; intent_matched: step only advances.
+            already_executed = teacher == "native_execute"
         else:
             labels = greedy_teacher_actions(env)
             already_executed = False
         for vid, st in steps.items():
             obs_l.append(st.obs)
             op_l.append(labels[vid][0])
-            comm_l.append(labels[vid][1])
+            # F training: only imitate sends that need energy-cert / contest.
+            comm_a = int(labels[vid][1])
+            if getattr(env, "ablation", "") == "F_race_marl":
+                from race_casablanca.marl.env import COMM_SUPPRESS, K_TASKS
+                from race_casablanca.sim.policy_api import ActionInterface
+
+                obs = env._pending_obs.get(vid)
+                if obs is not None and 0 <= comm_a < K_TASKS:
+                    tasks = sorted(obs.announced, key=lambda t: t.tw_end_s)[:K_TASKS]
+                    if comm_a < len(tasks):
+                        t = tasks[comm_a]
+                        chk = ActionInterface(env.sim, actor_vehicle_id=vid).check_insertion(
+                            vid, t.request_id
+                        )
+                        if not env._task_needs_energy_cert(obs, t, chk):
+                            comm_a = COMM_SUPPRESS
+            comm_l.append(comm_a)
             opm_l.append(st.op_mask)
             cmm_l.append(st.comm_mask)
         if already_executed:
@@ -417,7 +575,9 @@ def behavior_clone(
     lr: float = 1e-3,
     device: str | torch.device = "cpu",
     class_weight: bool = True,
+    send_boost: float = 2.0,
 ) -> list[float]:
+    """Imitate teacher op/comm. ``send_boost`` upweights non-suppress comm classes (G4)."""
     device = torch.device(device)
     actor = actor.to(device)
     opt = torch.optim.Adam(actor.parameters(), lr=lr)
@@ -427,20 +587,36 @@ def behavior_clone(
     opm = torch.as_tensor(batch["op_mask"], device=device)
     cmm = torch.as_tensor(batch["comm_mask"], device=device)
     op_w = None
+    comm_w = None
     if class_weight:
         n_op = int(getattr(getattr(actor, "op_head", None), "out_features", int(op.max().item()) + 1))
         counts = np.bincount(batch["op"], minlength=n_op).astype(np.float32)
         w = counts.sum() / (counts + 1.0)
         w = w / max(float(w.mean()), 1e-6)
         op_w = torch.as_tensor(w, device=device)
+        n_comm = int(
+            getattr(getattr(actor, "comm_head", None), "out_features", int(comm.max().item()) + 1)
+        )
+        c_counts = np.bincount(batch["comm"], minlength=n_comm).astype(np.float32)
+        cw = c_counts.sum() / (c_counts + 1.0)
+        cw = cw / max(float(cw.mean()), 1e-6)
+        # Boost every non-suppress class (suppress is last index = n_comm-1).
+        if send_boost and float(send_boost) != 1.0 and n_comm > 1:
+            cw = np.asarray(cw, dtype=np.float32).copy()
+            cw[:-1] *= float(send_boost)
+            cw = cw / max(float(cw.mean()), 1e-6)
+        comm_w = torch.as_tensor(cw, device=device)
     losses = []
     for _ in range(epochs):
         op_logits, comm_logits = actor(obs, opm, cmm)
-        loss = F.cross_entropy(op_logits, op, weight=op_w) + F.cross_entropy(comm_logits, comm)
+        loss = F.cross_entropy(op_logits, op, weight=op_w) + F.cross_entropy(
+            comm_logits, comm, weight=comm_w
+        )
         opt.zero_grad()
         loss.backward()
         opt.step()
-        losses.append(float(loss.item()))
+        v = float(loss.item())
+        losses.append(v if v == v and abs(v) != float("inf") else float("nan"))
     return losses
 
 
@@ -487,19 +663,26 @@ def dagger_aggregate(
     device: str | torch.device = "cpu",
     prior_batch: dict[str, np.ndarray] | None = None,
     teacher: str = "cooperative",
+    teacher_comm_mode: str = "selective",
 ) -> dict[str, np.ndarray]:
     """Roll out student; label states with teacher (DAgger-style)."""
     device = torch.device(device)
     actor = actor.to(device)
     actor.eval()
     coop = CooperativeTeacherAdapter() if teacher == "cooperative" else None
-    native = NativeBridgeTeacher(mode="intent") if teacher == "native_bridge" else None
+    # DAgger: student env.step must apply student ops — use soft intent labels only
+    # (intent_matched would pre-apply native claims and ignore the student).
+    label_teacher = (
+        NativeBridgeTeacher(mode="intent", comm_mode=str(teacher_comm_mode))
+        if teacher in ("native_bridge", "native_execute")
+        else None
+    )
     steps = env.reset(seed=seed)
     obs_l, op_l, comm_l, opm_l, cmm_l = [], [], [], [], []
     ep_seed = seed
     for _ in range(n_steps):
-        if native is not None:
-            labels = native_bridge_teacher_actions(env, native)
+        if label_teacher is not None:
+            labels = native_bridge_teacher_actions(env, label_teacher)
         else:
             labels = cooperative_teacher_actions(env, coop)
         student_actions: dict[str, tuple[int, int]] = {}
@@ -524,8 +707,8 @@ def dagger_aggregate(
             steps = env.reset(seed=ep_seed)
             if coop is not None:
                 coop.reset()
-            if native is not None:
-                native.reset()
+            if label_teacher is not None:
+                label_teacher.reset()
     tag = f"{teacher}_dagger"
     new = {
         "obs": np.asarray(obs_l, dtype=np.float32),
